@@ -4,29 +4,40 @@ networks:
   frontend:
   backend:
 
+volumes:
+  db-transcendance:
+    driver_opts:
+      type: none
+      device: $POSTGRES_DATAPATH
+      o: bind
+
 services:
 
-  react:
+  front:
     container_name: "react-transcendance"
     image: "react:transcendance"
     restart: unless-stopped
     init: true
+    env_file:
+        - .env
     ports:
       - 3000:3000
     networks:
       - frontend
-    env_file:
-        - .env
     build:
       context: containers/react-transcendance/
 
-  nest:
+  api:
     container_name: "nest-transcendance"
     image: "nest:transcendance"
     restart: unless-stopped
     init: true
+# ================== TO REMOVE =================================
     ports:
       - 3001:3000
+# ==============================================================
+    volumes:
+      - $POSTGRES_DATAPATH:$PGDATA
     networks:
       - frontend
       - backend
@@ -35,3 +46,16 @@ services:
     build:
       context: containers/nest-transcendance/
 
+  db:
+    container_name: "postgres-transcendance"
+    image: postgres
+    restart: unless-stopped
+    init: true
+    env_file:
+        - .env
+# ================== TO REMOVE =================================
+    ports:
+      - 5432:5432
+# ==============================================================
+    networks:
+      - backend
