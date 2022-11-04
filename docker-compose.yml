@@ -1,0 +1,22 @@
+version: "3.7"
+
+networks:
+  frontend:
+
+services:
+
+# REACT
+  react:
+    container_name: "react-transcendance"
+    image: "react:transcendance"
+    restart: unless-stopped
+    init: true
+    ports:
+      - 3000:3000
+    networks:
+      - frontend
+    env_file:
+        - .env
+    build:
+      context: containers/react-transcendance/
+
