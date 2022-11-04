@@ -16,9 +16,3 @@ chat capabilities.
 - middleware: [nestJS](https://nestjs.com/)
 - backend: [postgreSQL](https://github.com/nestjs/nest)
 
-## Usage
-create an ```.env``` file according to ```.env-sample``` and run
-```
-docker-compose up --build
-```
-you can then access the application by connecting to ```http://localhost:3000```
