@@ -1,27 +1,15 @@
 import React from 'react';
-import logo from '../logo.svg';
-import '../static/App.css';
 import Nav from './Nav'
+import Home from './Home'
+
+import { Stack } from '@mui/material'
 
 function App() {
   return (
-    <div className="App">
-		<Nav></Nav>
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Stack justifyContent='center'>
+	<Nav></Nav>
+	<Home></Home>
+    </Stack>
   );
 }
 
