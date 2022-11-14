@@ -2,7 +2,7 @@
 
 .Content {
 	.links {
-		width: 4rem * 4; // * number of childs in nav
+		width: 4rem * 5; // * number of childs in nav
 		height: 4rem;
 		display: flex;
 		border: dashed .3rem color('textSecondary');
@@ -36,15 +36,20 @@
 			&:nth-child(4):hover {
 				background: color('aquaPrimary');
 			}
+			&:nth-child(5):hover {
+				background: color('redPrimary');
+			}
 		}
 	}
 
 	.slides {
+		width: 50rem;
+		height: 40rem;
+		max-width: 98%;
+		max-height: 50vh;
 		border: dashed .3rem color('textSecondary');
 		display: flex;
 		overflow: hidden;
-		width: 50rem;
-		height: 40rem;
 		margin: auto;
 		margin-top: 5rem;
 

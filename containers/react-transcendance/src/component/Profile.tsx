@@ -1,86 +1,41 @@
 import React from 'react';
 
 import '../static/Profile.scss'
+import {ReactComponent as SchoolLogo} from '../static/logo.svg'
+
+import PlaceholderPic from '../static/yikes.jpg'
+
 import Historic from './Historic'
 
 function Profile() {
-  var placeholderName = "John Doe"
-  var placeholderPic = ""
-  var wins: number = 2
-  var loss: number = 4
-  var gamesPlayed: number = 6
-
-	const matches = [
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-	];
+  const placeholderName = "John Doe"
+  const placeholderPic = PlaceholderPic
+  const wins: number = 2
+  const loss: number = 4
+  const gamesPlayed: number = 6
+	const Oauth = false;
 
   return (
 	<div className="Profile">
-			<div className="userCard">
-				<img src="" alt="JD" />
-				<h3>{placeholderName}</h3>
-				<div className="stats">
-					<p className="games">
-						games played<br/>{gamesPlayed}
-					</p>
-					<p className="win">
-						win<br/>{wins}
-					</p>
-					<p className="loss">
-						loss<br/>{loss}
-					</p>
-				</div>
+		<div className="userCard">
+			<div className="stats">
+				<img src={placeholderPic} alt="JD" />
+				<h4>{placeholderName}</h4>
+				<a href="#" className="Oauth"
+				style={{background: Oauth ? "#b8bb26" : "#cc241d"}}
+				><SchoolLogo/> {Oauth ? "√" : "×" }</a>
+				<p className="games">
+					games played<br/>{gamesPlayed}
+				</p>
+				<p className="win">
+					win<br/>{wins}
+				</p>
+				<p className="loss">
+					loss<br/>{loss}
+				</p>
 			</div>
-			<table className="historic">
-					<th>opponent</th>
-					<th>status</th>
-					<th colSpan={2}>scores</th>
-			{
-				matches.map((match, idx) =>
-				<tr key={idx}>
-					<td>{match.opponent.slice(0, 7) + (match.opponent.length > 7 ? "..." : "")}</td>
-					<td>{match.winned ? "√" : "×"}</td>
-					<td>{match.gain}</td>
-					<td>{match.loss}</td>
-				</tr>
-				)
-			}
-			</table>
+		</div>
+		<Historic></Historic>
 	</div>
   );
 }

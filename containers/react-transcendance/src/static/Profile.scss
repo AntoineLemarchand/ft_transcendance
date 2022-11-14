@@ -2,24 +2,21 @@
 
 .Profile {
 	.userCard {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		text-align: center;
-		img {
-			padding: 1rem;
-			border-radius: 25px;
-			background: color('aquaPrimary');
-		}
-
-		h3 {
-			margin-top: 2rem;
-			color: color('textPrimary')
-		}
 
 		.stats {
 			width: 50%;
 			margin: auto auto 2rem auto;
 			display: grid;
 			text-align: center;
-			grid: 'header header' '. .';
+			grid:
+				'Name Pic'
+				'Oauth Oauth'
+				'gamesPlayed gamesPlayed'
+				'. .';
 			border: double 4px color(textPrimary);
 			color: color('backGround2');
 
@@ -27,8 +24,30 @@
 				margin: 0;
 			}
 
+			h4 {
+				grid-area: Name;
+				color: color('textPrimary');
+				margin: auto 1rem auto 1rem;
+			}
+
+			img {
+				width: 4rem;
+				height: 4rem;
+				grid-area: Pic;
+				background: color('aquaPrimary');
+			}
+
+			.Oauth {
+				grid-area: Oauth;
+				display: flex;
+				justify-content: space-around;
+				align-items: center;
+				text-decoration: none;
+				color: color('backGround2');
+				font-size: 1.5rem;
+			}
 			.games {
-				grid-area: header;
+				grid-area: gamesPlayed;
 				background: color('orangePrimary');
 			}
 
@@ -38,31 +57,6 @@
 
 			.loss {
 				background: color('redSecondary');
-			}
-		}
-	}
-
-	.historic {
-		display: block;
-		height: 15rem;
-		overflow-y: scroll;
-		th {
-			background: color(aquaSecondary);
-			color: color('backGround2');
-			text-align: left;
-		}
-
-		tr {
-			background: color('backGround2');
-			color: color('textPrimary');
-			text-align: center;
-
-			td {
-				min-width: 4rem;
-			}
-
-			td:first-child {
-				text-align: left;
 			}
 		}
 	}

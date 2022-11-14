@@ -1,0 +1,28 @@
+@import 'gruvbox';
+
+.Historic {
+	display: block;
+	height: 15rem;
+	overflow-y: scroll;
+	th {
+		position: sticky;
+		top: 0;
+		background: color(aquaSecondary);
+		color: color('backGround2');
+		text-align: left;
+	}
+
+	tr {
+		background: color('backGround2');
+		color: color('textPrimary');
+		text-align: center;
+
+		td {
+			min-width: 4rem;
+		}
+
+		td:first-child {
+			text-align: left;
+		}
+	}
+}

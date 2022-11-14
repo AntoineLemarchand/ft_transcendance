@@ -1,6 +1,12 @@
 import * as React from 'react';
 
-import { FaHome, FaTableTennis, FaCommentDots, FaUser } from 'react-icons/fa'
+import {
+	FaHome,
+	FaTableTennis,
+	FaCommentDots,
+	FaUser,
+	FaDoorOpen
+	} from 'react-icons/fa'
 
 import '../static/Content.scss'
 
@@ -13,7 +19,8 @@ const pages = [
 	{ icon: <FaHome/>, ref: 'Home', component: <Home/>},
 	{ icon: <FaTableTennis/>, ref: 'Play', component: <Play/>},
 	{ icon: <FaCommentDots/>, ref: 'Discuss', component: <Chat/>},
-	{ icon: <FaUser/>, ref: 'Profile', component: <Profile/>}
+	{ icon: <FaUser/>, ref: 'Profile', component: <Profile/>},
+	{ icon: <FaDoorOpen/>, ref: 'Profile', component: null}
 ];
 
 
