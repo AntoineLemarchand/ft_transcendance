@@ -1,16 +1,16 @@
-import React from 'react';
-import Nav from './Nav'
-import Home from './Home'
+import React from 'react'
+import Header from './Header'
+import Content from './Content'
 
-import { Stack } from '@mui/material'
+import '../static/App.scss'
 
 function App() {
-  return (
-    <Stack justifyContent='center'>
-	<Nav></Nav>
-	<Home></Home>
-    </Stack>
-  );
+	return (
+	<div className="App">
+		<Header></Header>
+		<Content></Content>
+	</div>
+   );
 }
 
 export default App;

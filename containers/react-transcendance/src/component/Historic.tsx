@@ -3,8 +3,9 @@ import Stack from '@mui/material/Stack';
 
 function Historic() {
 	return (
-			<Stack className="Historic">
-			</Stack>
+			<div className="Historic">
+			historic
+			</div>
 		   );
 }
 

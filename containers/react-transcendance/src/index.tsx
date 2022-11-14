@@ -1,20 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './static/index.css';
+import './static/index.scss';
 import App from './component/App';
 import reportWebVitals from './reportWebVitals';
-
-import { ThemeProvider } from '@mui/material/styles';
-import gruvBox from './component/Theme'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-  <ThemeProvider theme={{gruvBox}}>
     <App />
-  </ThemeProvider>
   </React.StrictMode>
 );
 

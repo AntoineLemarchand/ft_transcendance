@@ -1,0 +1,72 @@
+@import './gruvbox';
+
+.Content {
+	.links {
+		width: 4rem * 4; // * number of childs in nav
+		height: 4rem;
+		display: flex;
+		border: dashed .3rem color('textSecondary');
+		margin: auto;
+		background: color('backGround2');
+
+		a {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			width: 4rem;
+			transition: .2s ease-in;
+
+			font-size: 2rem;
+			color: color('textPrimary');
+
+			&:hover {
+				color: color('backGround2');
+			}
+
+			&:nth-child(1):hover {
+				background: color('greenPrimary');
+			}
+			&:nth-child(2):hover {
+				background: color('orangePrimary');
+			}
+			&:nth-child(3):hover {
+				background: color('yellowPrimary');
+			}
+			&:nth-child(4):hover {
+				background: color('aquaPrimary');
+			}
+		}
+	}
+
+	.slides {
+		border: dashed .3rem color('textSecondary');
+		display: flex;
+		overflow: hidden;
+		width: 50rem;
+		height: 40rem;
+		margin: auto;
+		margin-top: 5rem;
+
+		scroll-snap-type: x mandatory;
+
+		scroll-behavior: smooth;
+
+		.component-wrapper {
+			min-width: 100%;
+			min-height: 100%;
+
+			scroll-snap-align: start;
+			flex-shrink: 0;
+			transform-origin: center center;
+			transform: scale(1);
+			transition: transform 0.5s;
+			position: relative;
+
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+	}
+}
+

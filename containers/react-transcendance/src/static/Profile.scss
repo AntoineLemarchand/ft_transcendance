@@ -1,0 +1,69 @@
+@import './gruvbox';
+
+.Profile {
+	.userCard {
+		text-align: center;
+		img {
+			padding: 1rem;
+			border-radius: 25px;
+			background: color('aquaPrimary');
+		}
+
+		h3 {
+			margin-top: 2rem;
+			color: color('textPrimary')
+		}
+
+		.stats {
+			width: 50%;
+			margin: auto auto 2rem auto;
+			display: grid;
+			text-align: center;
+			grid: 'header header' '. .';
+			border: double 4px color(textPrimary);
+			color: color('backGround2');
+
+			p {
+				margin: 0;
+			}
+
+			.games {
+				grid-area: header;
+				background: color('orangePrimary');
+			}
+
+			.win {
+				background: color('greenSecondary');
+			}
+
+			.loss {
+				background: color('redSecondary');
+			}
+		}
+	}
+
+	.historic {
+		display: block;
+		height: 15rem;
+		overflow-y: scroll;
+		th {
+			background: color(aquaSecondary);
+			color: color('backGround2');
+			text-align: left;
+		}
+
+		tr {
+			background: color('backGround2');
+			color: color('textPrimary');
+			text-align: center;
+
+			td {
+				min-width: 4rem;
+			}
+
+			td:first-child {
+				text-align: left;
+			}
+		}
+	}
+}
