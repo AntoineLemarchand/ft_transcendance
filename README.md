@@ -1,4 +1,4 @@
-# ft_transcendance
+# ft_transcendence
 
 ## Description
 This is the final project of the 42 common core.
