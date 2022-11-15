@@ -14,19 +14,21 @@ import Home from './Home'
 import Play from './Play'
 import Chat from './Chat'
 import Profile from './Profile'
+import Header from './Header'
 
 const pages = [
 	{ icon: <FaHome/>, ref: 'Home', component: <Home/>},
 	{ icon: <FaTableTennis/>, ref: 'Play', component: <Play/>},
 	{ icon: <FaCommentDots/>, ref: 'Discuss', component: <Chat/>},
 	{ icon: <FaUser/>, ref: 'Profile', component: <Profile/>},
-	{ icon: <FaDoorOpen/>, ref: 'Profile', component: null}
+	{ icon: <FaDoorOpen/>, ref: 'Logout', component: null}
 ];
 
 
 function Content() {
 	return (
 			<div className="Content">
+				<Header></Header>
 				<div className="links">
 				{
 					pages.map((page, idx) => 
@@ -50,3 +52,4 @@ function Content() {
 }
 
 export default Content;
+

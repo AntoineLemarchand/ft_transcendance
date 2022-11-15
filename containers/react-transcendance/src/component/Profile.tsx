@@ -13,7 +13,7 @@ function Profile() {
   const wins: number = 2
   const loss: number = 4
   const gamesPlayed: number = 6
-	const Oauth = false;
+  const Oauth = true
 
   return (
 	<div className="Profile">

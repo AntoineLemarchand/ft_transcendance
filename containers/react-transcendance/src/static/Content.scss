@@ -1,12 +1,23 @@
 @import './gruvbox';
 
+$linksHeight: 4rem;
+$slideWidth: 50rem;
+$slideHeight: 100%;
+
 .Content {
+	display: flex;
+	flex-direction: column;
+	height: 80%;
+
 	.links {
-		width: 4rem * 5; // * number of childs in nav
-		height: 4rem;
+		width: $slideWidth;
+		max-width: 98%;
+		height: $linksHeight;
 		display: flex;
+		justify-content: space-around;
 		border: dashed .3rem color('textSecondary');
-		margin: auto;
+		border-bottom: none;
+		margin: auto auto 0 auto;
 		background: color('backGround2');
 
 		a {
@@ -43,15 +54,13 @@
 	}
 
 	.slides {
-		width: 50rem;
-		height: 40rem;
+		flex-grow: 1;
+		width: $slideWidth;
 		max-width: 98%;
-		max-height: 50vh;
 		border: dashed .3rem color('textSecondary');
 		display: flex;
 		overflow: hidden;
-		margin: auto;
-		margin-top: 5rem;
+		margin: 0 auto auto auto;
 
 		scroll-snap-type: x mandatory;
 

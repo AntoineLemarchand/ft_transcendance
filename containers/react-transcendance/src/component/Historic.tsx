@@ -1,51 +1,51 @@
 import React from 'react';
-import Stack from '@mui/material/Stack';
 
 import '../static/Historic.scss';
 
-	const matches = [
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "op1", winned: true, gain: 5, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-		{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
-		{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
-	];
+const matches = [
+	{ opponent: "op1", winned: true, gain: 5, loss: 3},
+	{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
+	{ opponent: "op1", winned: true, gain: 5, loss: 3},
+	{ opponent: "op1", winned: true, gain: 5, loss: 3},
+	{ opponent: "op1", winned: true, gain: 5, loss: 3},
+	{ opponent: "op1", winned: true, gain: 5, loss: 3},
+	{ opponent: "op1", winned: true, gain: 5, loss: 3},
+	{ opponent: "op1", winned: true, gain: 5, loss: 3},
+	{ opponent: "op1", winned: true, gain: 5, loss: 3},
+	{ opponent: "op1", winned: true, gain: 5, loss: 3},
+	{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
+	{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
+	{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
+	{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
+	{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
+	{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
+	{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
+	{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
+	{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
+	{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
+	{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
+	{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
+	{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
+	{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
+	{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
+	{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
+	{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
+	{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
+	{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
+	{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
+	{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
+	{ opponent: "oploooooooooooong",winned: false, gain: 8, loss: 500},
+	{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
+	{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
+	{ opponent: "oplooooooong", winned: true, gain: 80, loss: 1},
+	{ opponent: "oploooooooo", winned: false, gain: 1, loss: 3},
+];
 
 
 function Historic() {
 	return (
 			<table className="Historic">
+			<tbody>
 			<tr>
 					<th>opponent</th>
 					<th>status</th>
@@ -61,6 +61,7 @@ function Historic() {
 				</tr>
 				)
 			}
+			</tbody>
 			</table>
 		   );
 }
