@@ -33,8 +33,8 @@ services:
     restart: unless-stopped
     init: true
 # ================== TO REMOVE =================================
-    ports:
-      - 3001:3000
+#    ports:
+#      - 3001:3000
 # ==============================================================
     volumes:
       - $POSTGRES_DATAPATH:$PGDATA

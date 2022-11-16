@@ -1,53 +1,63 @@
 @import './gruvbox';
 
 .Profile {
+	display: flex;
+	flex-direction: column;
 	.userCard {
+		width: 100%;
+		height: 6rem;
+
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		text-align: center;
+		justify-content: space-between;
 
-		.stats {
-			width: 50%;
-			margin: auto auto 2rem auto;
-			display: grid;
-			text-align: center;
-			grid:
-				'Name Pic'
-				'Oauth Oauth'
-				'gamesPlayed gamesPlayed'
-				'. .';
-			border: double 4px color(textPrimary);
-			color: color('backGround2');
+		color: color('backGround2');
 
-			p {
-				margin: 0;
-			}
-
-			h4 {
-				grid-area: Name;
-				color: color('textPrimary');
-				margin: auto 1rem auto 1rem;
-			}
+		.profileHeader {
+			display: flex;
+			grid-template-columns:min-content min-content;
 
 			img {
-				width: 4rem;
-				height: 4rem;
-				grid-area: Pic;
-				background: color('aquaPrimary');
+				height: 6rem;
 			}
 
 			.Oauth {
-				grid-area: Oauth;
+				width: 1.5rem;
 				display: flex;
-				justify-content: space-around;
+				flex-direction: column;
+				justify-content: center;
 				align-items: center;
+
+				font-size: 1.5rem;
 				text-decoration: none;
 				color: color('backGround2');
-				font-size: 1.5rem;
 			}
+
+		}
+
+		h4 {
+			margin: 0;
+
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			color: color('textSecondary');
+			font-size: 100%;
+		}
+
+		.stats {
+			display: grid;
+
+			p {
+				margin: 0;
+				padding: 0 .5rem 0 .5rem;
+
+				display: flex;
+				align-items: center;
+			}
+
 			.games {
-				grid-area: gamesPlayed;
+				grid-column: 1 / 3;
 				background: color('orangePrimary');
 			}
 

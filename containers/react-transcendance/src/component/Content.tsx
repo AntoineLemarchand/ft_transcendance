@@ -27,29 +27,28 @@ const pages = [
 
 function Content() {
 	return (
-			<div className="Content">
-				<Header></Header>
-				<div className="links">
-				{
-					pages.map((page, idx) => 
-						<a href={'#' + page.ref} key={idx}>
-							{page.icon}
-						</a>
-					)
-				}
-				</div>
-				<div className="slides">
-				{
-					pages.map((page, idx) => 
-					 <div id={page.ref} className="component-wrapper" key={idx}>
-						{page.component}
-					 </div>
-					)
-				}
-				</div>
+		<div className="Content">
+			<Header></Header>
+			<div className="links">
+			{
+				pages.map((page, idx) => 
+					<a href={'#' + page.ref} key={idx}>
+						{page.icon}
+					</a>
+				)
+			}
 			</div>
-		   )
+			<div className="slides">
+			{
+				pages.map((page, idx) => 
+				 <div id={page.ref} className="component-wrapper" key={idx}>
+					{page.component}
+				 </div>
+				)
+			}
+			</div>
+		</div>
+ )
 }
 
 export default Content;
-

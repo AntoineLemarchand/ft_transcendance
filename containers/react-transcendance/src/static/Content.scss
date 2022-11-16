@@ -5,31 +5,37 @@ $slideWidth: 50rem;
 $slideHeight: 100%;
 
 .Content {
+	height: 80%;
+
 	display: flex;
 	flex-direction: column;
-	height: 80%;
 
 	.links {
 		width: $slideWidth;
 		max-width: 98%;
 		height: $linksHeight;
+
 		display: flex;
 		justify-content: space-around;
+
+		margin: auto auto 0 auto;
+
 		border: dashed .3rem color('textSecondary');
 		border-bottom: none;
-		margin: auto auto 0 auto;
 		background: color('backGround2');
 
 		a {
+			width: 4rem;
+
 			display: flex;
 			justify-content: center;
 			align-items: center;
 
-			width: 4rem;
-			transition: .2s ease-in;
-
 			font-size: 2rem;
+			background: red;
 			color: color('textPrimary');
+
+			transition: .2s ease-in;
 
 			&:hover {
 				color: color('backGround2');
@@ -54,32 +60,34 @@ $slideHeight: 100%;
 	}
 
 	.slides {
-		flex-grow: 1;
 		width: $slideWidth;
 		max-width: 98%;
-		border: dashed .3rem color('textSecondary');
+		background: red;
+
 		display: flex;
+		flex-grow: 1;
+
+		border: dashed .3rem color('textSecondary');
 		overflow: hidden;
 		margin: 0 auto auto auto;
 
 		scroll-snap-type: x mandatory;
-
 		scroll-behavior: smooth;
 
 		.component-wrapper {
 			min-width: 100%;
 			min-height: 100%;
 
-			scroll-snap-align: start;
-			flex-shrink: 0;
-			transform-origin: center center;
-			transform: scale(1);
-			transition: transform 0.5s;
 			position: relative;
-
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			flex-shrink: 0;
+
+			scroll-snap-align: start;
+			transform-origin: center center;
+			transform: scale(1);
+			transition: transform 0.5s;
 		}
 	}
 }

@@ -1,28 +1,48 @@
 @import 'gruvbox';
 
 .Historic {
-	display: block;
-	height: 15rem;
-	overflow-y: scroll;
-	th {
-		position: sticky;
-		top: 0;
-		background: color(aquaSecondary);
-		color: color('backGround2');
-		text-align: left;
-	}
+	.content {
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
 
-	tr {
-		background: color('backGround2');
-		color: color('textPrimary');
-		text-align: center;
-
-		td {
-			min-width: 4rem;
+		.body {
+			margin: 0;
+			overflow-y: scroll;
+			height: 15rem;
 		}
 
-		td:first-child {
-			text-align: left;
+		.head, .body li {
+			display: flex;
+			p {
+				width: 100%;
+				margin: 0;
+				text-align: center;
+				border: solid 2px color('backGround2');
+				border-top: none;
+
+				&:first-child {border-left: none;}
+				&:last-child {border-right: none;}
+			}
+		}
+
+		.head {
+			p {
+				&:first-child { flex-grow: 2; }
+				background: color('aquaSecondary');
+			}
+		}
+
+		.body {
+			list-style: none;
+			padding: 0;
+			color: color('backGround2');
+			li {
+				p:first-child {
+					text-align: left;
+					overflow: scroll;
+				}
+			}
 		}
 	}
 }

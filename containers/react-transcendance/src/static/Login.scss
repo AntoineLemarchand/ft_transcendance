@@ -14,31 +14,38 @@
 	}
 
 	.loginPrompt {
-		margin: auto;
-		background: color('backGround2');
-		box-shadow: 0 0 1rem black;
 		width: 30rem;
 		max-width: 80%;
+
+		margin: auto;
+		padding: 1rem;
+
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 
+		background: color('backGround2');
+		box-shadow: 0 0 1rem black;
+
 		input {
-			padding: .2rem 1rem .2rem 1rem;
 			width: 80%;
+
+			margin: 1rem;
+			margin-bottom: .5rem;
+			padding: .2rem 1rem .2rem 1rem;
+
 			border: dashed .2rem color('textPrimary');
 			outline: none;
 			font-size: 1.5rem;
 			background: color('backGround2');
 			color: color('textSecondary');
-			margin: 1rem;
-			margin-bottom: .5rem;
 		}
 
 		button {
 			width: 40%;
 			height: 2rem;
+
 			border: none;
 			text-decoration: blink;
 			cursor: pointer;
@@ -47,8 +54,10 @@
 
 		.loginBox {
 			width: 80%;
+
 			margin-top: 1rem;
 			margin-bottom: 1rem;
+
 			display: flex;
 			flex-direction: row;
 			justify-content: space-between;
@@ -59,8 +68,9 @@
 			}
 
 			.Oauth {
-				background: color('aquaSecondary');
 				width: 3rem;
+
+				background: color('aquaSecondary');
 				border-radius: 25px;
 				font-size: 2rem;
 			}

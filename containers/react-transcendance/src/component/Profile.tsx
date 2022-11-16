@@ -1,5 +1,5 @@
 import React from 'react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import '../static/Profile.scss'
 import {ReactComponent as SchoolLogo} from '../static/logo.svg'
@@ -15,7 +15,7 @@ function Profile() {
 	});
 
 	function fetchUserData() {
-		let data = fetch("http://localhost:3000",
+		fetch("localhost:3000",
 				{method: 'GET'})
 		.then(request => {
 				return request.text();
@@ -38,23 +38,25 @@ function Profile() {
 	return (
 			<div className="Profile">
 			<div className="userCard">
-			<div className="stats">
-			<img src={placeholderPic} alt="JD" />
-			<h4>{getState.name}</h4>
-			<a href="" className="Oauth"
-			style={{background: Oauth ? "#b8bb26" : "#cc241d"}}>
-			<SchoolLogo/> {Oauth ? "√" : "×" }
-			</a>
-			<p className="games">
-			games played<br/>{gamesPlayed}
-			</p>
-			<p className="win">
-			win<br/>{wins}
-			</p>
-			<p className="loss">
-			loss<br/>{loss}
-			</p>
-			</div>
+				<div className="profileHeader">
+					<img src={placeholderPic} alt="JD" />
+					<a href="" className="Oauth"
+					style={{background: Oauth ? "#b8bb26" : "#cc241d"}}>
+					<SchoolLogo/> {Oauth ? "√" : "×" }
+					</a>
+				</div>
+				<h4>{getState.name} Jean Marie</h4>
+				<div className="stats">
+					<p className="games">
+					games played: {gamesPlayed}
+					</p>
+					<p className="win">
+					won: {wins}
+					</p>
+					<p className="loss">
+					lost: {loss}
+					</p>
+				</div>
 			</div>
 	<Historic></Historic>
 	</div>
