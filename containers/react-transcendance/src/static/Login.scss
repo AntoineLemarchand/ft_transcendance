@@ -1,0 +1,73 @@
+@import './gruvbox';
+
+.Login {
+	height: 100%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+
+	.Header {
+		width: 30rem;
+		max-width: 90%;
+		text-align: center;
+	}
+
+	.loginPrompt {
+		margin: auto;
+		background: color('backGround2');
+		box-shadow: 0 0 1rem black;
+		width: 30rem;
+		max-width: 80%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+
+		input {
+			padding: .2rem 1rem .2rem 1rem;
+			width: 80%;
+			border: dashed .2rem color('textPrimary');
+			outline: none;
+			font-size: 1.5rem;
+			background: color('backGround2');
+			color: color('textSecondary');
+			margin: 1rem;
+			margin-bottom: .5rem;
+		}
+
+		button {
+			width: 40%;
+			height: 2rem;
+			border: none;
+			text-decoration: blink;
+			cursor: pointer;
+			font-size: 1rem;
+		}
+
+		.loginBox {
+			width: 80%;
+			margin-top: 1rem;
+			margin-bottom: 1rem;
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+
+			.login {
+				background: color('greenPrimary');
+			}
+
+			.Oauth {
+				background: color('aquaSecondary');
+				width: 3rem;
+				border-radius: 25px;
+				font-size: 2rem;
+			}
+		}
+
+		.create {
+				background: color('orangePrimary');
+		}
+	}
+}
