@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 
 import '../static/Chat.scss'
 
@@ -93,24 +93,37 @@ function Chat() {
 
 	const [ getState, setState ] =  useState({
 		currentChannel: channels[0],
-    messageRef: useRef(null),
+		currentMessage: '',
 	})
 
 	const SelectChannel = (channel: any) => {
 		setState({
-    currentChannel: channel,
-    messageRef: getState.messageRef,
-    })
+			currentChannel: channel,
+			currentMessage: getState.currentMessage,
+			})
 	}
 
-  const handleInput = (event) => {
-    if (event.key == 'Enter') {
-      setState({
-      currentChannel: channel + {sender: UserName, getState.messageRef.current.value},
-      messageRef: getState.messageRef,
-      })
-    }
-  }
+	const SendMessage = (() => {
+		})
+
+
+  const OnChange = ((event: React.ChangeEvent<HTMLInputElement>) => {
+		setState({
+			currentChannel: getState.currentChannel,
+			currentMessage: event.target.value,
+		})
+	})
+
+  const OnKeyDown = ((event: React.KeyboardEvent<HTMLInputElement>) => {
+		if (event.key == 'Enter') {
+			let value: string = (event.target as any).value;
+			alert(value);
+			setState({
+				currentChannel: getState.currentChannel,
+				currentMessage: '',
+			})
+		}
+	})
 
 	const senderMessageStyle = {
 		textAlign: "right"
@@ -152,7 +165,11 @@ function Chat() {
           </li>
         )}
       </div>
-      <input type="text" placeholder="Say something smart !" onKeyDown={handleInput}/>
+      <input type="text"
+			placeholder="Say something smart !"
+			value={getState.currentMessage}
+			onChange={OnChange}
+			onKeyDown={OnKeyDown}/>
 			</ul>
 		</div>
 	)
