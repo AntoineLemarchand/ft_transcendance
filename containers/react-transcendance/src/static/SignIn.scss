@@ -1,6 +1,6 @@
 @import './gruvbox';
 
-.Login {
+.SignIn {
 	width: 30rem;
 	max-width: 80%;
 
@@ -34,9 +34,11 @@
 		}
 	}
 
-	button {
-		width: 40%;
+	.signin {
+		background: color('orangePrimary');
+		width: 60%;
 		height: 2rem;
+		margin: 1rem;
 
 		border: none;
 		text-decoration: blink;
@@ -44,27 +46,4 @@
 		font-size: 1rem;
 	}
 
-	.loginBox {
-		width: 80%;
-
-		margin-top: 1rem;
-		margin-bottom: 1rem;
-
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
-
-		.login {background: color('greenPrimary');}
-
-		.Oauth {
-			width: 3rem;
-
-			background: color('aquaSecondary');
-			border-radius: 25px;
-			font-size: 2rem;
-		}
-	}
-
-	.signin {background: color('orangePrimary');}
 }

@@ -1,14 +1,25 @@
 import * as React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Main from './Main'
-//import Login from './Login'
+import Header from './Header'
+import Login from './Login'
+import SignIn from './SignIn'
+
+import '../static/App.scss'
 
 function App() {
-	//const [token, setToken] = useState();
 	return (
-			<Main />
-			)
+	<div className="App">
+		<Header/>
+		<BrowserRouter>
+		<Routes>
+			<Route path="/" element={ <Login /> }/>
+			<Route path="/signin" element={ <SignIn /> }/>
+			<Route path="/dashboard" element={ <Main /> }/>
+		</Routes>
+		</BrowserRouter>
+	</div>
+	)
 }
-
 export default App;
 

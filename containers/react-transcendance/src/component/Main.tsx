@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom'
 
 import '../static/Main.scss'
 
@@ -16,18 +17,22 @@ import Chat from './Chat'
 import Profile from './Profile'
 import Header from './Header'
 
-const pages = [
-	{ icon: <FaHome/>, ref: 'Home', component: <Home/>},
-	{ icon: <FaTableTennis/>, ref: 'Play', component: <Play/>},
-	{ icon: <FaCommentDots/>, ref: 'Discuss', component: <Chat/>},
-	{ icon: <FaUser/>, ref: 'Profile', component: <Profile/>},
-	{ icon: <FaDoorOpen/>, ref: 'Profile', component: null}
-];
-
 function Main() {
+	const navigate = useNavigate();
+
+	const ProcessLogout = () => {
+		navigate('/');
+	}
+
+	const pages = [
+		{ icon: <FaHome/>, ref: 'Home', component: <Home/>},
+		{ icon: <FaTableTennis/>, ref: 'Play', component: <Play/>},
+		{ icon: <FaCommentDots/>, ref: 'Discuss', component: <Chat/>},
+		{ icon: <FaUser/>, ref: 'Profile', component: <Profile/>},
+	];
+
 	return (
 			<div className="Main">
-				<Header></Header>
 				<div className="links">
 				{
 					pages.map((page, idx) => 
@@ -36,6 +41,9 @@ function Main() {
 						</a>
 					)
 				}
+				<button onClick={ProcessLogout}>
+					<FaDoorOpen />
+				</button>
 				</div>
 				<div className="slides">
 				{

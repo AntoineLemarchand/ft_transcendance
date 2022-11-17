@@ -14,21 +14,23 @@ $slideHeight: 100%;
 
 	.links {
 		width: $slideWidth;
-		max-height: $linksHeight;
+		height: $linksHeight;
 		max-width: 98%;
 
 		margin: auto auto 0 auto;
 
 		display: flex;
-		flex-grow: 1;
 		justify-content: space-around;
 
 		border: dashed .3rem color('textSecondary');
 		border-bottom: none;
 		background: color('backGround2');
 
-		a {
+		a, button {
 			width: 4rem;
+
+			background: inherit;
+			border: none;
 
 			display: flex;
 			justify-content: center;
@@ -36,6 +38,7 @@ $slideHeight: 100%;
 
 			font-size: 2rem;
 			color: color('textPrimary');
+			cursor: pointer;
 
 			transition: .2s ease-in;
 
@@ -64,9 +67,10 @@ $slideHeight: 100%;
 	.slides {
 		width: $slideWidth;
 		max-width: 98%;
-		max-height: 95%;
+		max-height: 80%;
 
 		margin: 0 auto auto auto;
+		flex-grow: 1;
 
 		display: flex;
 
@@ -86,6 +90,10 @@ $slideHeight: 100%;
 			transform: scale(1);
 			transition: transform 0.5s;
 			position: relative;
+
+			& > div {
+				height: 100%;
+			}
 		}
 	}
 }
