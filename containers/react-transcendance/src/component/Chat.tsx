@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import '../static/Chat.scss'
 
@@ -93,11 +93,24 @@ function Chat() {
 
 	const [ getState, setState ] =  useState({
 		currentChannel: channels[0],
+    messageRef: useRef(null),
 	})
 
 	const SelectChannel = (channel: any) => {
-		setState({currentChannel: channel})
+		setState({
+    currentChannel: channel,
+    messageRef: getState.messageRef,
+    })
 	}
+
+  const handleInput = (event) => {
+    if (event.key == 'Enter') {
+      setState({
+      currentChannel: channel + {sender: UserName, getState.messageRef.current.value},
+      messageRef: getState.messageRef,
+      })
+    }
+  }
 
 	const senderMessageStyle = {
 		textAlign: "right"
@@ -139,7 +152,7 @@ function Chat() {
           </li>
         )}
       </div>
-      <input type="textarea" placeholder="..."/>
+      <input type="text" placeholder="Say something smart !" onKeyDown={handleInput}/>
 			</ul>
 		</div>
 	)

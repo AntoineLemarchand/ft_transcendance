@@ -28,9 +28,10 @@
 
 		padding: 0;
     display: grid;
-    grid-template-rows: auto 2rem;
+    grid-template-rows: auto 3rem;
 
     overflow-y: auto;
+    overflow-x: hidden;
 
     .chatArea {
       width: 100%;
@@ -38,7 +39,7 @@
       list-style: none;
 
       background: color('backGround2');
-      color: color('textPrimary');
+      color: color('textSecondary');
 
       li {
         width: 80%;
@@ -51,6 +52,20 @@
     }
 
     input {
+      width: 100%;
+
+      padding-left: 1rem;
+
+      outline: 0;
+      background: color('backGround2');
+      border: none;
+      border-top: dashed .3rem color('textSecondary');
+      color: color('textPrimary');
+      font-size: 1rem;
+
+      &:focus {
+        background: color('backGround1');
+      }
     }
 	}
 }
