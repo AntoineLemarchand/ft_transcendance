@@ -1,0 +1,55 @@
+@import './gruvbox';
+
+.Chat {
+	display: grid;
+	grid-template-columns: 15rem auto;
+
+	.channelList, .channelContent {
+		margin: 0;
+	}
+
+	.channelList {
+		display: inline;
+		background: color('greySecondary');
+
+		button {
+			border: none;
+			width: 100%;
+			height: 3rem;
+			font-size: 1rem;
+      color: color('backGround2');
+      cursor: pointer;
+		}
+	}
+
+	.channelContent {
+		padding: 0;
+    width: 100%;
+
+    display: grid;
+    grid-template-rows: auto 2rem;
+
+    overflow-y: auto;
+
+    .chatArea {
+      width: 100%;
+      overflow-y: scroll;
+      list-style: none;
+
+      background: color('backGround2');
+      color: color('textPrimary');
+
+      li {
+        width: 85%;
+        margin: 1rem auto 1rem auto;
+        padding: .1rem 1rem .1rem 1rem;
+        background: color('backGround1');
+        box-shadow: 1px 1px .3rem black;
+        word-wrap: break-word;
+      }
+    }
+
+    input {
+    }
+	}
+}
