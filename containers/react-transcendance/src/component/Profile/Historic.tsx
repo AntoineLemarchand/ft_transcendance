@@ -1,6 +1,6 @@
 import React from 'react';
 
-import '../static/Historic.scss';
+import 'static/Historic.scss';
 
 const matches = [
 { opponent: "op1", gain: 5, loss: 3},

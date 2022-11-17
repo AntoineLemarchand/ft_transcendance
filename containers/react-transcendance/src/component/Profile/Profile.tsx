@@ -1,10 +1,10 @@
 import React from 'react'
 import { useState } from 'react'
 
-import '../static/Profile.scss'
-import {ReactComponent as SchoolLogo} from '../static/logo.svg'
+import 'static/Profile.scss'
+import {ReactComponent as SchoolLogo} from 'static/logo.svg'
 
-import PlaceholderPic from '../static/yikes.jpg'
+import PlaceholderPic from 'static/yikes.jpg'
 
 import Historic from './Historic'
 

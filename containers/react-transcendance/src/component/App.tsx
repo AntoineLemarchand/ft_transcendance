@@ -2,8 +2,8 @@ import * as React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Main from './Main'
 import Header from './Header'
-import Login from './Login'
-import SignIn from './SignIn'
+import Login from './Account/Login'
+import SignIn from './Account/SignIn'
 
 import '../static/App.scss'
 

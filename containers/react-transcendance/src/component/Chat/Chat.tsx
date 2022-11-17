@@ -1,7 +1,11 @@
 import React from 'react';
 import { useState } from 'react'
 
-import '../static/Chat.scss'
+import { FaPlus } from 'react-icons/fa'
+
+import 'static/Chat.scss'
+
+import ChatName from './ChatName'
 
 function Chat() {
 	const channels = [
@@ -103,10 +107,6 @@ function Chat() {
 			})
 	}
 
-	const SendMessage = (() => {
-		})
-
-
   const OnChange = ((event: React.ChangeEvent<HTMLInputElement>) => {
 		setState({
 			currentChannel: getState.currentChannel,
@@ -115,7 +115,7 @@ function Chat() {
 	})
 
   const OnKeyDown = ((event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key == 'Enter') {
+		if (event.key === 'Enter') {
 			let value: string = (event.target as any).value;
 			alert(value);
 			setState({
@@ -125,26 +125,29 @@ function Chat() {
 		}
 	})
 
-	const senderMessageStyle = {
-		textAlign: "right"
-	}
+	const ChannelButtonStyle = (isActive: boolean) => {
+		return isActive ? {
+          backgroundColor:  '#d3869b',
+          border: 'solid 1px #1d2021',
+        } : {
+          backgroundColor:  '#458588',
+        }
+		}
 
 	return (
 		<div className="Chat">
 			<div className="channelList">
+			<header>
+				<p>Channels</p>
+				<button><FaPlus /></button>
+			</header>
 			{channels.map((channel, idx) =>
 				<button
 				key={idx}
 				onClick={()=>SelectChannel(channel)}
-        style={channel.name == getState.currentChannel.name ?
-        {
-          background:  '#83a598',
-          border: 'double #1d2021'
-        } : {
-          background:  '#458588',
-        }
-        }>
-				{channel.name}</button>
+        style={
+					ChannelButtonStyle(channel.name === getState.currentChannel.name)
+					}>{channel.name}</button>
 			)}
 			</div>
 			<ul className="channelContent">
@@ -152,13 +155,13 @@ function Chat() {
         {getState.currentChannel.content.map((message, idx) =>
             <li key={idx}
             className="message" style={
-            {textAlign: message.sender == UserName ? "right" : "left"}
+            {textAlign: message.sender === UserName ? "right" : "left"}
             }>
-            <p className="sender" style={
-            {color: message.sender == UserName ? "#fe8019" : "#b2bb26"}
-            }>
-              {message.sender}
-            </p>
+						<ChatName
+							username={UserName}
+							sender={message.sender}
+							style={message.sender === UserName ? {marginLeft: "auto"} : {}}
+						/>
             <p className="content">
               {message.content}
             </p>

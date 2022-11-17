@@ -1,9 +1,9 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
 
-import '../static/Login.scss'
+import 'static/Login.scss'
 
-import {ReactComponent as SchoolLogo} from '../static/logo.svg'
+import {ReactComponent as SchoolLogo} from 'static/logo.svg'
 import Header from './Header'
 
 function Login() {

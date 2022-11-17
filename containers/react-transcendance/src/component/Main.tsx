@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom'
 
-import '../static/Main.scss'
+import 'static/Main.scss'
 
 import {
 	FaHome,
@@ -11,10 +11,10 @@ import {
 	FaDoorOpen
 	} from 'react-icons/fa'
 
-import Home from './Home'
-import Play from './Play'
-import Chat from './Chat'
-import Profile from './Profile'
+import Home from './Home/Home'
+import Play from './Play/Play'
+import Chat from './Chat/Chat'
+import Profile from './Profile/Profile'
 import Header from './Header'
 
 function Main() {

@@ -12,7 +12,45 @@
 		display: inline;
 		background: color('greySecondary');
 
-		button {
+		header {
+			display: grid;
+			grid-template-columns: auto 3rem;
+			height: 3rem;
+
+			* {
+				height: 100%;
+				width: 100%;
+				margin: 0;
+			}
+
+			p {
+				display:flex;
+				justify-content: center;
+				align-items: center;
+
+				background: color('aquaSecondary');
+			}
+
+			button {
+				border: none;
+				height: 100%;
+				padding: 0;
+				margin: 0;
+				border: none;
+				background: color('greenSecondary');
+				cursor: pointer;
+				
+				svg {
+					height: 1.5rem;
+				}
+				
+				&:hover {
+					background: color('greenPrimary');
+				}
+			}
+		}
+
+		& > button {
 			width: 100%;
 			height: 3rem;
 
@@ -20,6 +58,9 @@
       color: color('backGround2');
       cursor: pointer;
 			border: solid 1px color('backGround2');
+			&:hover {
+				background: color('blueSecondary') !important;
+			}
 		}
 	}
 
@@ -63,9 +104,7 @@
       color: color('textPrimary');
       font-size: 1rem;
 
-      &:focus {
-        background: color('backGround1');
-      }
+      &:focus {background: color('backGround1');}
     }
 	}
 }

@@ -1,0 +1,31 @@
+@import './gruvbox';
+
+.ChatName {
+	.wrapper  {
+		& > button {
+
+			background: color('backGround1'); 
+			font-size: 1rem;
+			padding: 0;
+			border: none;
+			cursor: pointer;
+		}
+
+		.options {
+
+			background: color('backGround1');
+			position: absolute;
+
+			button {
+				display: block;
+
+				height: 1.5rem;
+
+				color: color('textSecondary');
+				background: color('backGround1'); 
+				border: none;
+				cursor: pointer;
+			}
+		}
+	}
+}

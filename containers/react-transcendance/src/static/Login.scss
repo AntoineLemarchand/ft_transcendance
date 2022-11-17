@@ -55,16 +55,24 @@
 		justify-content: space-between;
 		align-items: center;
 
-		.login {background: color('greenPrimary');}
+		.login {
+			background: color('greenPrimary');
+			&:hover {background: color('greenSecondary')}
+		}
+
+		.signin {
+			background: color('orangePrimary');
+			&:hover {background: color('orangeSecondary')}
+		}
 
 		.Oauth {
 			width: 3rem;
 
-			background: color('aquaSecondary');
+			background: color('aquaPrimary');
+			&:hover {background: color('aquaSecondary')}
 			border-radius: 25px;
 			font-size: 2rem;
 		}
 	}
 
-	.signin {background: color('orangePrimary');}
 }
