@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect} from 'react';
+import { useState } from 'react';
 
 import 'static/ChatName.scss'
 
@@ -24,9 +24,16 @@ function ChatName(props: {}) {
 		marginLeft: "auto",
 	} : {}
 
-	const DropDownStyle = getState.menuToggle ? {display: "block"} : {display: "none"}
+	const DropDownStyle = getState.menuToggle ?
+		{display: "block"} : {display: "none"}
 
-	const options = ["Make Admin", "Profile", "Invite to play", "Mute", "Ban"]
+	const options = [
+		"Make Admin",
+		"Profile",
+		"Invite to play",
+		"Mute",
+		"Ban"
+	]
 
 	return (
 	<div className="ChatName">
@@ -35,12 +42,17 @@ function ChatName(props: {}) {
 				style={MessageSenderStyle}
 				onClick={ToggleDropDown}
 			>{props.sender}</button>
-			<div className="options" style={DropDownStyle}>
-			{
-				options.map( (option, idx) => 
-					<button key={idx} style={ButtonStyle}>{option}</button>
-				)
-			}
+			<div className="options" style={DropDownStyle} onClick={ToggleDropDown}>
+				<div className="optionList">
+				<h3
+					style={MessageSenderStyle}
+				>{props.sender}</h3>
+				{
+					options.map( (option, idx) => 
+						<button key={idx} style={ButtonStyle}>{option}</button>
+					)
+				}
+				</div>
 			</div>
 		</div>
 	</div>

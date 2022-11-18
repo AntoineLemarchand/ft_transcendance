@@ -12,19 +12,53 @@
 		}
 
 		.options {
+			width: 100%;
+			height: 100%;
 
-			background: color('backGround1');
 			position: absolute;
+			top: 0;
+			left: 0;
 
-			button {
-				display: block;
+			background: rgba(29, 32, 33, 0.5);
 
-				height: 1.5rem;
+			.optionList {
+				width: max-content;
+				height: max-content;
 
-				color: color('textSecondary');
-				background: color('backGround1'); 
-				border: none;
-				cursor: pointer;
+				margin: auto;
+				padding: 1rem;
+
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				text-align: center;
+
+				background: color('backGround1');
+				border: dashed .2rem color('textSecondary');
+
+				h3 {
+					text-align: center !important;
+					margin-top: 0;
+				}
+
+				button {
+					height: 2rem;
+					width: 100%;
+
+					display: block;
+					font-size:1rem;
+
+					color: color('textSecondary');
+					background: color('backGround1'); 
+					border: none;
+					cursor: pointer;
+
+					&:hover {
+						background: color('backGround2'); 
+					}
+				}
 			}
 		}
 	}
