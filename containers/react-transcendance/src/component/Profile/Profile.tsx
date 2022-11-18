@@ -11,7 +11,14 @@ import Historic from './Historic'
 
 function Profile() {
   const [ getState, setState ] =  useState({
-name: ''
+	user: {
+		name: "Jean Marie",
+		picture: "https://cdn.intra.42.fr/users/f27b945e9b897115a72dec00527d7bcd/fschlute.JPG",
+		wins: 2,
+		losses: 4,
+		gamesPlayed: 6,
+		Oauth: true,
+	}
 });
 
 function fetchUserData() {
@@ -28,33 +35,26 @@ function fetchUserData() {
       })
 };
 
-fetchUserData();
-const placeholderPic = PlaceholderPic;
-const wins: number = 2;
-const loss: number = 4;
-const gamesPlayed: number = 6;
-const Oauth = true;
-
 return (
   <div className="Profile">
     <div className="userCard">
       <div className="profileHeader">
-	<img src={placeholderPic} alt="JD" />
+	<img src={getState.user.picture} alt="JD" />
 	<a href="" className="Oauth"
-	style={{background: Oauth ? "#b8bb26" : "#cc241d"}}>
-	  <SchoolLogo/> {Oauth ? "√" : "×" }
+	style={{background: getState.user.Oauth ? "#b8bb26" : "#cc241d"}}>
+	  <SchoolLogo/> {getState.user.Oauth ? "√" : "×" }
 	</a>
       </div>
-      <h4>{getState.name} Jean Marie</h4>
+      <h4>{getState.user.name}</h4>
       <div className="stats">
 	<p className="games">
-	  games played: {gamesPlayed}
+	  games played: {getState.user.gamesPlayed}
 	</p>
 	<p className="win">
-	  won: {wins}
+	  won: {getState.user.wins}
 	</p>
 	<p className="loss">
-	  lost: {loss}
+	  lost: {getState.user.losses}
 	</p>
       </div>
     </div>

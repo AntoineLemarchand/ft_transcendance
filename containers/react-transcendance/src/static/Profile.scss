@@ -14,14 +14,21 @@
 		color: color('backGround2');
 
 		.profileHeader {
-			display: flex;
-			grid-template-columns:min-content min-content;
+			display: grid;
+			grid-template-columns:6rem 1.5rem;
+			height: 6rem;
+			overflow-x: hidden;
 
 			img {
 				height: 6rem;
+				margin-left: 50%;
+				transform: translateX(-50%);
+				z-index: 1;
 			}
 
 			.Oauth {
+				z-index: 2;
+				height: 6rem;
 				width: 1.5rem;
 				display: flex;
 				flex-direction: column;

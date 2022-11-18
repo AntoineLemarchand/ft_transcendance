@@ -21,6 +21,7 @@
 				text-align: center;
 				border: solid 2px color('backGround2');
 				border-top: none;
+				border-left: none;
 
 				&:first-child {border-left: none;}
 				&:last-child {border-right: none;}
