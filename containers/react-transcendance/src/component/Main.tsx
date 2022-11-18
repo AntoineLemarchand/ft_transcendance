@@ -11,8 +11,11 @@ import {
 	FaDoorOpen
 	} from 'react-icons/fa'
 
+import { HiVideoCamera } from 'react-icons/hi'
+
 import Home from './Home/Home'
 import Play from './Play/Play'
+import Spectate from './Play/Spectate'
 import Chat from './Chat/Chat'
 import Profile from './Profile/Profile'
 import Header from './Header'
@@ -27,6 +30,7 @@ function Main() {
 	const pages = [
 		{ icon: <FaHome/>, ref: 'Home', component: <Home/>},
 		{ icon: <FaTableTennis/>, ref: 'Play', component: <Play/>},
+		{ icon: <HiVideoCamera/>, ref: 'Spectate', component: <Spectate/>},
 		{ icon: <FaCommentDots/>, ref: 'Discuss', component: <Chat/>},
 		{ icon: <FaUser/>, ref: 'Profile', component: <Profile/>},
 	];

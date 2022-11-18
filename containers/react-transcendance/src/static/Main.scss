@@ -27,7 +27,7 @@ $slideHeight: 100%;
 		background: color('backGround2');
 
 		a, button {
-			width: 4rem;
+			width: 100%;
 
 			background: inherit;
 			border: none;
@@ -53,12 +53,15 @@ $slideHeight: 100%;
 				background: color('orangePrimary');
 			}
 			&:nth-child(3):hover {
-				background: color('yellowPrimary');
+				background: color('purplePrimary');
 			}
 			&:nth-child(4):hover {
-				background: color('aquaPrimary');
+				background: color('yellowPrimary');
 			}
 			&:nth-child(5):hover {
+				background: color('aquaPrimary');
+			}
+			&:nth-child(6):hover {
 				background: color('redPrimary');
 			}
 		}

@@ -1,6 +1,7 @@
 @import './gruvbox';
 
 .Chat {
+	position: absolute;
 	display: grid;
 	grid-template-columns: 15rem auto;
 
@@ -57,9 +58,12 @@
 			font-size: 1rem;
       color: color('backGround2');
       cursor: pointer;
-			border: solid 1px color('backGround2');
+			border: none;
+			border-top: solid 1px color('backGround2');
+
+			&:last-child {border-bottom: solid 1px color('backGround2');}
 			&:hover {
-				background: color('blueSecondary') !important;
+				background: color('bluePrimary') !important;
 			}
 		}
 	}

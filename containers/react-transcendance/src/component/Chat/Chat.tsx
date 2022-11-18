@@ -127,10 +127,9 @@ function Chat() {
 
 	const ChannelButtonStyle = (isActive: boolean) => {
 		return isActive ? {
-          backgroundColor:  '#d3869b',
-          border: 'solid 1px #1d2021',
-        } : {
           backgroundColor:  '#458588',
+        } : {
+          backgroundColor:  '#83a598',
         }
 		}
 
