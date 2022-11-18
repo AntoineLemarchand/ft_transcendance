@@ -30,6 +30,126 @@ function Chat() {
 			content: []
     },
 		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
+			name: "channel18",
+			content: []
+    },
+		{
 			name: "channel26",
 			content: [
 				{
@@ -46,7 +166,7 @@ function Chat() {
 
 		},
 		{
-			name: "channel2",
+			name: "channelLast",
 			content: [
 				{
 					sender: "Some random dude",
@@ -135,12 +255,14 @@ function Chat() {
 
 	return (
 		<div className="Chat">
-			<div className="channelList">
+			<div className="channelMenu">
 			<header>
 				<p>Channels</p>
 				<button><FaPlus /></button>
 			</header>
-			{channels.map((channel, idx) =>
+			<div className="channelList">
+			{
+				channels.map((channel, idx) =>
 				<button
 				key={idx}
 				onClick={()=>SelectChannel(channel)}
@@ -148,6 +270,7 @@ function Chat() {
 					ChannelButtonStyle(channel.name === getState.currentChannel.name)
 					}>{channel.name}</button>
 			)}
+			</div>
 			</div>
 			<ul className="channelContent">
       <div className="chatArea">
