@@ -30,126 +30,6 @@ function Chat() {
 			content: []
     },
 		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
 			name: "channel26",
 			content: [
 				{
@@ -247,9 +127,9 @@ function Chat() {
 
 	const ChannelButtonStyle = (isActive: boolean) => {
 		return isActive ? {
-          backgroundColor:  '#458588',
-        } : {
           backgroundColor:  '#83a598',
+        } : {
+          backgroundColor:  '#458588',
         }
 		}
 

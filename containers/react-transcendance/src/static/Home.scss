@@ -36,12 +36,18 @@
 
 		margin: auto;
 
-		background: color('greenPrimary');
+		color: color('backGround2');
+		background: color('greenSecondary');
 		font-size: 2rem;
-		border: none;
+		border: groove .2rem color('greyPrimary');
 		cursor: pointer;
 
 		&:hover {
+			background: color('greenPrimary');
+		}
+
+		&:active {
+			border: ridge .2rem color('greyPrimary');
 			background: color('greenSecondary');
 		}
 	}

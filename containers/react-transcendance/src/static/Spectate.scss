@@ -7,13 +7,19 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		text-align: left;
-		color: color('backGround2');
-		background: color('blueSecondary');
-				border-bottom: solid 1px color('backGround2');
+		color: color('backGround1');
+		background: color('bluePrimary');
+		border: ridge 2px color('greyPrimary');
 		cursor: pointer;
 
 		&:hover {
-			background: color('bluePrimary');
+			color: color('backGround2');
+			background: color('blueSecondary');
+			border: groove 2px color('greyPrimary');
+		}
+		
+		&:active {
+			border: ridge 2px color('greyPrimary');
 		}
 
 		.player1, .player2 {

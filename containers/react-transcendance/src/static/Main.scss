@@ -46,23 +46,44 @@ $slideHeight: 100%;
 				color: color('backGround2');
 			}
 
+			&:active {
+			}
+
 			&:nth-child(1):hover {
 				background: color('greenPrimary');
+				&:active {
+					background: color('greenSecondary');
+				}
 			}
 			&:nth-child(2):hover {
 				background: color('orangePrimary');
+				&:active {
+					background: color('orangeSecondary');
+				}
 			}
 			&:nth-child(3):hover {
 				background: color('purplePrimary');
+				&:active {
+					background: color('purpleSecondary');
+				}
 			}
 			&:nth-child(4):hover {
 				background: color('yellowPrimary');
+				&:active {
+					background: color('yellowSecondary');
+				}
 			}
 			&:nth-child(5):hover {
 				background: color('aquaPrimary');
+				&:active {
+					background: color('aquaSecondary');
+				}
 			}
 			&:nth-child(6):hover {
 				background: color('redPrimary');
+				&:active {
+					background: color('redSecondary');
+				}
 			}
 		}
 	}

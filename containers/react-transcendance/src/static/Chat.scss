@@ -26,23 +26,27 @@
 				justify-content: center;
 				align-items: center;
 
-				background: color('aquaSecondary');
+				background: color('greyPrimary');
 			}
 			button {
 				border: none;
 				height: 100%;
 				padding: 0;
 				margin: 0;
-				border: none;
+				border: groove 2px color('greyPrimary');
 				background: color('greenSecondary');
 				cursor: pointer;
 				
 				svg {
 					height: 1.5rem;
 				}
-				
+
 				&:hover {
 					background: color('greenPrimary');
+				}
+
+				&:active {
+					border: ridge 2px color('greyPrimary');
 				}
 			}
 
@@ -58,12 +62,14 @@
 				font-size: 1rem;
 				color: color('backGround2');
 				cursor: pointer;
-				border: none;
-				border-top: solid 1px color('backGround2');
+				border: groove 2px color('greyPrimary');
 
-				&:last-child {border-bottom: solid 1px color('backGround2');}
 				&:hover {
-					background: color('bluePrimary') !important;
+					background: color('blueSecondary') !important;
+				}
+
+				&:active {
+					border: ridge 2px color('greyPrimary');
 				}
 			}
 		}
