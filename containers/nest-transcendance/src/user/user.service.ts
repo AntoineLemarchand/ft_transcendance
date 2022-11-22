@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { User } from './user.entities';
+import User from "./user.entities";
 
 @Injectable()
 export class UserService {
-  users: User[] = [];
+  users: User[] = [new User("Thomas")];
 
   getUser(name: string): User {
     if (this.users.length == 0)
