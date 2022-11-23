@@ -35,9 +35,14 @@ export class AuthService {
   }
 
   createUser(userCandidate: CreateUserDTO) {
-    this.userService.createUser(
-      new User(userCandidate.name, userCandidate.password),
-    );
-    return this.login(new Identity(userCandidate.name, 1));
+    try {
+      this.userService.getUser(userCandidate.name);
+    } catch (e) {
+      this.userService.createUser(
+        new User(userCandidate.name, userCandidate.password),
+      );
+      return this.login(new Identity(userCandidate.name, 1));
+    }
+    throw new HttpException('User already exists', HttpStatus.UNAUTHORIZED);
   }
 }
