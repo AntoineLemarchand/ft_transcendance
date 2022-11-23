@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { transfer } from "../app.controller";
+import { Identity } from './auth.local.strategy';
+import User from '../user/user.entities';
 
 @Injectable()
 export class AuthService {
@@ -10,18 +11,20 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(username: string, password: string): Promise<User> {
     const user = await this.userService.getUser(username);
+    if (!user)
+      throw new Error('could not find user');
     if (user.getPassword() === password) {
       return user;
     }
+    throw new Error('could not find user');
   }
 
-  async login(user: transfer) {
+  async login(user: Identity) {
     const payload = { user };
-    console.log("sub: " + user.sub);
     return {
-      sub: this.jwtService.sign(payload), tomate: "testme "
+      access_token: this.jwtService.sign(payload),
     };
   }
 }

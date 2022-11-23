@@ -15,8 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   //todo: generate typed object
-  async validate(payload: any): Promise<any> {
-    console.log("in function validate: " + payload.sub + payload.username);
-    return { userId: payload.sub, username: payload.username };
+  async validate(payload: Express.Request): Promise<any> {
+    return payload.user;
   }
 }
