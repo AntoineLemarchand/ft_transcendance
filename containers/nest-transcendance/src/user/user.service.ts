@@ -4,7 +4,7 @@ import User from './user.entities';
 
 @Injectable()
 export class UserService {
-  users: User[] = [new User('Thomas')];
+  users: User[] = [new User('Thomas', 'test')];
 
   getUser(name: string): User {
     for (const user of this.users) {

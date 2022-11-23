@@ -1,12 +1,12 @@
 export default class User {
-  constructor(private name: string) {}
+  constructor(private name: string, private password: string) {}
 
   getName() {
     return this.name;
   }
 
   getPassword() {
-    return 'test';
+    return this.password;
   }
 
   toJson(): JSON {

@@ -22,7 +22,7 @@ export class UserController {
   }
 
   @Post()
-  createUser(name: string) {
-    this.userService.createUser(new User(name));
+  createUser(name: string, password: string) {
+    this.userService.createUser(new User(name, password));
   }
 }

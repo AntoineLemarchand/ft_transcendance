@@ -1,8 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { Identity } from './auth.local.strategy';
 import User from '../user/user.entities';
+import { CreateUserDTO } from '../app.controller';
+
+export class Identity {
+  constructor(public name: string, public id: number) {}
+}
 
 @Injectable()
 export class AuthService {
@@ -28,5 +32,12 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  createUser(userCandidate: CreateUserDTO) {
+    this.userService.createUser(
+      new User(userCandidate.name, userCandidate.password),
+    );
+    return this.login(new Identity(userCandidate.name, 1));
   }
 }

@@ -1,9 +1,12 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from './auth/local-auth.guard';
-import { AuthService } from './auth/auth.service';
+import { AuthService, Identity } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt.auth.guard';
-import { Identity } from './auth/auth.local.strategy';
 
+export class CreateUserDTO {
+  name: string;
+  password: string;
+}
 
 @Controller()
 export class AppController {
@@ -13,6 +16,12 @@ export class AppController {
   @Post('auth/login')
   async login(@Request() req: Express.Request): Promise<{ access_token: string }> {
     return this.authService.login(req.user as Identity);
+  }
+
+  @Post('auth/signin')
+  async signin(@Body() userCandidate: CreateUserDTO) {
+    const token = this.authService.createUser(userCandidate);
+    return token;
   }
 
   @UseGuards(JwtAuthGuard)
