@@ -1,15 +1,17 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import User from "./user.entities";
+import User from './user.entities';
 
 @Injectable()
 export class UserService {
-  users: User[] = [new User("Thomas")];
+  users: User[] = [new User('Thomas')];
 
   getUser(name: string): User {
-    if (this.users.length == 0)
-      throw new Error('new error');
-    return this.users[0];
+    for (const user of this.users) {
+      if (user.getName() === name)
+        return user;
+    }
+    throw new Error('new error');
   }
 
   createUser(user: User) {
@@ -18,10 +20,10 @@ export class UserService {
 
   deleteUser(name: string) {
     const toDelete: User | undefined = this.users.find(
-      (user) => user.getName() == name,
+      (user) => user.getName() == name
     );
     if (toDelete == undefined)
-		  throw new Error('User does not exist');
+      throw new Error('User does not exist');
     const userIndex: number = this.users.indexOf(toDelete);
     this.users.splice(userIndex, 1);
   }
