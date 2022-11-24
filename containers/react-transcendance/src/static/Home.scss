@@ -2,21 +2,18 @@
 
 .Home {
 	position: absolute;
-
-	display: grid;
+	display: inline;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
 	.content {
-		width: 70%;
+		width: 80%;
 
-		margin: auto;
+		display: inline;
+    text-align: center;
 
-		display: flex;
-		flex-direction: column;
-		justify-content: space-around;
-		align-items: center;
-
-		h1 {
-			color: color('orangePrimary');
-		}
+		h1 {color: color('orangePrimary');}
 
 		p {
 			color: color('textPrimary');
@@ -25,7 +22,7 @@
 				color: color('aquaSecondary');
 				text-decoration: none;
 
-				&:hover {color: color('aquaPrimary');}
+				&:hover {background: color('greySecondary');}
 			}
 		}
 	}
@@ -33,22 +30,12 @@
 	button {
 		width: 60%;
 		height: 5rem;
-
-		margin: auto;
-
 		color: color('backGround2');
 		background: color('greenSecondary');
 		font-size: 2rem;
-		border: groove .2rem color('greyPrimary');
 		cursor: pointer;
 
-		&:hover {
-			background: color('greenPrimary');
-		}
-
-		&:active {
-			border: ridge .2rem color('greyPrimary');
-			background: color('greenSecondary');
-		}
+		&:hover {background: color('greenPrimary');}
+		&:active {background: color('greenSecondary');}
 	}
 }

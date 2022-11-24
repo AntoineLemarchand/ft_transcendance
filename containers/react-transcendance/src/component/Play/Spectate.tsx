@@ -118,13 +118,13 @@ function Spectate() {
 	{
 		livegames.map((game, idx) =>
 			<li className="game" key={idx} onClick={()=>SelectGame(game)}>
-				<div className="player1">
+				<div className="player player1">
 					<p className="name">{game.players[0]}</p>
 					<p className="score"
 					style={scoreStyle(game.scores[1], game.scores[0])}
 					>{game.scores[1]}</p>
 				</div>
-				<div className="player2">
+				<div className="player player2">
 					<p className="name">{game.players[1]}</p>
 					<p className="score"
 					style={scoreStyle(game.scores[0], game.scores[1])}

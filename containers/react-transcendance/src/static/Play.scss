@@ -1,6 +1,6 @@
 @import './gruvbox';
 
-$statusHeight: 4rem;
+$statusHeight: 5rem;
 
 .Play {
 	position: absolute;
@@ -8,53 +8,42 @@ $statusHeight: 4rem;
 	grid-template-rows: auto $statusHeight;
 
 	.status {
-		 
 		display: grid;
-		grid-template-columns: 1fr 2fr 1fr;
-
-		text-align: center;
-		border-top: dashed .2rem color('textPrimary');
+		grid-template-columns: 2fr auto 2fr;
 		background: color('backGround2');
-
-		.Player {
+		.player {
 			display: flex;
 			align-items: center;
-
 			color: color('textPrimary');
-
-			img {
-				height: $statusHeight;
-			}
-
-			p {
-				margin: 0;
-			}
+			img {height: $statusHeight;}
+			p {width: 100%;margin: 0 1rem}
 		}
+
+    .player2 {
+      text-align: right;
+      img{margin-left: auto;}
+    }
 
 		.scores {
 			width: 5rem;
-
+      height: 100%;
 			margin: auto;
 			padding: 0;
 			font-size: 2rem;
-
-			display: flex;
-			justify-content: center;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
 			list-style: none;
 
 			li {
-				border: dashed .2rem color('textSecondary');
-				padding: 0 .5rem;
-			}
-
-			li:first-child {
-				border-right: none;
-				background: color('greenSecondary');
-			}
-			li:last-child {
-				border-left: none;
-				background: color('redSecondary');
-			}
+        padding: 0 .5rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+      }
 		}
 	}
+}
+
+@media screen and (max-width: 50rem) {
+  .Play .status .player p {display: none;}
 }

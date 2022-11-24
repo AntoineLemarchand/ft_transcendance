@@ -1,69 +1,59 @@
 @import './gruvbox';
 
 .Spectate {
-	display: block;
 	overflow-y: scroll;
 	.game {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		text-align: left;
-		color: color('backGround1');
+		color: color('backGround2');
 		background: color('bluePrimary');
-		border: ridge 2px color('greyPrimary');
+		border: outset 1px color('greySecondary');
 		cursor: pointer;
 
 		&:hover {
 			color: color('backGround2');
 			background: color('blueSecondary');
-			border: groove 2px color('greyPrimary');
+			border: outset 1px color('greySecondary');
 		}
 		
 		&:active {
-			border: ridge 2px color('greyPrimary');
+      background: color('bluePrimary');
+			border: inset 1px color('greyPrimary');
 		}
 
-		.player1, .player2 {
-			margin: 0;
-			padding: 0;
-			display: flex;
-			justify-content: space-between;
+    .player {
+			display: grid;
+      text-align: center;
 
-			.name:first-child {
-				padding: 0 1rem;
-			}
+      .score {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+      }
+    }
 
-			.score {
-				width: 2rem;
-				height: 100%;
-				margin: 0;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-		}
+		.player1 {grid-template-columns: 4fr 1fr;}
+    .player2 {
+      grid-template-columns: 1fr 4fr;
 
-		.player2 {
-			flex-direction: row-reverse;
+      .score {grid-row: 1;}
 		}
 	}
 
 	.spectateScreen {
 		position: absolute;
-		display: none;
 		top: 0;
-
 		width: 100%;
 		height: 100%;
-
 		display: flex;
 		justify-content: center;
 		align-items: center;
-
 		background: rgba(29, 32, 33, 0.5);
 
 		.Play {
-			width: 80%;
-			height: 80%;
+			width: 90%;
+			height: 90%;
 			background: color('backGround1');
 		}
 	}

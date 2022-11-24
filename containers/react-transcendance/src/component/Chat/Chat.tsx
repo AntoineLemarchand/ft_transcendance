@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react'
 
 import { FaPlus } from 'react-icons/fa'
+import { GiHamburgerMenu } from 'react-icons/gi'
 
 import 'static/Chat.scss'
 
@@ -135,6 +136,8 @@ function Chat() {
 
 	return (
 		<div className="Chat">
+      <input className="burger" type="checkbox" id="burgerToggle"/>
+      <label htmlFor="burgerToggle"><GiHamburgerMenu /></label>
 			<div className="channelMenu">
 			<header>
 				<p>Channels</p>

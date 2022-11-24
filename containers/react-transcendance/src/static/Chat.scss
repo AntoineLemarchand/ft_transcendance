@@ -1,13 +1,15 @@
 @import './gruvbox';
 
+$headerHeight: 3rem;
+
 .Chat {
 	position: absolute;
 	display: grid;
 	grid-template-columns: 15rem auto;
+  .burger {display: none;}
 
 	.channelMenu {
 		background: color('greySecondary');
-		overflow: hidden;
 		display: grid;
 		grid-template-rows: 3rem auto;
 		header {
@@ -29,11 +31,9 @@
 				background: color('greyPrimary');
 			}
 			button {
-				border: none;
 				height: 100%;
 				padding: 0;
 				margin: 0;
-				border: groove 2px color('greyPrimary');
 				background: color('greenSecondary');
 				cursor: pointer;
 				
@@ -43,10 +43,6 @@
 
 				&:hover {
 					background: color('greenPrimary');
-				}
-
-				&:active {
-					border: ridge 2px color('greyPrimary');
 				}
 			}
 
@@ -58,18 +54,12 @@
 			button {
 				width: 100%;
 				height: 3rem;
-
 				font-size: 1rem;
 				color: color('backGround2');
 				cursor: pointer;
-				border: groove 2px color('greyPrimary');
 
 				&:hover {
 					background: color('blueSecondary') !important;
-				}
-
-				&:active {
-					border: ridge 2px color('greyPrimary');
 				}
 			}
 		}
@@ -97,19 +87,17 @@
 
       li {
         width: 80%;
-        margin: 1rem auto 1rem auto;
-        padding: .1rem 1rem .1rem 1rem;
+        margin: 1rem auto;
+        padding: .1rem 1rem;
         background: color('backGround1');
-        box-shadow: 1px 1px .3rem black;
+        box-shadow: 0 0 .2rem black;
         word-wrap: break-word;
       }
     }
 
     input {
       width: 100%;
-
       padding-left: 1rem;
-
       outline: 0;
       background: color('backGround2');
       border: none;
@@ -121,7 +109,40 @@
     }
 	}
 
-	.channelContent {
-		margin: 0;
-	}
+	.channelContent {margin: 0;}
+}
+
+@media screen and (max-width: 50rem) {
+  .Chat {
+    .burger:checked ~ .channelMenu {visibility: visible;opacity: 100%}
+    label {
+      position: absolute;
+      display:block;
+      z-index: 2;
+      svg {
+        fill: color('textPrimary');
+        width: 2rem;
+        height: 2rem;
+        margin: .5rem;
+      }
+    };
+    
+    .channelMenu {
+      position: absolute;
+      visibility: hidden;
+      opacity: 0%;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      transition: .05s ease-in;
+    }
+
+    .channelContent {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      bottom: 0;
+      z-index: 0;
+    }
+  }
 }

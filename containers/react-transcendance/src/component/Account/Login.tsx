@@ -1,10 +1,9 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
 
-import 'static/Login.scss'
+import 'static/Prompt.scss'
 
 import {ReactComponent as SchoolLogo} from 'static/logo.svg'
-import Header from './Header'
 
 function Login() {
 	const navigate = useNavigate();
@@ -22,10 +21,10 @@ function Login() {
 	}
 
 	return (
-		<div className="Login">
+		<div className="Prompt">
 			<input type="text" placeholder="Login"/>
 			<input type="text" placeholder="Password"/>
-			<div className="loginBox">
+			<div className="buttonBox">
 				<button className="login"
 				onClick={ProcessLogin}>Login</button>
 				<button className="signin"

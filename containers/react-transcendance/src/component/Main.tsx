@@ -18,7 +18,6 @@ import Play from './Play/Play'
 import Spectate from './Play/Spectate'
 import Chat from './Chat/Chat'
 import Profile from './Profile/Profile'
-import Header from './Header'
 
 function Main() {
 	const navigate = useNavigate();
@@ -36,7 +35,7 @@ function Main() {
 	];
 
 	return (
-			<div className="Main">
+			<main>
 				<div className="links">
 				{
 					pages.map((page, idx) => 
@@ -58,7 +57,7 @@ function Main() {
 					)
 				}
 				</div>
-			</div>
+			</main>
 		   )
 }
 

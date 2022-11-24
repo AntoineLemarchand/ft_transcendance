@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import './static/index.scss';
 import App from './component/App';
 import reportWebVitals from './reportWebVitals';
-import "@fontsource/ibm-plex-mono";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

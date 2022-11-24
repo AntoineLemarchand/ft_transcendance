@@ -1,10 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
 
-import 'static/SignIn.scss'
-
-import {ReactComponent as SchoolLogo} from 'static/logo.svg'
-import Header from './Header'
+import 'static/Prompt.scss'
 
 function SignIn() {
 	const navigate = useNavigate();
@@ -14,12 +11,13 @@ function SignIn() {
 	}
 
 	return (
-		<div className="SignIn">
+		<div className="Prompt">
 			<input type="text" placeholder="SignIn"/>
 			<input type="text" placeholder="Password"/>
 			<input type="text" placeholder="Confirm Password"/>
-			<button className="signin"
-			onClick={ProcessSignIn}>Sign in</button>
+      <div className="buttonBox">
+        <button className="signin" onClick={ProcessSignIn}>Sign in</button>
+      </div>
 		</div>
 	)
 }
