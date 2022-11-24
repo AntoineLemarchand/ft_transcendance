@@ -119,6 +119,8 @@ $headerHeight: 3rem;
       position: absolute;
       display:block;
       z-index: 2;
+      height: $headerHeight;
+      background: color('greyPrimary');
       svg {
         fill: color('textPrimary');
         width: 2rem;
