@@ -1,5 +1,12 @@
-import { Controller, Get, Body } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { LocalAuthGuard } from './auth/local-auth.guard';
+import { AuthService, Identity } from './auth/auth.service';
+import { JwtAuthGuard } from './auth/jwt.auth.guard';
+
+export class CreateUserDTO {
+  username: string;
+  password: string;
+}
 
 class RequestBody {
 	readonly name: string;
@@ -7,17 +14,23 @@ class RequestBody {
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private authService: AuthService) {}
 
-  @Get()
-  async  myMethod(@Body() data: RequestBody) {
-		console.log("get received");
-		return "John";
+  @UseGuards(LocalAuthGuard)
+  @Post('auth/login')
+  async login(@Request() req: Express.Request): Promise<{ access_token: string }> {
+    return this.authService.login(req.user as Identity);
   }
-  /*
-  getHello(@Query() query: { name: string }): string {
-		console.log('name: ' + name);
-    return this.appService.getHello();
+
+  @Post('auth/signin')
+  async signin(@Body() userCandidate: CreateUserDTO) {
+    const token = this.authService.createUser(userCandidate);
+    return token;
   }
-  */
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getProfile(@Request() req: any) {
+    return req.user;
+  }
 }
