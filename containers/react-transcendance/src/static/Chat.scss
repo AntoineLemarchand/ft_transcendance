@@ -7,6 +7,7 @@ $headerHeight: 3rem;
 	display: grid;
 	grid-template-columns: 15rem auto;
   .burger {display: none;}
+  label {display: none;}
 
 	.channelMenu {
 		background: color('greySecondary');
