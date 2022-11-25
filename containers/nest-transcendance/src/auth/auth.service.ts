@@ -22,7 +22,7 @@ export class AuthService {
         return user;
       }
     } catch (e) {
-      throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
+      throw new HttpException('Could not find user', HttpStatus.UNAUTHORIZED);
     }
     throw new HttpException('Wrong password', HttpStatus.UNAUTHORIZED);
   }
