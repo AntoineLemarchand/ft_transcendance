@@ -4,7 +4,7 @@ import { AuthService, Identity } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt.auth.guard';
 
 export class CreateUserDTO {
-  name: string;
+  username: string;
   password: string;
 }
 

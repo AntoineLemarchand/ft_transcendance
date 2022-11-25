@@ -6,12 +6,12 @@ import User from './user.entities';
 export class UserService {
   users: User[] = [new User('Thomas', 'test')];
 
-  getUser(name: string): User {
+  getUser(name: string): User | undefined {
     for (const user of this.users) {
       if (user.getName() === name)
         return user;
     }
-    throw new Error('new error');
+		return undefined;
   }
 
   createUser(user: User) {
