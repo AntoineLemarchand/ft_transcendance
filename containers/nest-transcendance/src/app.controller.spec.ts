@@ -1,13 +1,19 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing'
 import * as request from 'supertest';
 import { AppModule } from './app.module'
-import { AppController } from './app.controller';
-import { UserService } from './user/user.service';
-import { AuthService } from './auth/auth.service';
 
 describe('AuthController', () => {
 	let app: INestApplication;
+	let loginUser = async (username: string, password: string) => {
+			return await request(app.getHttpServer())
+				.post('/auth/login')
+				.send({
+					username: username,
+					password: password,
+				});
+		}
+
 	beforeEach (async () => {
 		const module = await Test.createTestingModule({
 			imports: [AppModule],
@@ -16,27 +22,17 @@ describe('AuthController', () => {
 		await app.init();
 	})
 
-	it("should return 401 on wrong password", () => {
-		return request(app.getHttpServer())
-			.post('/auth/login')
-			.send({
-				username: 'Thomas',
-				password: 'tet',
-			})
-			.expect(401)
+	it("should return 401 on wrong password", async () => {
+				loginUser("Thomas", "wrong password").then((response)=>
+				 expect(response.status).toBe(401))
 	});
 
 	it("should return 401 on non existing username", () => {
-		return request(app.getHttpServer())
-			.post('/auth/login')
-			.send({
-				username: 'Thoas',
-				password: 'test',
-			})
-			.expect(401)
+		loginUser("non existing user", "wrong password").then((response)=>
+		 expect(response.status).toBe(401))
 	});
 
-	it("should return 201 and access token on successful login", () => {
+	it("should return 201 and access token on successful login", async () => {
 		return request(app.getHttpServer())
 			.post('/auth/login')
 			.send({
@@ -45,7 +41,8 @@ describe('AuthController', () => {
 			})
 			.expect(201)
 			.then((result) => {expect(result.body.access_token).toBeDefined()});
-			//.expect((result) => {result.body[0]).toBe("access_token")});
-			//expect(result.body.to.have("access_token");
+	});
+
+	it("should return 401 when creating an already existent user", () => {
 	});
 })
