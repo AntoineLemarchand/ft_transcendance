@@ -1,11 +1,12 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import * as request from 'supertest';
+import { Response } from 'supertest';
+import * as request from 'supertest'
 import { AppModule } from './app.module';
 import { response } from 'express';
 
-async function extractBearerToken(loginResponse: supertest.Test) {
-  const jwt: string = await loginResponse.then((response) => {
+async function extractBearerToken(loginResponse: Promise<Test>) {
+  const jwt: string = await loginResponse.then((response: Response) => {
     return response.body.access_token;
   });
   return jwt;
@@ -31,6 +32,26 @@ describe('AuthController', () => {
     return request(app.getHttpServer())
       .get('/profile')
       .set('Authorization', 'Bearer ' + jwt);
+  };
+
+	const getLoginToken = async (username: string, password: string) => {
+    const loginResponse = await loginUser(username, password);
+    return await loginResponse.body.access_token;
+	};
+
+  const addFriend = async (jwt: string, username: string) => {
+		return request(app.getHttpServer())
+      .post('/friend')
+      .set('Authorization', 'Bearer ' + jwt)
+			.send({
+				username: username,
+			})
+  };
+
+  const getFriends = async (jwt: string) => {
+		return request(app.getHttpServer())
+      .get('/friend')
+      .set('Authorization', 'Bearer ' + jwt)
   };
 
   beforeEach(async () => {
@@ -85,13 +106,53 @@ describe('AuthController', () => {
 
   //GET
   it('should be possible to get Data with the jwt of login', async () => {
-    const loginResponse = loginUser('Thomas', 'test');
-    const jwt = await extractBearerToken(loginResponse);
+    const jwt = await getLoginToken('Thomas', 'test');
 
-    const result = getUserData(jwt);
+    const result = await getUserData(jwt);
 
-    return result.then((response) => {
-      expect(response.status).toBe(200);
-    });
+		expect(result.status).toBe(200);
+  });
+
+	// FRIENDS
+  it('should return 404 on adding unexisting friend', async () => {
+    const jwt = await getLoginToken('Thomas', 'test');
+
+		const result = await addFriend(jwt, 'non existing user');
+
+		expect(result.status).toBe(404);
+  });
+
+  it('should return 401 on adding friend twice', async () => {
+    const jwt = await getLoginToken('Thomas', 'test');
+    signinUser('JayDee', 'yeah');
+		await addFriend(jwt, 'JayDee');
+
+		const result = await addFriend(jwt, 'JayDee');
+		const friendsList = JSON.parse((await getFriends(jwt)).body.friends);
+
+		expect(result.status).toBe(401);
+		expect(friendsList.length).toBe(1);
+  });
+
+  it('should return 201 and add friend', async () => {
+    const jwt = await getLoginToken('Thomas', 'test');
+    signinUser('JayDee', 'yeah');
+
+		const result = await addFriend(jwt, 'JayDee');
+
+		expect(result.status).toBe(201);
+  });
+
+  it('should return 201 and a list of friends', async () => {
+    const jwt = await getLoginToken('Thomas', 'test');
+    signinUser('JayDee', 'yeah');
+		addFriend(jwt, 'JayDee');
+
+		const result = await getFriends(jwt);
+
+		console.log(result);
+		expect(result.status).toBe(200);
+		expect(result.body.friends).toBeDefined();
+		expect(JSON.parse(result.body.friends).length).toBe(1);
   });
 });

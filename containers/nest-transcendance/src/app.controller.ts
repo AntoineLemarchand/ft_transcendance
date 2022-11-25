@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService, Identity } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt.auth.guard';
+import { UserService } from './user/user.service'
 
 export class CreateUserDTO {
   username: string;
@@ -10,7 +11,7 @@ export class CreateUserDTO {
 
 @Controller()
 export class AppController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private userService: UserService ) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
@@ -28,5 +29,18 @@ export class AppController {
   @Get('profile')
   async getProfile(@Request() req: any) {
     return req.user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('friend')
+  async addFriend(@Request() req: any) {
+    this.userService.addFriend(req.user.name, req.body.username);
+		return req.username + ' is now your friend';
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('friend')
+  async getFriends(@Request() req: any) {
+		return {friends: JSON.stringify(this.userService.getFriends(req.user.name))};
   }
 }
