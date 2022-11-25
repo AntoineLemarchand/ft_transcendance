@@ -25,6 +25,16 @@ export default class User {
 		this.friends.push(friendname);
 	}
 
+	removeFriend(friendname: string) {
+		for (let i = 0; i < this.friends.length; i++) {
+			if (this.friends[i] === friendname) {
+				this.friends.splice(i);
+				return;
+			}
+		}
+	throw new Error("not your friend");
+	}
+
   toJson(): JSON {
     // return {name: this.name};
     return JSON.parse(JSON.stringify(this));

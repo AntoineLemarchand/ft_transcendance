@@ -32,12 +32,19 @@ export class UserService {
 		const friend = this.getUser(friendname);
 		if (friend === undefined)
 			throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
-		try{
+		try {
 			(this.getUser(username) as User).addFriend(friendname);
 		} catch (e) {
 			throw new HttpException('is already a friend', HttpStatus.UNAUTHORIZED)
 		}
+	}
 
+	removeFriend(username: string, friendname: string){
+		try{
+			(this.getUser(username) as User).removeFriend(friendname);
+		} catch (e) {
+			throw new HttpException('not your friend', HttpStatus.NOT_FOUND)
+		}
 	}
 
 	getFriends(username: string){

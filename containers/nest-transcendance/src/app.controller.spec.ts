@@ -54,6 +54,15 @@ describe('AuthController', () => {
       .set('Authorization', 'Bearer ' + jwt)
   };
 
+  const removeFriend = async (jwt: string, username: string) => {
+		return request(app.getHttpServer())
+      .delete('/friend')
+      .set('Authorization', 'Bearer ' + jwt)
+			.send({
+				username: username,
+			})
+  };
+
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       imports: [AppModule],
@@ -150,9 +159,30 @@ describe('AuthController', () => {
 
 		const result = await getFriends(jwt);
 
-		console.log(result);
 		expect(result.status).toBe(200);
 		expect(result.body.friends).toBeDefined();
 		expect(JSON.parse(result.body.friends).length).toBe(1);
+  });
+
+  it('should return 404 when removing nonexistant friend', async () => {
+		const jwt = await getLoginToken('Thomas', 'test');
+    signinUser('JayDee', 'yeah');
+		addFriend(jwt, 'JayDee');
+
+		const result = await removeFriend(jwt, 'not my friend');
+
+		expect(result.status).toBe(404);
+  });
+
+  it('should return 200 and remove friend', async () => {
+		const jwt = await getLoginToken('Thomas', 'test');
+    signinUser('JayDee', 'yeah');
+		addFriend(jwt, 'JayDee');
+
+		const result = await removeFriend(jwt, 'JayDee');
+		const friendsList = JSON.parse((await getFriends(jwt)).body.friends);
+
+		expect(result.status).toBe(200);
+		expect(friendsList.length).toBe(0);
   });
 });

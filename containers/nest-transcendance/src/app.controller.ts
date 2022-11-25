@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Delete, Request, UseGuards } from '@nestjs/common';
+import { HttpException, HttpStatus} from '@nestjs/common';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService, Identity } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt.auth.guard';
@@ -42,5 +43,12 @@ export class AppController {
   @Get('friend')
   async getFriends(@Request() req: any) {
 		return {friends: JSON.stringify(this.userService.getFriends(req.user.name))};
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('friend')
+  async removeFriend(@Request() req: any) {
+		this.userService.removeFriend(req.user.name, req.body.username)
+		return req.username + ' is no longer your friend';
   }
 }
