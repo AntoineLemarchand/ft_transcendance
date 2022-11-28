@@ -51,4 +51,11 @@ export class UserService {
 		const user = this.getUser(username) as User;
 		return user.getFriends();
 	}
+
+	getInfo(username: string) {
+		const user = this.getUser(username) as User;
+		if (user === undefined)
+			throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
+		return user;
+	}
 }

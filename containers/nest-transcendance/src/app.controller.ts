@@ -10,6 +10,10 @@ export class CreateUserDTO {
   password: string;
 }
 
+class RequestBody {
+	readonly name: string;
+}
+
 @Controller()
 export class AppController {
   @UseGuards(JwtAuthGuard)

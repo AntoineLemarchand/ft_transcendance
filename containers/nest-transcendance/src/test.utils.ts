@@ -75,3 +75,13 @@ export const getLoginToken = async (
   const loginResponse = await loginUser(callerModule, username, password);
   return await loginResponse.body.access_token;
 };
+
+
+export const getUserData = async (
+	app: INestApplication,
+	jwt: string,
+	name: string) => {
+    return request(app.getHttpServer())
+      .get('/user/info/' + name)
+      .set('Authorization', 'Bearer ' + jwt)
+};

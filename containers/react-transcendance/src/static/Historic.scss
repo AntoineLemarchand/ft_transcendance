@@ -1,0 +1,51 @@
+@import 'gruvbox';
+
+.Historic {
+	flex-grow: 1;
+	overflow: scroll;
+	.content {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+
+		.body {
+			margin: 0;
+			overflow-y: scroll;
+		}
+
+		.head, .body li {
+			display: flex;
+			p {
+				width: 100%;
+				margin: 0;
+				text-align: center;
+				border: solid 2px color('backGround2');
+				border-top: none;
+				border-left: none;
+
+				&:first-child {border-left: none;}
+				&:last-child {border-right: none;}
+			}
+		}
+
+		.head {
+			p {
+				&:first-child { flex-grow: 2; }
+				background: color('aquaSecondary');
+			}
+		}
+
+		.body {
+			list-style: none;
+			padding: 0;
+			color: color('backGround2');
+			li {
+				p:first-child {
+					text-align: left;
+					overflow: scroll;
+				}
+			}
+		}
+	}
+}

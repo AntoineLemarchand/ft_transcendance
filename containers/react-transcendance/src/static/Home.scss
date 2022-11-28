@@ -1,0 +1,41 @@
+@import './gruvbox';
+
+.Home {
+	position: absolute;
+	display: inline;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+	.content {
+		width: 80%;
+
+		display: inline;
+    text-align: center;
+
+		h1 {color: color('orangePrimary');}
+
+		p {
+			color: color('textPrimary');
+
+			a {
+				color: color('aquaSecondary');
+				text-decoration: none;
+
+				&:hover {background: color('greySecondary');}
+			}
+		}
+	}
+
+	button {
+		width: 60%;
+		height: 5rem;
+		color: color('backGround2');
+		background: color('greenSecondary');
+		font-size: 2rem;
+		cursor: pointer;
+
+		&:hover {background: color('greenPrimary');}
+		&:active {background: color('greenSecondary');}
+	}
+}

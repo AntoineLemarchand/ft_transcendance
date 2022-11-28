@@ -1,0 +1,49 @@
+@import './gruvbox';
+
+$statusHeight: 5rem;
+
+.Play {
+	position: absolute;
+	display: grid;
+	grid-template-rows: auto $statusHeight;
+
+	.status {
+		display: grid;
+		grid-template-columns: 2fr auto 2fr;
+		background: color('backGround2');
+		.player {
+			display: flex;
+			align-items: center;
+			color: color('textPrimary');
+			img {height: $statusHeight;}
+			p {width: 100%;margin: 0 1rem}
+		}
+
+    .player2 {
+      text-align: right;
+      img{margin-left: auto;}
+    }
+
+		.scores {
+			width: 5rem;
+      height: 100%;
+			margin: auto;
+			padding: 0;
+			font-size: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+			list-style: none;
+
+			li {
+        padding: 0 .5rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+      }
+		}
+	}
+}
+
+@media screen and (max-width: 50rem) {
+  .Play .status .player p {display: none;}
+}

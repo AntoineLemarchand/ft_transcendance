@@ -1,0 +1,65 @@
+@import './gruvbox';
+
+.ChatName {
+	.wrapper  {
+		& > button {
+
+			background: color('backGround1'); 
+			font-size: 1rem;
+			padding: 0;
+			border: none;
+			cursor: pointer;
+		}
+
+		.options {
+			width: 100%;
+			height: 100%;
+
+			position: absolute;
+			top: 0;
+			left: 0;
+
+			background: rgba(29, 32, 33, 0.5);
+
+			.optionList {
+				width: max-content;
+				height: max-content;
+
+				margin: auto;
+				padding: 1rem;
+
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				text-align: center;
+
+				background: color('backGround1');
+				border: dashed .2rem color('textSecondary');
+
+				h3 {
+					text-align: center !important;
+					margin-top: 0;
+				}
+
+				button {
+					height: 2rem;
+					width: 100%;
+
+					display: block;
+					font-size:1rem;
+
+					color: color('textSecondary');
+					background: color('backGround1'); 
+					border: none;
+					cursor: pointer;
+
+					&:hover {
+						background: color('backGround2'); 
+					}
+				}
+			}
+		}
+	}
+}

@@ -80,4 +80,23 @@ describe('UserController', () => {
     expect(result.status).toBe(200);
     expect(friendsList.length).toBe(0);
   });
+
+  it('should return 404 on non existing user info', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const result = await testUtils.getUserData(app, jwt, 'non existing user');
+
+    expect(result.status).toBe(404);
+  });
+
+  it('should return 200 and user info on successful query', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const result = await testUtils.getUserData(app, jwt, 'Thomas');
+
+    expect(result.status).toBe(200);
+    expect(result.body.userInfo).toBeDefined();
+    console.log(result.body.userInfo);
+    expect(JSON.parse(result.body.userInfo).name).toBe('Thomas');
+  });
 });

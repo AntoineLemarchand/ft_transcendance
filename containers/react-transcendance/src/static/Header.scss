@@ -1,0 +1,22 @@
+@import './gruvbox';
+
+.Header {
+	margin: 0 auto;
+	display: block;
+
+	border: none;
+	background: inherit;
+	text-align: center;
+	cursor: pointer;
+
+	h1 {
+		margin-bottom: 0;
+		color: color('textPrimary');
+		font-size: 2rem;
+	}
+
+	h3 {
+		color: color('textSecondary');
+		font-size: 1rem;
+	}
+}

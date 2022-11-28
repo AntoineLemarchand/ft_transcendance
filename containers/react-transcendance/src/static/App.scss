@@ -1,0 +1,21 @@
+@import './gruvbox';
+
+.App {
+	height: 80%;
+	overflow: hidden;
+  display: grid;
+
+  button {
+    border: outset .2rem color('textSecondary');
+
+    &:active {
+    border: inset .2rem color('textSecondary');
+    }
+  }
+}
+
+@media screen and (max-width: 50em) {
+  .App {
+    height: 100%;
+  }
+}
