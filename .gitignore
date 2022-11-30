@@ -1,2 +1,4 @@
 *.swp
 .env
+
+node_modules/

@@ -1,0 +1,37 @@
+@import 'gruvbox';
+
+$boardHeight: 25%;
+$boardWidth: 3%;
+
+.Game {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  .player {
+    height: $boardHeight;
+    width: $boardWidth;
+    display: block;
+    position: absolute;
+    transition: .2s linear;
+
+    &.left {
+      background: color('textPrimary');
+      left: 3%;
+    }
+
+    &.right {
+      background: color('greyPrimary');
+      right: 3%;
+    }
+  }
+
+  .ball {
+    display: block;
+    position: absolute;
+    box-sizing: border-box;
+    width: $boardWidth;
+    padding: $boardWidth / 2;
+    background: color('textPrimary');
+  }
+}

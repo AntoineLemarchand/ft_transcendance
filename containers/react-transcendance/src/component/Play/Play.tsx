@@ -1,6 +1,7 @@
 import React from 'react';
 
 import 'static/Play.scss'
+import Game from './Game'
 
 
 function Play() {
@@ -24,7 +25,7 @@ function Play() {
 
 	return (
 		<div className="Play">
-			<div className="gameWindow">HERE WE SHOULD PLAY PONG</div>
+			<Game/>
 			<div className="status">
 				<div className="player player1">
 					<img className="picture" src={PlaceholderPic1}
