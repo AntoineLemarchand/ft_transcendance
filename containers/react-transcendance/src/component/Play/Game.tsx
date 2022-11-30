@@ -44,6 +44,7 @@ function Game() {
   return (
   <div className="Game">
     <span className="player left" style={pLeftStyle}/>
+    <span className="separator" />
     <span className="player right"/>
     <span className="ball" style={ballStyle}/>
   </div>

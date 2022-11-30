@@ -26,6 +26,17 @@ $boardWidth: 3%;
     }
   }
 
+  .separator {
+    height: 99%;
+    width: 0;
+    margin: auto;
+    position: absolute;
+    display: block;
+    left: 0;
+    right: 0;
+    border: dashed .1rem color('textSecondary');
+  }
+
   .ball {
     display: block;
     position: absolute;
