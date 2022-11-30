@@ -1,124 +1,76 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useState } from 'react'
 
 import { FaPlus } from 'react-icons/fa'
 import { GiHamburgerMenu } from 'react-icons/gi'
+import {io,  Socket } from 'socket.io-client'
 
 import 'static/Chat.scss'
 
 import ChatName from './ChatName'
+import {Channel, Message, putMessageInChannels} from "../../utils/Message";
 
 function Chat() {
-	const channels = [
-		{
-			name: "channel1",
-			content: []
-    },
-		{
-			name: "channel3",
-			content: []
-    },
-		{
-			name: "channel4",
-			content: []
-    },
-		{
-			name: "channel6",
-			content: []
-    },
-		{
-			name: "channel18",
-			content: []
-    },
-		{
-			name: "channel26",
-			content: [
-				{
-					sender: "Jaydee",
-					content: "suuuuup its JayDeee"
-				}, {
-					sender: "Some random dude",
-					content: "Who even is jaydee"
-				}, {
-					sender: "less random dude",
-					content: "dude !! its jaydee !!"
-				}
-			]
-
-		},
-		{
-			name: "channelLast",
-			content: [
-				{
-					sender: "Some random dude",
-					content: "yo who's jaydee ?"
-				}, {
-					sender: "Jaydee",
-					content: "me"
-				}, {
-					sender: "Some random dude",
-					content: "Yo you everywhere ?????"
-				}, {
-					sender: "Jaydee",
-					content: "I'm litteraly god"
-				}, 
-        {
-					sender: "Some random dude",
-					content: "AAAAAAAAAAAAAAAAAAAAAHHH"
-        },
-        {
-					sender: "Some random dude",
-					content: "AAAAAAAAAAAAAAAAAAAAAHHH"
-        },
-        {
-					sender: "Some random dude",
-					content: "AAAAAAAAAAAAAAAAAAAAAHHH"
-        },
-        {
-					sender: "Some random dude",
-					content: "AAAAAAAAAAAAAAAAAAAAAHHH"
-        },
-        {
-					sender: "Some random dude",
-					content: "AAAAAAAAAAAAAAAAAAAAAHHH"
-        },
-        {
-					sender: "Some random dude",
-					content: "AAAAAAAAAAAAAAAAAAAAAHHH"
-        },
-        {
-					sender: "Some random dude",
-					content: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHH"
-        },
-			]
-		},
-	]
+	const [channels, setChannels] = useState<Channel[]>([
+		new Channel('channel1'),
+		new Channel('channel2'),
+		new Channel('channel3'),
+		new Channel('channel4'),
+		new Channel('channel5'),
+	])
 
 	const UserName: string = "Jaydee"
-
+	const [socket, setSocket] = useState<Socket>()
 	const [ getState, setState ] =  useState({
 		currentChannel: channels[0],
 		currentMessage: '',
 	})
 
+	const send = (sender: string, content: string, channel: string) =>{
+		socket?.emit("messageToServer", JSON.stringify({sender: sender, content: content, channel: channel}))
+	}
+
+	//todo: find out why this is not working with https (you will get a CORS error in the browser console)
+	//todo: where do we want to configure this ?
+	useEffect(() =>{
+		const newSocket = io("http://localhost:8001")
+		setSocket(newSocket)
+	}, [setSocket])
+
+	//todo: I dont understand react. help (ESLint: The 'messageListener' function makes the dependencies of useEffect Hook (at line 54) change on every render. Move it inside the useEffect callback. Alternatively, wrap the definition of 'messageListener' in its own useCallback() Hook.(react-hooks/exhaustive-deps))
+	const messageListener = (payload: string) => {
+		const message: Message = JSON.parse(payload);
+		const allChannels = putMessageInChannels(message, channels)
+		setChannels(allChannels);
+		if (message.channel === getState.currentChannel.name)
+			SelectChannel(allChannels[allChannels.findIndex(channel => channel.name === message.channel)]);
+	}
+
+	useEffect(() => {
+		socket?.on("messageToClient", messageListener)
+		return () => {
+			socket?.off("messageToClient", messageListener)
+		}
+	}, [messageListener, socket])
+
 	const SelectChannel = (channel: any) => {
 		setState({
 			currentChannel: channel,
 			currentMessage: getState.currentMessage,
-			})
+		})
 	}
 
-  const OnChange = ((event: React.ChangeEvent<HTMLInputElement>) => {
+	const OnChange = ((event: React.ChangeEvent<HTMLInputElement>) => {
 		setState({
 			currentChannel: getState.currentChannel,
 			currentMessage: event.target.value,
 		})
 	})
 
-  const OnKeyDown = ((event: React.KeyboardEvent<HTMLInputElement>) => {
+	const OnKeyDown = ((event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter') {
-			let value: string = (event.target as any).value;
-			alert(value);
+			let messageContent: string = (event.target as any).value;
+			send(UserName, messageContent, getState.currentChannel.name);
 			setState({
 				currentChannel: getState.currentChannel,
 				currentMessage: '',
@@ -128,56 +80,56 @@ function Chat() {
 
 	const ChannelButtonStyle = (isActive: boolean) => {
 		return isActive ? {
-          backgroundColor:  '#83a598',
-        } : {
-          backgroundColor:  '#458588',
-        }
+			backgroundColor:  '#83a598',
+		} : {
+			backgroundColor:  '#458588',
 		}
+	}
 
 	return (
 		<div className="Chat">
-      <input className="burger" type="checkbox" id="burgerToggle"/>
-      <label htmlFor="burgerToggle"><GiHamburgerMenu /></label>
+			<input className="burger" type="checkbox" id="burgerToggle"/>
+			<label htmlFor="burgerToggle"><GiHamburgerMenu /></label>
 			<div className="channelMenu">
-			<header>
-				<p>Channels</p>
-				<button><FaPlus /></button>
-			</header>
-			<div className="channelList">
-			{
-				channels.map((channel, idx) =>
-				<button
-				key={idx}
-				onClick={()=>SelectChannel(channel)}
-        style={
-					ChannelButtonStyle(channel.name === getState.currentChannel.name)
-					}>{channel.name}</button>
-			)}
-			</div>
+				<header>
+					<p>Channels</p>
+					<button><FaPlus /></button>
+				</header>
+				<div className="channelList">
+					{
+						channels.map((channel, idx) =>
+							<button
+								key={idx}
+								onClick={()=>SelectChannel(channel)}
+								style={
+									ChannelButtonStyle(channel.name === getState.currentChannel.name)
+								}>{channel.name}</button>
+						)}
+				</div>
 			</div>
 			<ul className="channelContent">
-      <div className="chatArea">
-        {getState.currentChannel.content.map((message, idx) =>
-            <li key={idx}
-            className="message" style={
-            {textAlign: message.sender === UserName ? "right" : "left"}
-            }>
-						<ChatName
-							username={UserName}
-							sender={message.sender}
-							style={message.sender === UserName ? {marginLeft: "auto"} : {}}
-						/>
-            <p className="content">
-              {message.content}
-            </p>
-          </li>
-        )}
-      </div>
-      <input type="text"
-			placeholder="Say something smart !"
-			value={getState.currentMessage}
-			onChange={OnChange}
-			onKeyDown={OnKeyDown}/>
+				<div className="chatArea">
+					{getState.currentChannel.content.map((message, idx) =>
+						<li key={idx}
+							className="message" style={
+							{textAlign: message.sender === UserName ? "right" : "left"}
+						}>
+							<ChatName
+								username={UserName}
+								sender={message.sender}
+								style={message.sender === UserName ? {marginLeft: "auto"} : {}}
+							/>
+							<p className="content">
+								{message.content}
+							</p>
+						</li>
+					)}
+				</div>
+				<input type="text"
+					   placeholder="Say something smart !"
+					   value={getState.currentMessage}
+					   onChange={OnChange}
+					   onKeyDown={OnKeyDown}/>
 			</ul>
 		</div>
 	)
