@@ -1,41 +1,102 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
-jest.mock('./user.service');
+import { Test } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import * as testUtils from '../test.utils';
+import { AppModule } from '../app.module';
 
 describe('UserController', () => {
-  let controller: UserController;
-  let service: UserService;
+  let app: INestApplication;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [UserController],
-      providers: [UserService],
+    const module = await Test.createTestingModule({
+      imports: [AppModule],
     }).compile();
-
-    controller = module.get<UserController>(UserController);
-    service = module.get<UserService>(UserService);
+    app = module.createNestApplication();
+    await app.init();
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  it('should return 404 on adding unexisting friend', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const result = await testUtils.addFriend(app, jwt, 'non existing user');
+
+    expect(result.status).toBe(404);
   });
 
-  it('should call the service method when calling the get method', () => {
-    controller.getUser('test');
+  it('should return 401 on adding friend twice', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    testUtils.signinUser(app, 'JayDee', 'yeah');
+    await testUtils.addFriend(app, jwt, 'JayDee');
 
-    expect(service.getUser).toHaveBeenCalled();
+    const result = await testUtils.addFriend(app, jwt, 'JayDee');
+    const friendsList = JSON.parse(
+      (await testUtils.getFriends(app, jwt)).body.friends,
+    );
+
+    expect(result.status).toBe(401);
+    expect(friendsList.length).toBe(1);
   });
 
-  it('should call deleteUser on service', () => {
-    controller.deleteUser('test');
+  it('should return 201 and add friend', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    testUtils.signinUser(app, 'JayDee', 'yeah');
 
-    expect(service.deleteUser).toHaveBeenCalled();
+    const result = await testUtils.addFriend(app, jwt, 'JayDee');
+
+    expect(result.status).toBe(201);
   });
 
-  it('should call createUser on service', () => {
-    controller.createUser('test');
+  it('should return 201 and a list of friends', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    testUtils.signinUser(app, 'JayDee', 'yeah');
+    testUtils.addFriend(app, jwt, 'JayDee');
 
-    expect(service.createUser).toHaveBeenCalled();
+    const result = await testUtils.getFriends(app, jwt);
+
+    expect(result.status).toBe(200);
+    expect(result.body.friends).toBeDefined();
+    expect(JSON.parse(result.body.friends).length).toBe(1);
+  });
+
+  it('should return 404 when removing nonexistant friend', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    testUtils.signinUser(app, 'JayDee', 'yeah');
+    testUtils.addFriend(app, jwt, 'JayDee');
+
+    const result = await testUtils.removeFriend(app, jwt, 'not my friend');
+
+    expect(result.status).toBe(404);
+  });
+
+  it('should return 200 and remove friend', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    testUtils.signinUser(app, 'JayDee', 'yeah');
+    testUtils.addFriend(app, jwt, 'JayDee');
+
+    const result = await testUtils.removeFriend(app, jwt, 'JayDee');
+    const friendsList = JSON.parse(
+      (await testUtils.getFriends(app, jwt)).body.friends,
+    );
+
+    expect(result.status).toBe(200);
+    expect(friendsList.length).toBe(0);
+  });
+
+  it('should return 404 on non existing user info', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const result = await testUtils.getUserData(app, jwt, 'non existing user');
+
+    expect(result.status).toBe(404);
+  });
+
+  it('should return 200 and user info on successful query', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const result = await testUtils.getUserData(app, jwt, 'Thomas');
+
+    expect(result.status).toBe(200);
+    expect(result.body.userInfo).toBeDefined();
+    console.log(result.body.userInfo);
+    expect(JSON.parse(result.body.userInfo).name).toBe('Thomas');
   });
 });

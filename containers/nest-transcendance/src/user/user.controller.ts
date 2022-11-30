@@ -1,28 +1,46 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Delete, Get, Post } from "@nestjs/common";
-import { UserService } from './user.service';
+import {
+    Controller,
+    Delete,
+    Get,
+    Post,
+    Request,
+    UseGuards,
+    Param,
+} from '@nestjs/common';
+import {UserService} from './user.service';
 import User from "./user.entities";
+import {JwtAuthGuard} from '../auth/jwt.auth.guard';
+import {userInfo} from "os";
 
-@Controller('user')
+@Controller()
 export class UserController {
-  constructor(private userService: UserService) {}
-  @Get()
-  getUser(name: string): JSON {
-    try {
-      return this.userService.getUser(name).toJson();
+    constructor(private userService: UserService) {
     }
-    catch (e){
-      return <JSON>{};
+
+    @UseGuards(JwtAuthGuard)
+    @Post('friend')
+    async addFriend(@Request() req: any) {
+        this.userService.addFriend(req.user.name, req.body.username);
+        return req.username + ' is now your friend';
     }
-  }
 
-  @Delete()
-  deleteUser(name: string) {
-    this.userService.deleteUser(name);
-  }
+    @UseGuards(JwtAuthGuard)
+    @Get('friend')
+    async getFriends(@Request() req: any) {
+        return {friends: JSON.stringify(this.userService.getFriends(req.user.name))};
+    }
 
-  @Post()
-  createUser(name: string, password: string) {
-    this.userService.createUser(new User(name, password));
-  }
+    @UseGuards(JwtAuthGuard)
+    @Delete('friend')
+    async removeFriend(@Request() req: any) {
+        this.userService.removeFriend(req.user.name, req.body.username)
+        return req.username + ' is no longer your friend';
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('info/:username')
+    async getInfo(@Param('username') username: string) {
+        return {userInfo: JSON.stringify(this.userService.getInfo(username) as User)};
+    }
 }
