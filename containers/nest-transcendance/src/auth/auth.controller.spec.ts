@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as testUtils from '../test.utils';
 import { AppModule } from '../app.module';
+import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 
 describe('AuthController', () => {
   let app: INestApplication;
@@ -9,7 +10,10 @@ describe('AuthController', () => {
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(BroadcastingGateway)
+      .useValue(jest.fn())
+      .compile();
     app = module.createNestApplication();
     await app.init();
   });

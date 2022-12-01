@@ -2,6 +2,8 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as testUtils from '../test.utils';
 import { AppModule } from '../app.module';
+import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import fn = jest.fn;
 
 describe('UserController', () => {
   let app: INestApplication;
@@ -9,7 +11,10 @@ describe('UserController', () => {
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(BroadcastingGateway)
+      .useValue(jest.fn())
+      .compile();
     app = module.createNestApplication();
     await app.init();
   });
