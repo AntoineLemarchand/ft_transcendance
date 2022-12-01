@@ -1,16 +1,18 @@
 import React, {useEffect} from 'react';
 import { useState } from 'react'
 
-import { FaPlus } from 'react-icons/fa'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import {io,  Socket } from 'socket.io-client'
 
 import 'static/Chat.scss'
 
 import ChatName from './ChatName'
+import NewChannelButton from './NewChannelButton'
+import NewChannelMenu from './NewChannelMenu'
 import {Channel, Message, putMessageInChannels} from "../../utils/Message";
 
 function Chat() {
+	const [NewConvMenu, SetNewConvMenu] = useState(false)
 	const [channels, setChannels] = useState<Channel[]>([
 		new Channel('channel1'),
 		new Channel('channel2'),
@@ -18,6 +20,10 @@ function Chat() {
 		new Channel('channel4'),
 		new Channel('channel5'),
 	])
+
+	const ToggleNewConvMenu = () => {
+		SetNewConvMenu(!NewConvMenu);
+	}
 
 	const UserName: string = "Jaydee"
 	const [socket, setSocket] = useState<Socket>()
@@ -88,12 +94,13 @@ function Chat() {
 
 	return (
 		<div className="Chat">
+			<NewChannelMenu	toggle={ToggleNewConvMenu} setChannels={setChannels} visible={NewConvMenu}/>
 			<input className="burger" type="checkbox" id="burgerToggle"/>
 			<label htmlFor="burgerToggle"><GiHamburgerMenu /></label>
 			<div className="channelMenu">
 				<header>
 					<p>Channels</p>
-					<button><FaPlus /></button>
+					<NewChannelButton toggle={ToggleNewConvMenu}/>
 				</header>
 				<div className="channelList">
 					{

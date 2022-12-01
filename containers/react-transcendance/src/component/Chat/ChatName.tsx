@@ -3,33 +3,32 @@ import { useState } from 'react';
 
 import 'static/ChatName.scss'
 
-function ChatName(props: {}) {
+function ChatName(props: {username: string, sender: string}) {
 
-	const [ getState, setState ] = useState({
-		menuToggle: false,
-	});
+	const [ menuToggle, setMenuToggle ] = useState(false);
 
-	const ToggleDropDown = (event: React.MouseEvent<HTMLInputElement>) => {
-		setState({menuToggle: !getState.menuToggle});
+	const ToggleUserMenu = () => {
+		setMenuToggle(!menuToggle);
 	}
 
-	const MessageSenderStyle = props.sender === props.username ? {
+	const MessageSenderStyle: React.CSSProperties = (props.sender === props.username ? {
 			color: "#fe9019",
 			textAlign: "right",
 		} : {
 			color: "#b2bb26",
-	}
+	})
 
-	const ButtonStyle = props.sender === props.username ? {
+	const ButtonStyle: React.CSSProperties = props.sender === props.username ? {
 		marginLeft: "auto",
 	} : {}
 
-	const DropDownStyle = getState.menuToggle ?
+	const DropDownStyle = menuToggle ?
 		{display: "block"} : {display: "none"}
 
 	const options = [
 		"Make Admin",
 		"Profile",
+		"Block",
 		"Invite to play",
 		"Mute",
 		"Ban"
@@ -40,13 +39,11 @@ function ChatName(props: {}) {
 		<div className="wrapper">
 			<button
 				style={MessageSenderStyle}
-				onClick={ToggleDropDown}
+				onClick={ToggleUserMenu}
 			>{props.sender}</button>
-			<div className="options" style={DropDownStyle} onClick={ToggleDropDown}>
-				<div className="optionList">
-				<h3
-					style={MessageSenderStyle}
-				>{props.sender}</h3>
+			<div className="options" style={DropDownStyle} onClick={ToggleUserMenu}>
+				<div className="optionList" onClick={(event)=>{event.stopPropagation()}}>
+				<h3 style={MessageSenderStyle}>{props.sender}</h3>
 				{
 					options.map( (option, idx) => 
 						<button key={idx} style={ButtonStyle}>{option}</button>

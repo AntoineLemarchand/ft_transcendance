@@ -9,6 +9,8 @@
 			padding: 0;
 			border: none;
 			cursor: pointer;
+
+			&:active {border: none;}
 		}
 
 		.options {
@@ -46,18 +48,14 @@
 				button {
 					height: 2rem;
 					width: 100%;
-
 					display: block;
+					cursor: pointer;
 					font-size:1rem;
-
 					color: color('textSecondary');
 					background: color('backGround1'); 
 					border: none;
-					cursor: pointer;
 
-					&:hover {
-						background: color('backGround2'); 
-					}
+					&:hover {background: color('backGround2'); }
 				}
 			}
 		}
