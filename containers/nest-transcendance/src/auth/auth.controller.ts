@@ -1,8 +1,16 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Request,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService, Identity } from './auth.service';
 import { CreateUserDTO } from '../app.controller';
-import { AuthModule} from './auth.module';
+import { AuthModule } from './auth.module';
+import { Response as ExpressResponse } from 'express';
 
 @Controller()
 export class AuthController {
@@ -10,13 +18,22 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req: Express.Request): Promise<{ access_token: string }> {
-    return this.authService.login(req.user as Identity);
+  async login(
+    @Request() req: Express.Request,
+    @Res({ passthrough: true }) res: ExpressResponse,
+  ): Promise<{ access_token: string }> {
+    const token = this.authService.login(req.user as Identity);
+    res.cookie('token', JSON.stringify({ access_token: token }));
+    return token;
   }
 
   @Post('signin')
-  async signin(@Body() userCandidate: CreateUserDTO) {
+  async signin(
+    @Body() userCandidate: CreateUserDTO,
+    @Res({ passthrough: true }) res: ExpressResponse,
+  ) {
     const token = this.authService.createUser(userCandidate);
+    res.cookie('token', JSON.stringify({ access_token: token }));
     return token;
   }
 }
