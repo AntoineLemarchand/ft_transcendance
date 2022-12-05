@@ -8,6 +8,7 @@ import { environment } from '../utils/environmentParser';
 import { JwtStrategy } from './auth.jwt.strategy';
 import { AuthController } from './auth.controller';
 import User from '../user/user.entities';
+import { WsGuard } from './websocket.auth.guard';
 
 @Module({
   providers: [AuthService, LocalStrategy, JwtStrategy],
@@ -20,7 +21,7 @@ import User from '../user/user.entities';
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
   controllers: [AuthController],
 })
 export class AuthModule {}

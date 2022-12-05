@@ -9,7 +9,7 @@ import 'static/Chat.scss'
 import ChatName from './ChatName'
 import NewChannelButton from './NewChannelButton'
 import NewChannelMenu from './NewChannelMenu'
-import {Channel, Message, putMessageInChannels} from "../../utils/Message";
+import {Channel, Message, putMessageInChannels} from "../../utils/Message";import { useCookies } from 'react-cookie';
 
 function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
@@ -25,6 +25,8 @@ function Chat() {
 		SetNewConvMenu(!NewConvMenu);
 	}
 
+	const [cookies, setCookie, removeCookie] = useCookies(['auth']);
+
 	const UserName: string = "Jaydee"
 	const [socket, setSocket] = useState<Socket>()
 	const [ getState, setState ] =  useState({
@@ -39,7 +41,13 @@ function Chat() {
 	//todo: find out why this is not working with https (you will get a CORS error in the browser console)
 	//todo: where do we want to configure this ?
 	useEffect(() =>{
-		const newSocket = io("http://localhost:8001")
+		const newSocket = io("http://localhost:8001", {
+			extraHeaders: {
+				Cookie: `auth=CookieValue;`,
+			},
+			withCredentials: true,
+			query: {auth: cookies.auth},
+		})
 		setSocket(newSocket)
 	}, [setSocket])
 

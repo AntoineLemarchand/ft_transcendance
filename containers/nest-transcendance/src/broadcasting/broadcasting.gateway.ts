@@ -4,6 +4,9 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import {JwtAuthGuard} from "../auth/jwt.auth.guard";
+import {UseGuards} from "@nestjs/common";
+import {WsGuard} from "../auth/websocket.auth.guard";
 
 //todo: how to prevent duplication with react?
 export class Message {
@@ -30,6 +33,7 @@ export class BroadcastingGateway {
 
   //todo: call database layer and store messages
   //todo: invoke guard to check valid token
+  @UseGuards(WsGuard)
   @SubscribeMessage('messageToServer')
   handleMessage(client: any, payload: string): void {
     const message: Message = JSON.parse(payload);
