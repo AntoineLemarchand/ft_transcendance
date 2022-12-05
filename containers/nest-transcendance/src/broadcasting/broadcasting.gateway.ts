@@ -4,21 +4,10 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import {JwtAuthGuard} from "../auth/jwt.auth.guard";
-import {UseGuards} from "@nestjs/common";
-import {WsGuard} from "../auth/websocket.auth.guard";
-
-//todo: how to prevent duplication with react?
-export class Message {
-  sender: string;
-  content: string;
-  channel: string;
-  constructor() {
-    this.sender = '';
-    this.channel = '';
-    this.content = '';
-  }
-}
+import { JwtAuthGuard } from '../auth/jwt.auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { WsGuard } from '../auth/websocket.auth.guard';
+import { Message } from '../channel/channel.entities';
 
 //todo: is cors * a security concern in our case?
 @WebSocketGateway(8001, {

@@ -101,7 +101,6 @@ describe('UserController', () => {
 
     expect(result.status).toBe(200);
     expect(result.body.userInfo).toBeDefined();
-    console.log(result.body.userInfo);
     expect(JSON.parse(result.body.userInfo).name).toBe('Thomas');
   });
 });

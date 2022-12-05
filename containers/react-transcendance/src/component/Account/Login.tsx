@@ -26,8 +26,7 @@ function Login() {
                 'username': state.username,
                 'password': state.password,
             }),
-        })
-            .then(async response => {
+        }).then(async response => {
                 if (response.status === 201) {
                     const token = await response.text().then((body) => {
                         return JSON.parse(body).access_token

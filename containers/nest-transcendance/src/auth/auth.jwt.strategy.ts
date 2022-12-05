@@ -18,16 +18,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  //todo: generate typed object
   async validate(payload: Express.Request): Promise<any> {
     return payload.user;
   }
 
   static extractJWT(req: RequestType): string | null {
-    console.log('trying to find cookies');
     if (req.cookies && 'auth' in req.cookies && req.cookies.auth.length > 0) {
-      console.log('yay, found cookie');
-      console.log(req.cookies.auth);
       return req.cookies.auth;
     }
     return null;

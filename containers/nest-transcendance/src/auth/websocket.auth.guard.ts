@@ -26,22 +26,4 @@ export class WsGuard implements CanActivate {
       throw new WsException('not authorized');
     return sender;
   }
-  //   const bearerToken =
-  //     context.args[0].handshake.headers.authorization.split(' ')[1];
-  //   try {
-  //     const decoded = jwt.verify(
-  //       bearerToken,
-  //       environment.JWT_SECRET_PASSWORD,
-  //     ) as any;
-  //     return new Promise((resolve, reject) => {
-  //       const user = this.userService.getUser(decoded.username);
-  //       if (user === undefined)
-  //         throw new HttpException('not authorized', HttpStatus.UNAUTHORIZED);
-  //       return user;
-  //     });
-  //   } catch (ex) {
-  //     console.log(ex);
-  //     return false;
-  //   }
-  // }
 }
