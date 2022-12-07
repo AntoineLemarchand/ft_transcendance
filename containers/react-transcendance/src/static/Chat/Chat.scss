@@ -26,13 +26,21 @@ $headerHeight: 3rem;
 				margin: 0;
 			}
 
-			p {
+			input {
+				padding-left: .5rem;
 				display:flex;
 				justify-content: center;
 				align-items: center;
 
-				background: color('greyPrimary');
+				background: color('greySecondary');
+				color: color('textPrimary');
+				font-size: 1rem;
 			}
+
+			p {
+				display: none;
+			}
+			
 			button {
 				height: 100%;
 				padding: 0;

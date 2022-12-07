@@ -42,7 +42,7 @@ $boardWidth: 3%;
     position: absolute;
     box-sizing: border-box;
     width: $boardWidth;
-    padding: $boardWidth / 2;
+    padding: calc($boardWidth / 2);
     background: color('textPrimary');
   }
 }

@@ -1,8 +1,7 @@
-import React from 'react'
+import * as React from 'react'
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import 'static/Account/Prompt.scss'
 
@@ -11,7 +10,7 @@ import {ReactComponent as SchoolLogo} from 'static/logo.svg'
 function Login() {
 
     const navigate = useNavigate();
-    const [cookies, setCookie] = useCookies(['auth']);
+    const [, setCookie] = useCookies(['auth']);
     const [state, setState] = useState({
         username: 'Thomas',
         password: 'test',
@@ -58,14 +57,14 @@ function Login() {
         navigate('/dashboard');
     }
 
-    const UpdatePassword = (event) => {
+    const UpdatePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
         setState({
             username: state.username,
             password: event.target.value,
         });
     }
 
-    const UpdateLogin = (event) => {
+    const UpdateLogin = (event: React.ChangeEvent<HTMLInputElement>) => {
         setState({
             username: event.target.value,
             password: state.password,

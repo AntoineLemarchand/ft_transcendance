@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Main from './Main'
+import NotFound from './NotFound'
 import Header from './Header'
 import Login from './Account/Login'
 import SignIn from './Account/SignIn'
@@ -29,7 +30,7 @@ function App() {
 			<Route path="/chat" element={ <Main component={<Chat />}/>}/>
 			<Route path="/profile" element={ <Main component={<Profile />}/>}/>
 			<Route path="/profile/:uid" element={ <Main component={<Profile />}/>}/>
-			<Route path="/*" element={ <h1>404: Page not found</h1> }/>
+			<Route path="/*" element={ <NotFound /> }/>
 		</Routes>
 		</BrowserRouter>
 	</div>
