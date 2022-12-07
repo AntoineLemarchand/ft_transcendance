@@ -1,6 +1,6 @@
 import React from 'react';
 
-import 'static/Play.scss'
+import 'static/Play/Play.scss'
 import Game from './Game'
 
 

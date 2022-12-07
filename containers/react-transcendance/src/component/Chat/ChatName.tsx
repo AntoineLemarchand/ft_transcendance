@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import 'static/ChatName.scss'
+import 'static/Chat/ChatName.scss'
 
 function ChatName(props: {username: string, sender: string}) {
 

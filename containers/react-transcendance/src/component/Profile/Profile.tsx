@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 
-import 'static/Profile.scss'
+import 'static/Profile/Profile.scss'
 import {ReactComponent as SchoolLogo} from 'static/logo.svg'
 
 import Historic from './Historic'

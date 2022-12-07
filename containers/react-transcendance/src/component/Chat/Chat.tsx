@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import {io,  Socket } from 'socket.io-client'
 
-import 'static/Chat.scss'
+import 'static/Chat/Chat.scss'
 
 import ChatName from './ChatName'
 import NewChannelButton from './NewChannelButton'

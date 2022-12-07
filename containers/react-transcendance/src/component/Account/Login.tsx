@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
-import 'static/Prompt.scss'
+import 'static/Account/Prompt.scss'
 
 import {ReactComponent as SchoolLogo} from 'static/logo.svg'
 

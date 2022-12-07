@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
-import 'static/Game.scss'
+import 'static/Play/Game.scss'
 
 function Game() {
 

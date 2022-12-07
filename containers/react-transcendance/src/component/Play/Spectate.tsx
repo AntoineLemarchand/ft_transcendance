@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import 'static/Spectate.scss'
+import 'static/Play/Spectate.scss'
 
 import Play from './Play'
 
