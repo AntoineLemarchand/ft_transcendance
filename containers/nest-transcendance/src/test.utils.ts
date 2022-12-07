@@ -122,3 +122,19 @@ export const doesChannelExist = async (
   );
   return tmp !== undefined;
 };
+
+export async function getMatchingChannels(
+  callerModule: INestApplication,
+  jwt: string,
+  regexString: string,
+) {
+  const result = await request(callerModule.getHttpServer())
+    .get('/channel/search')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      regexString: regexString,
+    });
+  const channels = result.body.channels;
+  const allChannels: Channel[] = <Channel[]>JSON.parse(channels);
+  return allChannels;
+}

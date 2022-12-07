@@ -2,6 +2,9 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as testUtils from '../test.utils';
 import { AppModule } from '../app.module';
+import * as request from 'supertest';
+import { Channel } from './channel.entities';
+import { getChannels } from '../test.utils';
 
 jest.mock('../broadcasting/broadcasting.gateway');
 
@@ -15,9 +18,13 @@ beforeEach(async () => {
   await app.init();
 });
 
-describe('ChannelController', () => {
+describe('joining a channel', () => {
   it('should not be allowed to create a channel if the user is not logged in ', async () => {
-    const result = await testUtils.addChannel(app, 'invalid token', 'newChannelName');
+    const result = await testUtils.addChannel(
+      app,
+      'invalid token',
+      'newChannelName',
+    );
 
     expect(result.status).toBe(401);
   });
@@ -33,10 +40,23 @@ describe('ChannelController', () => {
 
   it('should return 201 and create a new channel if correct input is provided', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    // await testUtils.addChannel(app, jwt, 'newChannelName2');
     const result = await testUtils.addChannel(app, jwt, 'newChannelName');
 
     expect(result.status).toBe(201);
-    expect(await testUtils.doesChannelExist(app, jwt, 'newChannelName')).toBeTruthy();
+    expect(
+      await testUtils.doesChannelExist(app, jwt, 'newChannelName'),
+    ).toBeTruthy();
+  });
+});
+
+describe('searching channels by name', () => {
+  it('should return a list of channels', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.addChannel(app, jwt, 'newChannelName1');
+    await testUtils.addChannel(app, jwt, 'newChannelName2');
+
+    const allChannels = await testUtils.getMatchingChannels(app, jwt, 'new');
+
+    expect(allChannels.length).toBe(2);
   });
 });

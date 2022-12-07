@@ -18,4 +18,13 @@ export class ChannelController {
     const allChannels = await this.channelService.getChannels();
     return {channels: JSON.stringify(allChannels)};
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('search')
+  async findMatching(@Request() req: any) {
+    const matchingChannels = await this.channelService.findMatching(
+      req.body.regexString,
+    );
+    return {channels: JSON.stringify(matchingChannels)};
+  }
 }

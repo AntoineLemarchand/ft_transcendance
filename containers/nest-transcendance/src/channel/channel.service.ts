@@ -27,14 +27,16 @@ export class ChannelService {
   }
 
   async addChannel(channelname: string, ownername: string): Promise<void> {
-    await this.channelRepository
-      .create(channelname, ownername)
-      .catch(() => {
-        throw new HttpException(
-          'This channel exists already',
-          HttpStatus.UNAUTHORIZED,
-        );
-      });
+    await this.channelRepository.create(channelname, ownername).catch(() => {
+      throw new HttpException(
+        'This channel exists already',
+        HttpStatus.UNAUTHORIZED,
+      );
+    });
+  }
+
+  async findMatching(regexSearchString: string): Promise<Channel[]> {
+    return await this.channelRepository.findMatching(regexSearchString);
   }
 
   async getChannels(): Promise<Channel[]> {

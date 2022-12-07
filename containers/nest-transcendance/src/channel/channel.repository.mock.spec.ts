@@ -11,11 +11,8 @@ beforeEach(async () => {
   channelRepository = module.get<ChannelRepository>(ChannelRepository);
 });
 
-async function createAChannel() {
-  const result = await channelRepository.create(
-    'channelName',
-    'creatorUserName',
-  );
+async function createAChannel(channelname = 'channelName') {
+  const result = await channelRepository.create(channelname, 'creatorUserName');
   return result;
 }
 
@@ -72,8 +69,20 @@ describe('removing a channel', () => {
   });
 });
 
-describe('updating a channel', () => {
+describe('finding all channels', () => {
   it('should update channel content when a message is added', async () => {
+    await createAChannel('a');
+    await createAChannel('aab');
+    await createAChannel('aaab');
+    await createAChannel('y');
+
+    expect((await channelRepository.findMatching('a')).length).toBe(3);
+    expect((await channelRepository.findMatching('y')).length).toBe(1);
+  });
+});
+
+describe('updating a channel', () => {
+  it('should return all channels containing the search expression', async () => {
     await createAChannel();
 
     await channelRepository.addMessageToChannel('channelName', new Message());
