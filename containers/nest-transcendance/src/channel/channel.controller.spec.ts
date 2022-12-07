@@ -50,13 +50,13 @@ describe('joining a channel', () => {
 });
 
 describe('searching channels by name', () => {
-  it('should return a list of channels', async () => {
+  it('should return a list of channel names', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
     await testUtils.addChannel(app, jwt, 'newChannelName1');
     await testUtils.addChannel(app, jwt, 'newChannelName2');
 
-    const allChannels = await testUtils.getMatchingChannels(app, jwt, 'new');
+    const matchingChannels = await testUtils.getMatchingChannels(app, jwt, 'new');
 
-    expect(allChannels.length).toBe(2);
+    expect(matchingChannels.length).toBe(2);
   });
 });

@@ -35,7 +35,7 @@ export class ChannelService {
     });
   }
 
-  async findMatching(regexSearchString: string): Promise<Channel[]> {
+  async findMatching(regexSearchString: string): Promise<string[]> {
     return await this.channelRepository.findMatching(regexSearchString);
   }
 

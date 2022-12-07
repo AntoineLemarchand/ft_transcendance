@@ -135,6 +135,6 @@ export async function getMatchingChannels(
       regexString: regexString,
     });
   const channels = result.body.channels;
-  const allChannels: Channel[] = <Channel[]>JSON.parse(channels);
+  const allChannels = <string[]>JSON.parse(channels);
   return allChannels;
 }

@@ -36,12 +36,12 @@ export class ChannelRepository {
     this.channels.set(channelName, channel);
   }
 
-  async findMatching(regexSearchString: string): Promise<Channel[]> {
-    const result: Channel[] = [];
+  async findMatching(regexSearchString: string): Promise<string[]> {
+    const result: string[] = [];
 
     this.channels.forEach((value, key, map) => {
       if (new RegExp(regexSearchString, 'g').test(key))
-        result.push(value);
+        result.push(value.getName());
     });
     return result;
   }
