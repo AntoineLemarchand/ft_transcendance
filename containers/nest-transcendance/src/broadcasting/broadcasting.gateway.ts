@@ -20,7 +20,8 @@ export class Message {
 //todo: is cors * a security concern in our case?
 @WebSocketGateway(8001, {
   cors: {
-    origin: '*',
+    origin: 'http://localhost:3001',
+    credentials: true,
   },
 })
 export class BroadcastingGateway {
