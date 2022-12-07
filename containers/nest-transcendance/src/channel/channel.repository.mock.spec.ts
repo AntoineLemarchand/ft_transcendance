@@ -9,6 +9,7 @@ beforeEach(async () => {
     providers: [ChannelRepository],
   }).compile();
   channelRepository = module.get<ChannelRepository>(ChannelRepository);
+  channelRepository.clear();
 });
 
 async function createAChannel(channelname = 'channelName') {

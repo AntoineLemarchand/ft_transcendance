@@ -5,6 +5,13 @@ import { Channel, Message } from './channel.entities';
 export class ChannelRepository {
   private channels = new Map<string, Channel>();
 
+  constructor() {
+    this.channels.set('welcome', new Channel('welcome', 'admin'));
+    this.channels.set('welcom', new Channel('welcom', 'scam'));
+    this.channels.set('wlcm', new Channel('wlcm', 'scam'));
+    this.channels.set('ab', new Channel('ab', 'scam'));
+  }
+
   async findAll(): Promise<Channel[]> {
     return Array.from(this.channels.values());
   }
@@ -44,5 +51,9 @@ export class ChannelRepository {
         result.push(value.getName());
     });
     return result;
+  }
+
+  clear() {
+    this.channels.clear();
   }
 }
