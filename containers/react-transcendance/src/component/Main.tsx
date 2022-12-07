@@ -1,6 +1,4 @@
-import * as React from 'react';
-import { useNavigate, Link } from 'react-router-dom'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 
 import 'static/Main.scss'
 
@@ -22,6 +20,8 @@ import Profile from './Profile/Profile'
 
 function Main(props: {component: any}) {
 	const navigate = useNavigate();
+	const location = useLocation();
+	const tab = location.pathname.split('/')[1];
 
 	const ProcessLogout = () => {
 		navigate('/');
@@ -35,12 +35,20 @@ function Main(props: {component: any}) {
 		{ icon: <FaUser/>, ref: 'profile', component: <Profile/>},
 	];
 
+	const tabStyle= (ref: string): React.CSSProperties  => {
+		return ref === tab ? {
+			background: "#3c3836",
+			color: "#ebdbb2"
+		}: {}
+	}
+
 	return (
 			<main>
 				<div className="links">
 				{
 					pages.map((page, idx) => 
-						<Link to={'/' + page.ref} key={idx}>
+						<Link to={'/' + page.ref} key={idx}
+						style={tabStyle(page.ref)}>
 							{page.icon}
 						</Link>
 					)
