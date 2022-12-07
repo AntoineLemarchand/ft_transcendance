@@ -91,7 +91,8 @@ main {
 	.slides {
 		width: $slideWidth;
 		max-width: 98%;
-		max-height: 80%;
+		height: 80%;
+		position: relative;
 
 		margin: 0 auto auto auto;
 		flex-grow: 1;

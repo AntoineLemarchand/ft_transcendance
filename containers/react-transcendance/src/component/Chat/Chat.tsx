@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import {io,  Socket } from 'socket.io-client'
 
-import 'static/Chat.scss'
+import 'static/Chat/Chat.scss'
 
 import ChatName from './ChatName'
 import NewChannelButton from './NewChannelButton'
@@ -38,20 +38,7 @@ function Chat() {
 		socket?.emit("messageToServer", JSON.stringify({sender: sender, content: content, channel: channel}))
 	}
 
-	//todo: find out why this is not working with https (you will get a CORS error in the browser console)
-	//todo: where do we want to configure this ?
-	useEffect(() =>{
-		const newSocket = io("http://localhost:8001", {
-			extraHeaders: {
-				Cookie: `auth=CookieValue;`,
-			},
-			withCredentials: true,
-			query: {auth: cookies.auth},
-		})
-		setSocket(newSocket)
-	}, [setSocket])
-
-	//todo: I dont understand react. help (ESLint: The 'messageListener' function makes the dependencies of useEffect Hook (at line 54) change on every render. Move it inside the useEffect callback. Alternatively, wrap the definition of 'messageListener' in its own useCallback() Hook.(react-hooks/exhaustive-deps))
+// eslint-disable-next-line
 	const messageListener = (payload: string) => {
 		const message: Message = JSON.parse(payload);
 		const allChannels = putMessageInChannels(message, channels)
@@ -60,12 +47,14 @@ function Chat() {
 			SelectChannel(allChannels[allChannels.findIndex(channel => channel.name === message.channel)]);
 	}
 
-	useEffect(() => {
+	useEffect(() =>{
+		const newSocket = io("http://localhost:8001")
+		setSocket(newSocket)
 		socket?.on("messageToClient", messageListener)
 		return () => {
 			socket?.off("messageToClient", messageListener)
 		}
-	}, [messageListener, socket])
+	}, [messageListener, socket, setSocket])
 
 	const SelectChannel = (channel: any) => {
 		setState({
@@ -100,6 +89,10 @@ function Chat() {
 		}
 	}
 
+	const focusSearch = (event: React.FocusEvent<HTMLInputElement>) => {
+		console.log(event);
+	}
+
 	return (
 		<div className="Chat">
 			<NewChannelMenu	toggle={ToggleNewConvMenu} setChannels={setChannels} visible={NewConvMenu}/>
@@ -107,7 +100,8 @@ function Chat() {
 			<label htmlFor="burgerToggle"><GiHamburgerMenu /></label>
 			<div className="channelMenu">
 				<header>
-					<p>Channels</p>
+					<input type="text" onFocus={focusSearch} placeholder="search"/>
+					<p>coucou</p>
 					<NewChannelButton toggle={ToggleNewConvMenu}/>
 				</header>
 				<div className="channelList">
@@ -132,7 +126,8 @@ function Chat() {
 							<ChatName
 								username={UserName}
 								sender={message.sender}
-								style={message.sender === UserName ? {marginLeft: "auto"} : {}}
+								style={
+									message.sender === UserName ? {marginLeft: "auto"} : {}}
 							/>
 							<p className="content">
 								{message.content}

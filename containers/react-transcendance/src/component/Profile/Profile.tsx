@@ -1,16 +1,18 @@
 import React from 'react'
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-import 'static/Profile.scss'
+import 'static/Profile/Profile.scss'
 import {ReactComponent as SchoolLogo} from 'static/logo.svg'
 
 import Historic from './Historic'
 
 
 function Profile() {
-  const [ getState, setState ] =  useState({
+	const uid = useParams();
+  const [ getState, /*setState*/ ] =  useState({
 	user: {
-		name: "Jean Marie",
+		name: uid.uid === undefined ? "Jean Marie" : uid.uid,
 		picture: "https://cdn.intra.42.fr/users/f27b945e9b897115a72dec00527d7bcd/fschlute.JPG",
 		wins: 2,
 		losses: 4,
@@ -19,6 +21,7 @@ function Profile() {
 	}
 });
 
+/*
 function fetchUserData() {
   fetch("localhost:3000",
       {method: 'GET'})
@@ -32,13 +35,14 @@ function fetchUserData() {
       return "test";
       })
 };
+*/
 
 return (
   <div className="Profile">
     <div className="userCard">
       <div className="profileHeader">
 	<img src={getState.user.picture} alt="JD" />
-	<a href="" className="Oauth"
+	<a href="42.fr" className="Oauth"
 	style={{background: getState.user.Oauth ? "#b8bb26" : "#cc241d"}}>
 	  <SchoolLogo/> {getState.user.Oauth ? "√" : "×" }
 	</a>
@@ -56,7 +60,7 @@ return (
 	</p>
       </div>
     </div>
-    <Historic></Historic>
+    <Historic />
   </div>
 );
 }

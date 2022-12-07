@@ -7,7 +7,10 @@
 	border: none;
 	background: inherit;
 	text-align: center;
+	outline: none;
 	cursor: pointer;
+
+	a {text-decoration: none;}
 
 	h1 {
 		margin-bottom: 0;
@@ -15,7 +18,7 @@
 		font-size: 2rem;
 	}
 
-	h3 {
+	h2 {
 		color: color('textSecondary');
 		font-size: 1rem;
 	}

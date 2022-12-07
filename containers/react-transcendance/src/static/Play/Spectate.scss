@@ -1,6 +1,8 @@
-@import './gruvbox';
+@import 'static/gruvbox';
 
 .Spectate {
+	width: 100%;
+	height: 100%;
 	overflow-y: scroll;
 	.game {
 		display: grid;
