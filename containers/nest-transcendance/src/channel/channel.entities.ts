@@ -31,4 +31,8 @@ export class Channel {
   getMessages(): Message[] {
     return this.messages;
   }
+
+  getName(): string {
+    return this.channelName;
+  }
 }

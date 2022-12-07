@@ -3,7 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import * as testUtils from '../test.utils';
 import { AppModule } from '../app.module';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
-import fn = jest.fn;
 
 describe('UserController', () => {
   let app: INestApplication;

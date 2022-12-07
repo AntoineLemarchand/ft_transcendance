@@ -4,7 +4,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { WsGuard } from '../auth/websocket.auth.guard';
 import { Message } from '../channel/channel.entities';
@@ -37,7 +36,9 @@ export class BroadcastingGateway {
     this.emitMessage('messageToClient', message);
   }
 
+  //todo: find syntax to differentiate between messages and game states etc
   emitMessage(eventName: string, message: Message) {
     this.server.emit(eventName, JSON.stringify(message));
+    // this.server.in('test').emit(eventName, JSON.stringify(message));
   }
 }

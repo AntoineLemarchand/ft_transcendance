@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { Response } from 'supertest';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
+import { Channel } from './channel/channel.entities';
 
 export async function extractBearerToken(loginResponse: Promise<Test>) {
   const jwt: string = await loginResponse.then((response: Response) => {
@@ -76,12 +77,48 @@ export const getLoginToken = async (
   return await loginResponse.body.access_token;
 };
 
-
 export const getUserData = async (
-	app: INestApplication,
-	jwt: string,
-	name: string) => {
-    return request(app.getHttpServer())
-      .get('/user/info/' + name)
-      .set('Authorization', 'Bearer ' + jwt)
+  app: INestApplication,
+  jwt: string,
+  name: string,
+) => {
+  return request(app.getHttpServer())
+    .get('/user/info/' + name)
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const addChannel = async (
+  callerModule: INestApplication,
+  jwt: string,
+  channelname: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .post('/channel')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      channelname: channelname,
+    });
+};
+
+export const getChannels = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/channel')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const doesChannelExist = async (
+  app: INestApplication,
+  jwt: string,
+  channelname: string,
+) => {
+  const response = await getChannels(app, jwt);
+  const channels = response.body.channels;
+  const allChannels: Channel[] = <Channel[]>JSON.parse(channels);
+  const tmp = allChannels.find(
+    (channel: any) => channel.channelName == channelname,
+  );
+  return tmp !== undefined;
 };
