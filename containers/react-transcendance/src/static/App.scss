@@ -4,6 +4,7 @@
 	height: 80%;
 	overflow: hidden;
   display: grid;
+	grid-template-rows: 8rem auto;
 
   button {
     border: outset .2rem color('textSecondary');

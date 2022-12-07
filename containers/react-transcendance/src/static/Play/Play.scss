@@ -3,6 +3,8 @@
 $statusHeight: 5rem;
 
 .Play {
+	width: 100%;
+	height: 100%;
 	position: absolute;
 	display: grid;
 	grid-template-rows: auto $statusHeight;
@@ -44,6 +46,6 @@ $statusHeight: 5rem;
 	}
 }
 
-@media screen and (max-width: 50rem) {
+@media screen and (max-width: 30rem) {
   .Play .status .player p {display: none;}
 }

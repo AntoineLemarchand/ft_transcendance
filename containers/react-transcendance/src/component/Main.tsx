@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import 'static/Main.scss'
 
@@ -19,7 +20,7 @@ import Spectate from './Play/Spectate'
 import Chat from './Chat/Chat'
 import Profile from './Profile/Profile'
 
-function Main() {
+function Main(props: {component: any}) {
 	const navigate = useNavigate();
 
 	const ProcessLogout = () => {
@@ -27,11 +28,11 @@ function Main() {
 	}
 
 	const pages = [
-		{ icon: <FaHome/>, ref: 'Home', component: <Home/>},
-		{ icon: <FaTableTennis/>, ref: 'Play', component: <Play/>},
-		{ icon: <HiVideoCamera/>, ref: 'Spectate', component: <Spectate/>},
-		{ icon: <FaCommentDots/>, ref: 'Discuss', component: <Chat/>},
-		{ icon: <FaUser/>, ref: 'Profile', component: <Profile/>},
+		{ icon: <FaHome/>, ref: 'home', component: <Home/>},
+		{ icon: <FaTableTennis/>, ref: 'game', component: <Play/>},
+		{ icon: <HiVideoCamera/>, ref: 'spectate', component: <Spectate/>},
+		{ icon: <FaCommentDots/>, ref: 'chat', component: <Chat/>},
+		{ icon: <FaUser/>, ref: 'profile', component: <Profile/>},
 	];
 
 	return (
@@ -39,24 +40,13 @@ function Main() {
 				<div className="links">
 				{
 					pages.map((page, idx) => 
-						<a href={'#' + page.ref} key={idx}>
+						<Link to={'/' + page.ref} key={idx}>
 							{page.icon}
-						</a>
+						</Link>
 					)
 				}
-				<button onClick={ProcessLogout}>
-					<FaDoorOpen />
-				</button>
-				</div>
-				<div className="slides">
-				{
-					pages.map((page, idx) => 
-					 <div id={page.ref} className="component-wrapper" key={idx}>
-						{page.component}
-					 </div>
-					)
-				}
-				</div>
+				<button onClick={ProcessLogout}><FaDoorOpen /></button></div>
+				<div className="slides">{props.component}</div>
 			</main>
 		   )
 }

@@ -5,6 +5,8 @@ $headerHeight: 3rem;
 .Chat {
 	position: relative;
 	display: grid;
+	width: 100%;
+	height: 100%;
 	grid-template-columns: 15rem auto;
   .burger {display: none;}
   label {display: none;}

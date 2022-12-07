@@ -2,6 +2,7 @@ import React from 'react'
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom';
 import { useCookies } from 'react-cookie';
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import 'static/Account/Prompt.scss'
 
