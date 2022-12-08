@@ -2,10 +2,10 @@ import {
   Controller,
   Get,
   HttpException,
-  HttpStatus,
+  HttpStatus, Param,
   Post,
   Request,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { ChannelService } from './channel.service';
@@ -27,11 +27,11 @@ export class ChannelController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('findOne')
-  async getChannelByName(@Request() req: any) {
+  @Get('findOne/:channelname')
+  async getChannelByName(@Request() req: any, @Param() params: any) {
     try {
       const result = await this.channelService.getChannelByName(
-        req.body.channelname,
+        params.channelname,
       );
       return { channel: JSON.stringify(result) };
     } catch (e) {

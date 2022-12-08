@@ -145,11 +145,8 @@ export async function getChannelByName(
   channelname: string,
 ): Promise<Channel | undefined> {
   const raw = await request(callerModule.getHttpServer())
-    .get('/channel/findOne')
-    .set('Authorization', 'Bearer ' + jwt)
-    .send({
-      channelname: channelname,
-    });
+    .get('/channel/findOne/' + channelname)
+    .set('Authorization', 'Bearer ' + jwt);
   const fromJson = JSON.parse(raw.body.channel);
   let result = Object.create(Channel.prototype);
   Object.assign(result, fromJson);

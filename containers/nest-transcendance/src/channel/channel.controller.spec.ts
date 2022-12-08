@@ -54,11 +54,11 @@ describe('retrieving a channel', () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
     await request(app.getHttpServer())
-      .get('/channel/findOne')
+      .get('/channel/findOne/nonExistingChannelName')
       .set('Authorization', 'Bearer ' + jwt)
-      .send({
-        channelname: 'nonExistingChannelName',
-      }).expect((response) => {expect(response.status).toBe(404)});
+      .expect((response) => {
+        expect(response.status).toBe(404);
+      });
   });
 
   it('should return the channel matching the request', async () => {
@@ -72,7 +72,7 @@ describe('retrieving a channel', () => {
 
     expect(result.getName()).toBe('welcome');
   });
-})
+});
 
 describe('searching channels by name', () => {
   it('should return a list of channel names', async () => {
@@ -81,7 +81,11 @@ describe('searching channels by name', () => {
     await testUtils.addChannel(app, jwt, 'newChannelName2');
     await testUtils.addChannel(app, jwt, 'otherChannelName1');
 
-    const matchingChannels = await testUtils.getMatchingChannelnames(app, jwt, 'new');
+    const matchingChannels = await testUtils.getMatchingChannelnames(
+      app,
+      jwt,
+      'new',
+    );
 
     expect(matchingChannels.length).toBe(2);
     expect(matchingChannels[0]).toBe('newChannelName1');
