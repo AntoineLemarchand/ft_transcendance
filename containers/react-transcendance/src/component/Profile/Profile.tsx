@@ -37,7 +37,14 @@ function Profile() {
 		 })
 		 };
 		 */
-
+	const TabStyle = (index: number): React.CSSProperties =>{
+		return index === tabIndex ? {
+			background: '#83a598',
+			border: 'inset .2rem #a89984'
+		} : {
+			background: '#458588'
+		}
+	}
 
 	return (
 			<div className="Profile">
@@ -48,9 +55,18 @@ function Profile() {
 					<h1>{user.name}</h1>
 				</div>
 				<div className="tabs">
-					<button onClick={()=>setTabIndex(0)}>Friends</button>
-					<button onClick={()=>setTabIndex(1)}>Historic</button>
-					<button onClick={()=>setTabIndex(2)}>Settings</button>
+					<button
+						onClick={()=>setTabIndex(0)}
+						style={TabStyle(0)}
+					>Friends</button>
+					<button
+						onClick={()=>setTabIndex(1)}
+						style={TabStyle(1)}
+						>Historic</button>
+					<button
+						onClick={()=>setTabIndex(2)}
+						style={TabStyle(2)}
+						>Settings</button>
 				</div>
 				<div className="content">
 					<Friends isSelected={tabIndex === 0}/>
