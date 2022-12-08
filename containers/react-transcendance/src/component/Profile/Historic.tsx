@@ -5,7 +5,7 @@ import 'static/Profile/Historic.scss';
 const matches = [
 { opponent: "op1", gain: 5, loss: 3},
 { opponent: "op2oooooooooooong",winned: false, gain: 8, loss: 500},
-{ opponent: "op3", gain: 5, loss: 3},
+{ opponent: "op3", gain: 5, loss: 5},
 { opponent: "op4", gain: 5, loss: 3},
 { opponent: "op5", gain: 5, loss: 30},
 { opponent: "op6", gain: 5, loss: 3},
@@ -47,6 +47,15 @@ const matches = [
 
 
 function Historic() {
+	const ChannelStatus = (match: any): React.CSSProperties => {
+		if (match.gain > match.loss)
+			return {background: "#98971a"};
+		else if (match.gain < match.loss)
+			return {background: "#cc241d"};
+		else
+			return {background: "#b16286"};
+	}
+
 	return (
 		<div className="Historic">
 			<header>
@@ -64,7 +73,7 @@ function Historic() {
 				{
 				matches.map((match, idx) =>
 						<li className="row" key={idx} 
-						style={{background: match.gain > match.loss ? "#98971a": "#cc241d"}}>
+						style={ChannelStatus(match)}>
 							<p>&nbsp;{match.opponent}</p>
 							<p>{match.gain > match.loss ? "won" : "lost"}</p>
 							<p>{match.gain}/{match.loss}</p>
