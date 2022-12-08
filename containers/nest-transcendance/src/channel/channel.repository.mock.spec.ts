@@ -39,16 +39,27 @@ describe('creating a channel', () => {
   });
 });
 
-describe('getting all channels', () => {
+describe('retrieving channels', () => {
   it('should return an empty array on creation', async function () {
     const result = await channelRepository.findAll();
     expect(result).toEqual([]);
   });
 
-  it('should return a none empty array when a channel is inserted', async () => {
+  it('should return a list of all channels', async () => {
     await createAChannel();
+
     const result = await channelRepository.findAll();
+
     expect(result.length).toBe(1);
+  });
+
+  it('should return the channel matching the request name', async () => {
+    await createAChannel('not me');
+    await createAChannel('but me');
+
+    const result = await channelRepository.findOne('but me');
+
+    expect(result.getName()).toBe('but me');
   });
 });
 
@@ -70,8 +81,8 @@ describe('removing a channel', () => {
   });
 });
 
-describe('finding all channels', () => {
-  it('should update channel content when a message is added', async () => {
+describe('searching in channel names', () => {
+  it('should return all channels names containing the search expression', async () => {
     await createAChannel('a');
     await createAChannel('aab');
     await createAChannel('aaab');
@@ -83,7 +94,7 @@ describe('finding all channels', () => {
 });
 
 describe('updating a channel', () => {
-  it('should return all channels containing the search expression', async () => {
+  it('should update channel content when a message is added', async () => {
     await createAChannel();
 
     await channelRepository.addMessageToChannel('channelName', new Message());

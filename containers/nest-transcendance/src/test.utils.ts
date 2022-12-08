@@ -78,11 +78,11 @@ export const getLoginToken = async (
 };
 
 export const getUserData = async (
-  app: INestApplication,
+  callerModule: INestApplication,
   jwt: string,
   name: string,
 ) => {
-  return request(app.getHttpServer())
+  return request(callerModule.getHttpServer())
     .get('/user/info/' + name)
     .set('Authorization', 'Bearer ' + jwt);
 };
@@ -93,7 +93,7 @@ export const addChannel = async (
   channelname: string,
 ) => {
   return request(callerModule.getHttpServer())
-    .post('/channel')
+    .post('/channel/join')
     .set('Authorization', 'Bearer ' + jwt)
     .send({
       channelname: channelname,
@@ -105,16 +105,16 @@ export const getChannels = async (
   jwt: string,
 ) => {
   return request(callerModule.getHttpServer())
-    .get('/channel')
+    .get('/channel/findAll')
     .set('Authorization', 'Bearer ' + jwt);
 };
 
 export const doesChannelExist = async (
-  app: INestApplication,
+  callerModule: INestApplication,
   jwt: string,
   channelname: string,
 ) => {
-  const response = await getChannels(app, jwt);
+  const response = await getChannels(callerModule, jwt);
   const channels = response.body.channels;
   const allChannels: Channel[] = <Channel[]>JSON.parse(channels);
   const tmp = allChannels.find(
@@ -123,18 +123,35 @@ export const doesChannelExist = async (
   return tmp !== undefined;
 };
 
-export async function getMatchingChannels(
+export async function getMatchingChannelnames(
   callerModule: INestApplication,
   jwt: string,
   regexString: string,
 ) {
   const result = await request(callerModule.getHttpServer())
-    .get('/channel/search')
+    .get('/channel/getMatchingNames')
     .set('Authorization', 'Bearer ' + jwt)
     .send({
       regexString: regexString,
     });
-  const channels = result.body.channels;
-  const allChannels = <string[]>JSON.parse(channels);
+  const channelnames = result.body.channels;
+  const allChannels = <string[]>JSON.parse(channelnames);
   return allChannels;
+}
+
+export async function getChannelByName(
+  callerModule: INestApplication,
+  jwt: string,
+  channelname: string,
+): Promise<Channel | undefined> {
+  const raw = await request(callerModule.getHttpServer())
+    .get('/channel/findOne')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      channelname: channelname,
+    });
+  const fromJson = JSON.parse(raw.body.channel);
+  let result = Object.create(Channel.prototype);
+  Object.assign(result, fromJson);
+  return result;
 }

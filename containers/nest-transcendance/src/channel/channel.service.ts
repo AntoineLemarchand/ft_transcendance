@@ -42,4 +42,8 @@ export class ChannelService {
   async getChannels(): Promise<Channel[]> {
     return await this.channelRepository.findAll();
   }
+
+  async getChannelByName(channelname: string) {
+    return await this.channelRepository.findOne(channelname);
+  }
 }
