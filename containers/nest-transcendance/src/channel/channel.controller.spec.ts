@@ -49,14 +49,42 @@ describe('joining a channel', () => {
   });
 });
 
+describe('retrieving a channel', () => {
+  it('should return 404 on non existing channelname', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    await request(app.getHttpServer())
+      .get('/channel/findOne')
+      .set('Authorization', 'Bearer ' + jwt)
+      .send({
+        channelname: 'nonExistingChannelName',
+      }).expect((response) => {expect(response.status).toBe(404)});
+  });
+
+  it('should return the channel matching the request', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const result: Channel = (await testUtils.getChannelByName(
+      app,
+      jwt,
+      'welcome',
+    )) as Channel;
+
+    expect(result.getName()).toBe('welcome');
+  });
+})
+
 describe('searching channels by name', () => {
   it('should return a list of channel names', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
     await testUtils.addChannel(app, jwt, 'newChannelName1');
     await testUtils.addChannel(app, jwt, 'newChannelName2');
+    await testUtils.addChannel(app, jwt, 'otherChannelName1');
 
-    const matchingChannels = await testUtils.getMatchingChannels(app, jwt, 'new');
+    const matchingChannels = await testUtils.getMatchingChannelnames(app, jwt, 'new');
 
     expect(matchingChannels.length).toBe(2);
+    expect(matchingChannels[0]).toBe('newChannelName1');
+    expect(matchingChannels[1]).toBe('newChannelName2');
   });
 });
