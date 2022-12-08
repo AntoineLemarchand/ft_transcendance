@@ -46,7 +46,7 @@ const matches = [
 ];
 
 
-function Historic() {
+function Historic(props: {isSelected: boolean}) {
 	const ChannelStyle = (match: any): React.CSSProperties => {
 		if (match.gain > match.loss)
 			return {background: "#98971a"};
@@ -66,7 +66,7 @@ function Historic() {
 	}
 
 	return (
-		<div className="Historic">
+		<div className="Historic" style={{display: props.isSelected ? "":"none"}}>
 			<header>
 			<p>games played: {matches.length}</p>
 			<p>Won: {matches.filter(item=>item.gain > item.loss).length}</p>
