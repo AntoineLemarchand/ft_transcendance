@@ -37,7 +37,6 @@ function Chat() {
 				.then(result => result.text()
 					.then((body: string) => {
 							let channelJSON = JSON.parse(JSON.parse(body).channel);
-							console.log(channelJSON as Channel)
 							setJoinedChannel(joinedChannel.concat(channelJSON as Channel));
 							setCurrentChannel(joinedChannel[0]);
 						}
@@ -54,12 +53,11 @@ function Chat() {
 				},
 		}).then((result) => {
 			result.text().then(body => {
-				JSON.parse(JSON.parse(body).userInfo).channels.map((channelName: string) => {
-					getChannel(channelName);
-				})
+				setJoinedChannel(JSON.parse(body).userInfo.channelnames);
+				setCurrentChannel(joinedChannel[0]);
 			})
 		})
-	}, []);
+	}, [setJoinedChannel, setCurrentChannel])
 
 	const displayChannelContent = (currentChannel: Channel | undefined) => {
 		if (currentChannel === undefined)
@@ -86,9 +84,10 @@ function Chat() {
 		}
 	})
 
-	const ChannelButtonStyle = (isActive: boolean) => {
-		return isActive ? {
+	const ChannelButtonStyle = (channel: string) => {
+		return channel === currentChannel ? {
 			backgroundColor:  '#83a598',
+			border: 'inset .2rem #a89984'
 		} : {
 			backgroundColor:  '#458588',
 		}
@@ -117,8 +116,8 @@ function Chat() {
 								key={idx}
 								onClick={()=>setCurrentChannel(channel)}
 								style={
-									ChannelButtonStyle(channel === currentChannel)
-								}>{channel.channelName}</button>
+									ChannelButtonStyle(channel)
+								}>{channel}</button>
 						)}
 				</div>
 			</div>
