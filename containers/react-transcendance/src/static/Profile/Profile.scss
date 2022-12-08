@@ -11,8 +11,6 @@
 		height: 6rem;
 
 		display: flex;
-		justify-content: space-between;
-
 		color: color('backGround2');
 
 		.profileHeader {
@@ -43,32 +41,12 @@
 
 		}
 
-		h4 {
+		h1 {
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			color: color('textSecondary');
 		}
 
-		.stats {
-			display: grid;
-
-			p {
-				margin: 0;
-				padding: 0 .5rem;
-
-				display: flex;
-				align-items: center;
-			}
-
-			.games {
-				grid-column: 1 / 3;
-				background: color('orangePrimary');
-			}
-
-			.win {background: color('greenSecondary');}
-
-			.loss {background: color('redSecondary');}
-		}
 	}
 }

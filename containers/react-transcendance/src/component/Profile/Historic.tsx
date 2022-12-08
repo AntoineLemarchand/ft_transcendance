@@ -49,6 +49,11 @@ const matches = [
 function Historic() {
 	return (
 		<div className="Historic">
+			<header>
+			<p>games played: {matches.length}</p>
+			<p>Won: {matches.filter(item=>item.gain > item.loss).length}</p>
+			<p>Loss: {matches.filter(item=>item.gain < item.loss).length}</p>
+			</header>
 			<div className="content">
 				<div className="head">
 					<p>opponent</p>
