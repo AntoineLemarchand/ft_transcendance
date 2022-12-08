@@ -102,4 +102,13 @@ describe('UserController', () => {
     expect(result.body.userInfo).toBeDefined();
     expect(JSON.parse(result.body.userInfo).name).toBe('Thomas');
   });
+
+	it('should be subscribed to the welcome channel on creation', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const result = await testUtils.getUserData(app, jwt, 'Thomas');
+
+    expect(result.status).toBe(200);
+    expect(JSON.parse(result.body.userInfo).channels.length).toBe(1);
+	}) 
 });

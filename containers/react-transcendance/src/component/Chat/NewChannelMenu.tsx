@@ -4,7 +4,6 @@ import 'static/Chat/NewChannelMenu.scss';
 
 function NewChannelMenu(props: {
 	toggle: React.MouseEventHandler<HTMLDivElement>,
-	setChannels: Function,
 	visible: boolean,
 	}) {
 

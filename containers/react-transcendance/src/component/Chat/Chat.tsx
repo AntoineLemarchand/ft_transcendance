@@ -2,82 +2,72 @@ import React, {useEffect} from 'react';
 import { useState } from 'react'
 
 import { GiHamburgerMenu } from 'react-icons/gi'
-import {io,  Socket } from 'socket.io-client'
+//import {io,  Socket } from 'socket.io-client'
 
 import 'static/Chat/Chat.scss'
 
 import ChatName from './ChatName'
 import NewChannelButton from './NewChannelButton'
 import NewChannelMenu from './NewChannelMenu'
-import {Channel, Message, putMessageInChannels} from "../../utils/Message";import { useCookies } from 'react-cookie';
+import {Channel, Message, putMessageInChannels} from "../../utils/Message";
+//import { useCookies } from 'react-cookie';
 
 function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
-	const [channels, setChannels] = useState<Channel[]>([
-		new Channel('channel1'),
-		new Channel('channel2'),
-		new Channel('channel3'),
-		new Channel('channel4'),
-		new Channel('channel5'),
-	])
-
-	const ToggleNewConvMenu = () => {
-		SetNewConvMenu(!NewConvMenu);
-	}
-
-	const [cookies, setCookie, removeCookie] = useCookies(['auth']);
-
-	const UserName: string = "Jaydee"
+	const [joinedChannel, setJoinedChannel] = useState<string[]>([])
+	const [ currentChannel, setCurrentChannel ] =  useState('')
+	const [ currentMessage, setCurrentMessage ] =  useState('')
 	const [socket, setSocket] = useState<Socket>()
-	const [ getState, setState ] =  useState({
-		currentChannel: channels[0],
-		currentMessage: '',
-	})
+	const UserName = 'Thomas';
+
 
 	const send = (sender: string, content: string, channel: string) =>{
 		socket?.emit("messageToServer", JSON.stringify({sender: sender, content: content, channel: channel}))
 	}
 
-// eslint-disable-next-line
-	const messageListener = (payload: string) => {
-		const message: Message = JSON.parse(payload);
-		const allChannels = putMessageInChannels(message, channels)
-		setChannels(allChannels);
-		if (message.channel === getState.currentChannel.name)
-			SelectChannel(allChannels[allChannels.findIndex(channel => channel.name === message.channel)]);
-	}
-
-	useEffect(() =>{
-		const newSocket = io("http://localhost:8001")
-		setSocket(newSocket)
-		socket?.on("messageToClient", messageListener)
-		return () => {
-			socket?.off("messageToClient", messageListener)
-		}
-	}, [messageListener, socket, setSocket])
-
-	const SelectChannel = (channel: any) => {
-		setState({
-			currentChannel: channel,
-			currentMessage: getState.currentMessage,
+	useEffect( () => {
+		fetch('http://localhost:3000/user/info/Thomas', {
+				credentials: 'include',
+				method: 'GET',
+				headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json'
+				},
+		}).then((result) => {
+			if (result.status === 401)
+				alert('could not connect to server');
+			else {
+				result.text().then(body => {
+					setJoinedChannel(JSON.parse(JSON.parse(body).userInfo).channels)
+					if (joinedChannel.length !== 0)
+						setCurrentChannel(joinedChannel[0])
+				})
+			}
 		})
-	}
+	});
 
-	const OnChange = ((event: React.ChangeEvent<HTMLInputElement>) => {
-		setState({
-			currentChannel: getState.currentChannel,
-			currentMessage: event.target.value,
-		})
-	})
+	const displayChannelContent = (currentChannel: string) => {
+		if (currentChannel === undefined)
+			return <></>;
+			/*
+		return currentChannel.map((message: Message, idx: number) =>
+		<li key={idx}
+			className="message" style={
+			{textAlign: message.sender === UserName ? "right" : "left"}}>
+			<ChatName username={UserName} sender={message.sender}/>
+			<p className="content">
+				{message.content}
+			</p>
+		</li>
+	)
+	*/
+	}
 
 	const OnKeyDown = ((event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter') {
 			let messageContent: string = (event.target as any).value;
-			send(UserName, messageContent, getState.currentChannel.name);
-			setState({
-				currentChannel: getState.currentChannel,
-				currentMessage: '',
-			})
+			send(UserName, messageContent, currentChannel);
+			setCurrentMessage('');
 		}
 	})
 
@@ -90,55 +80,41 @@ function Chat() {
 	}
 
 	const focusSearch = (event: React.FocusEvent<HTMLInputElement>) => {
-		console.log(event);
 	}
 
 	return (
 		<div className="Chat">
-			<NewChannelMenu	toggle={ToggleNewConvMenu} setChannels={setChannels} visible={NewConvMenu}/>
+			<NewChannelMenu
+				toggle={()=>SetNewConvMenu(!NewConvMenu)}
+				visible={NewConvMenu}/>
 			<input className="burger" type="checkbox" id="burgerToggle"/>
 			<label htmlFor="burgerToggle"><GiHamburgerMenu /></label>
 			<div className="channelMenu">
 				<header>
 					<input type="text" onFocus={focusSearch} placeholder="search"/>
 					<p>coucou</p>
-					<NewChannelButton toggle={ToggleNewConvMenu}/>
+					<NewChannelButton toggle={()=>SetNewConvMenu(!NewConvMenu)}/>
 				</header>
 				<div className="channelList">
 					{
-						channels.map((channel, idx) =>
+						joinedChannel.map((channel, idx) =>
 							<button
 								key={idx}
-								onClick={()=>SelectChannel(channel)}
+								onClick={()=>setCurrentChannel(channel)}
 								style={
-									ChannelButtonStyle(channel.name === getState.currentChannel.name)
-								}>{channel.name}</button>
+									ChannelButtonStyle(channel === currentChannel)
+								}>{channel}</button>
 						)}
 				</div>
 			</div>
 			<ul className="channelContent">
 				<div className="chatArea">
-					{getState.currentChannel.content.map((message, idx) =>
-						<li key={idx}
-							className="message" style={
-							{textAlign: message.sender === UserName ? "right" : "left"}
-						}>
-							<ChatName
-								username={UserName}
-								sender={message.sender}
-								style={
-									message.sender === UserName ? {marginLeft: "auto"} : {}}
-							/>
-							<p className="content">
-								{message.content}
-							</p>
-						</li>
-					)}
+					{displayChannelContent(currentChannel)}
 				</div>
 				<input type="text"
 					   placeholder="Say something smart !"
-					   value={getState.currentMessage}
-					   onChange={OnChange}
+					   value={currentMessage}
+					   onChange={(event)=>setCurrentMessage(event.target.value)}
 					   onKeyDown={OnKeyDown}/>
 			</ul>
 		</div>

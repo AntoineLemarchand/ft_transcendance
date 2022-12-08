@@ -1,5 +1,6 @@
 export default class User {
 	private friends: string[] = [];
+	private channels: string[] = ['welcome'];
   constructor(
 		private name: string,
 		private password: string,
