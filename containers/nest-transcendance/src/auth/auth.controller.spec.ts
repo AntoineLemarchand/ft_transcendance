@@ -25,7 +25,7 @@ describe('AuthController', () => {
       .then((response) => expect(response.status).toBe(401));
   });
 
-  it('should return 401 on non existing username', async () => {
+  it('should return 401 on non existing userName', async () => {
     return testUtils
       .loginUser(app, 'non existing user', 'test')
       .then((response) => expect(response.status).toBe(401));
@@ -58,5 +58,16 @@ describe('AuthController', () => {
       expect(response.status).toBe(201);
       expect(response.body.access_token).toBeDefined();
     });
+  });
+
+  it('should add the welcome channel to newly created user', async () => {
+    await testUtils.signinUser(app, 'Ginette', 'camemb3rt');
+    const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
+
+    const result = await testUtils.getUserData(app, jwt, 'Ginette');
+
+    expect(result.status).toBe(200);
+    expect(result.body.userInfo).toBeDefined();
+    expect(result.body.userInfo.channelnames[0]).toBe('welcome');
   });
 });

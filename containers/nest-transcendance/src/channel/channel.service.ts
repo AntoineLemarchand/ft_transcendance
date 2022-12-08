@@ -2,12 +2,14 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Channel, Message } from './channel.entities';
 import { ChannelRepository } from './channel.repository.mock';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ChannelService {
   constructor(
     private channelRepository: ChannelRepository,
     private broadcastingGateway: BroadcastingGateway,
+    private userService: UserService,
   ) {}
   async sendMessage(message: Message): Promise<void> {
     await this.channelRepository
@@ -45,5 +47,16 @@ export class ChannelService {
 
   async getChannelByName(channelname: string) {
     return await this.channelRepository.findOne(channelname);
+  }
+
+  async joinChannel(
+    userName: string,
+    channelName: string,
+    channelPassword: string,
+  ) {
+    await this.getChannelByName(channelName).catch(
+      async () => await this.addChannel(channelName, userName),
+    );
+    await this.userService.addChannelname(userName, channelName);
   }
 }

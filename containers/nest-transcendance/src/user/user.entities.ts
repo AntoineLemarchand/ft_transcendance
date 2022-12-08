@@ -1,9 +1,9 @@
+import { Channel } from '../channel/channel.entities';
+
 export default class User {
-	private friends: string[] = [];
-  constructor(
-		private name: string,
-		private password: string,
-	) {}
+  private friends: string[] = [];
+  private channelnames: string[] = ['welcome'];
+  constructor(private name: string, private password: string) {}
 
   getName() {
     return this.name;
@@ -13,30 +13,36 @@ export default class User {
     return this.password;
   }
 
-	getFriends() {
-		return this.friends;
-	}
+  getFriends() {
+    return this.friends;
+  }
 
-	addFriend(friendname: string) {
-		this.friends.forEach((name: string) => {
-			if (name === friendname)
-				throw new Error("already a friend");
-		});
-		this.friends.push(friendname);
-	}
+  addFriend(friendname: string) {
+    this.friends.forEach((name: string) => {
+      if (name === friendname) throw new Error('already a friend');
+    });
+    this.friends.push(friendname);
+  }
 
-	removeFriend(friendname: string) {
-		for (let i = 0; i < this.friends.length; i++) {
-			if (this.friends[i] === friendname) {
-				this.friends.splice(i);
-				return;
-			}
-		}
-	throw new Error("not your friend");
-	}
+  removeFriend(friendname: string) {
+    for (let i = 0; i < this.friends.length; i++) {
+      if (this.friends[i] === friendname) {
+        this.friends.splice(i);
+        return;
+      }
+    }
+    throw new Error('not your friend');
+  }
 
   toJson(): JSON {
-    // return {name: this.name};
     return JSON.parse(JSON.stringify(this));
+  }
+
+  getChannelnames() {
+    return this.channelnames;
+  }
+
+  addChannelName(channelName: string) {
+    this.channelnames.push(channelName);
   }
 }

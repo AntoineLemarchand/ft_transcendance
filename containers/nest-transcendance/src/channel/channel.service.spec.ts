@@ -3,6 +3,7 @@ import { Channel, Message } from './channel.entities';
 import { ChannelService } from './channel.service';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { ChannelRepository } from './channel.repository.mock';
+import { UserService } from '../user/user.service';
 jest.spyOn(Channel.prototype, 'addMessage');
 jest.spyOn(BroadcastingGateway.prototype, 'emitMessage');
 jest.mock('../broadcasting/broadcasting.gateway');
@@ -12,9 +13,13 @@ let channelRepository: ChannelRepository;
 let broadcasting: BroadcastingGateway;
 beforeEach(async () => {
   const module = await Test.createTestingModule({
-    providers: [ChannelService, ChannelRepository, BroadcastingGateway]
-  })
-    .compile();
+    providers: [
+      ChannelService,
+      ChannelRepository,
+      BroadcastingGateway,
+      UserService,
+    ],
+  }).compile();
   channelService = module.get<ChannelService>(ChannelService);
   channelRepository = module.get<ChannelRepository>(ChannelRepository);
   broadcasting = module.get<BroadcastingGateway>(BroadcastingGateway);
@@ -56,4 +61,16 @@ describe('Sending a message', () => {
     );
     expect(nowExistingChannel.addMessage).toHaveBeenCalled();
   });
+});
+
+describe('Joining a channel', () => {
+  it('should add the channelname to the user', async () => {
+    await channelService.joinChannel('Thomas', 'welcom', 'channelPassword');
+  });
+
+  //todo:
+  // it('should create a channel when trying to join a non existing ', () => {
+  // it('should not add banned usernames to a channel', () => {
+  // it('should not add user with wrong password', () => {
+  // it('should notify other members that user joined', () => {
 });

@@ -3,13 +3,14 @@ import { INestApplication } from '@nestjs/common';
 import * as testUtils from '../test.utils';
 import { AppModule } from '../app.module';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import * as request from 'supertest';
 
 describe('UserController', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule]
     })
       .overrideProvider(BroadcastingGateway)
       .useValue(jest.fn())
@@ -33,7 +34,7 @@ describe('UserController', () => {
 
     const result = await testUtils.addFriend(app, jwt, 'JayDee');
     const friendsList = JSON.parse(
-      (await testUtils.getFriends(app, jwt)).body.friends,
+      (await testUtils.getFriends(app, jwt)).body.friends
     );
 
     expect(result.status).toBe(401);
@@ -78,7 +79,7 @@ describe('UserController', () => {
 
     const result = await testUtils.removeFriend(app, jwt, 'JayDee');
     const friendsList = JSON.parse(
-      (await testUtils.getFriends(app, jwt)).body.friends,
+      (await testUtils.getFriends(app, jwt)).body.friends
     );
 
     expect(result.status).toBe(200);
@@ -100,6 +101,20 @@ describe('UserController', () => {
 
     expect(result.status).toBe(200);
     expect(result.body.userInfo).toBeDefined();
-    expect(JSON.parse(result.body.userInfo).name).toBe('Thomas');
+    expect(result.body.userInfo.name).toBe('Thomas');
+  });
+
+  it('should return 201 and all user channels', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.joinChannel(app, jwt, 'newChannelName', 'password');
+
+    const result = await request(app.getHttpServer())
+      .get('/user/channels/')
+      .set('Authorization', 'Bearer ' + jwt);
+
+    expect(result.status).toBe(200);
+    expect(result.body.channels).toBeDefined();
+    expect(result.body.channels[0]).toBe('welcome');
+    expect(result.body.channels[1]).toBe('newChannelName');
   });
 });

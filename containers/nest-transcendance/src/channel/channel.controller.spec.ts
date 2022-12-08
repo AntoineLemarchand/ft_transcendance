@@ -20,7 +20,7 @@ beforeEach(async () => {
 
 describe('joining a channel', () => {
   it('should not be allowed to create a channel if the user is not logged in ', async () => {
-    const result = await testUtils.addChannel(
+    const result = await testUtils.joinChannel(
       app,
       'invalid token',
       'newChannelName',
@@ -29,18 +29,9 @@ describe('joining a channel', () => {
     expect(result.status).toBe(401);
   });
 
-  it('should not be allowed to create a channel if the channelname is already taken ', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    await testUtils.addChannel(app, jwt, 'newChannelName');
-
-    const result = await testUtils.addChannel(app, jwt, 'newChannelName');
-
-    expect(result.status).toBe(401);
-  });
-
   it('should return 201 and create a new channel if correct input is provided', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    const result = await testUtils.addChannel(app, jwt, 'newChannelName');
+    const result = await testUtils.joinChannel(app, jwt, 'newChannelName');
 
     expect(result.status).toBe(201);
     expect(
@@ -77,9 +68,9 @@ describe('retrieving a channel', () => {
 describe('searching channels by name', () => {
   it('should return a list of channel names', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    await testUtils.addChannel(app, jwt, 'newChannelName1');
-    await testUtils.addChannel(app, jwt, 'newChannelName2');
-    await testUtils.addChannel(app, jwt, 'otherChannelName1');
+    await testUtils.joinChannel(app, jwt, 'newChannelName1');
+    await testUtils.joinChannel(app, jwt, 'newChannelName2');
+    await testUtils.joinChannel(app, jwt, 'otherChannelName1');
 
     const matchingChannels = await testUtils.getMatchingChannelnames(
       app,

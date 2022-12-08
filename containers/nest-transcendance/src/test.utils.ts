@@ -87,16 +87,18 @@ export const getUserData = async (
     .set('Authorization', 'Bearer ' + jwt);
 };
 
-export const addChannel = async (
+export const joinChannel = async (
   callerModule: INestApplication,
   jwt: string,
-  channelname: string,
+  channelName: string,
+  channelPassword = 'default',
 ) => {
   return request(callerModule.getHttpServer())
     .post('/channel/join')
     .set('Authorization', 'Bearer ' + jwt)
     .send({
-      channelname: channelname,
+      channelName: channelName,
+      channelPassword: channelPassword,
     });
 };
 
@@ -129,11 +131,8 @@ export async function getMatchingChannelnames(
   regexString: string,
 ) {
   const result = await request(callerModule.getHttpServer())
-    .get('/channel/getMatchingNames')
-    .set('Authorization', 'Bearer ' + jwt)
-    .send({
-      regexString: regexString,
-    });
+    .get('/channel/getMatchingNames/' + regexString)
+    .set('Authorization', 'Bearer ' + jwt);
   const channelnames = result.body.channels;
   const allChannels = <string[]>JSON.parse(channelnames);
   return allChannels;
@@ -148,7 +147,7 @@ export async function getChannelByName(
     .get('/channel/findOne/' + channelname)
     .set('Authorization', 'Bearer ' + jwt);
   const fromJson = JSON.parse(raw.body.channel);
-  let result = Object.create(Channel.prototype);
+  const result = Object.create(Channel.prototype);
   Object.assign(result, fromJson);
   return result;
 }
