@@ -2,10 +2,11 @@ import {
   Controller,
   Get,
   HttpException,
-  HttpStatus, Param,
+  HttpStatus,
+  Param,
   Post,
   Request,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { ChannelService } from './channel.service';
@@ -16,19 +17,23 @@ export class ChannelController {
   @UseGuards(JwtAuthGuard)
   @Post('join')
   async addChannel(@Request() req: any) {
-    await this.channelService.addChannel(req.body.channelname, req.user.name);
+    await this.channelService.joinChannel(
+      req.user.name,
+      req.body.channelName,
+      req.body.channelPassword,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('findAll')
-  async getChannels(@Request() req: any) {
+  async getChannels() {
     const allChannels = await this.channelService.getChannels();
     return { channels: JSON.stringify(allChannels) };
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('findOne/:channelname')
-  async getChannelByName(@Request() req: any, @Param() params: any) {
+  async getChannelByName(@Param() params: any) {
     try {
       const result = await this.channelService.getChannelByName(
         params.channelname,
@@ -40,10 +45,10 @@ export class ChannelController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('getMatchingNames')
-  async findMatching(@Request() req: any) {
+  @Get('getMatchingNames/:regexString')
+  async findMatching(@Param() params: any) {
     const matchingChannels = await this.channelService.findMatching(
-      req.body.regexString,
+      params.regexString,
     );
     return { channels: JSON.stringify(matchingChannels) };
   }

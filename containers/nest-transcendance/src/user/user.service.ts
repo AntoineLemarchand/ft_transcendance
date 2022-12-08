@@ -4,7 +4,11 @@ import User from './user.entities';
 
 @Injectable()
 export class UserService {
-  users: User[] = [new User('Thomas', 'test')];
+  users: User[];
+
+	constructor() {
+		this.users = [new User('Thomas', 'test')]
+	}
 
   getUser(name: string): User | undefined {
     for (const user of this.users) {
@@ -57,5 +61,15 @@ export class UserService {
 		if (user === undefined)
 			throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
 		return user;
+	}
+
+	getChannels(username: string) {
+		const user = this.getInfo(username)
+		return user.getChannelnames();
+	}
+
+	addChannelname(username: string, channelName: string) {
+		const user: User = this.getInfo(username)
+		return user.addChannelName(channelName);
 	}
 }
