@@ -47,13 +47,22 @@ const matches = [
 
 
 function Historic() {
-	const ChannelStatus = (match: any): React.CSSProperties => {
+	const ChannelStyle = (match: any): React.CSSProperties => {
 		if (match.gain > match.loss)
 			return {background: "#98971a"};
 		else if (match.gain < match.loss)
 			return {background: "#cc241d"};
 		else
 			return {background: "#b16286"};
+	}
+
+	const ChannelStatus = (match: any): string => {
+		if (match.gain > match.loss)
+			return "won";
+		else if (match.gain < match.loss)
+			return "lost";
+		else
+			return "equality";
 	}
 
 	return (
@@ -73,9 +82,9 @@ function Historic() {
 				{
 				matches.map((match, idx) =>
 						<li className="row" key={idx} 
-						style={ChannelStatus(match)}>
+						style={ChannelStyle(match)}>
 							<p>&nbsp;{match.opponent}</p>
-							<p>{match.gain > match.loss ? "won" : "lost"}</p>
+							<p>{ChannelStatus(match)}</p>
 							<p>{match.gain}/{match.loss}</p>
 						</li>
 						)
