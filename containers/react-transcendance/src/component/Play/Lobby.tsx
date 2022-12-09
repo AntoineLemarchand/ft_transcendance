@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useState } from 'react'
 
 import Spectate from './Spectate'
+import 'static/Play/Lobby.scss'
 
 function Lobby() {
   const [tabIndex, setTabIndex] = useState(0);
@@ -15,13 +16,103 @@ function Lobby() {
     }
   }
 
-  const lobby = <div class="MatchMaking">
-      <div className="Invite">
-        Invite a friend
+  const invites = [
+    {
+      name: 'aasli',
+      avatar: 'https://cdn.intra.42.fr/users/3d6930f126ba05fd5869fa81082f47f5/aasli.jpg',
+      status: 'online',
+    },
+    {
+      name: 'aasli',
+      avatar: 'https://cdn.intra.42.fr/users/3d6930f126ba05fd5869fa81082f47f5/aasli.jpg',
+      status: 'offline',
+    },
+    {
+      name: 'aasli',
+      avatar: 'https://cdn.intra.42.fr/users/3d6930f126ba05fd5869fa81082f47f5/aasli.jpg',
+      status: 'in game',
+    },
+    {
+      name: 'jsemelllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+    {
+      name: 'jsemel',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+    {
+      name: 'jsemel',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+    {
+      name: 'jsemel',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+    {
+      name: 'jsemel',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+    {
+      name: 'jsemel',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+    {
+      name: 'jsemel',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+    {
+      name: 'jsemel',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+    {
+      name: 'jsemel',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+    {
+      name: 'jsemel',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+    {
+      name: 'jsemel',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+    {
+      name: 'jsemel',
+      avatar: 'https://cdn.intra.42.fr/users/94e35f4bba9df72dc573b94de88a97d0/jsemel.jpg',
+      status: 'online',
+    },
+  ]
+
+  const lobby = <div className="MatchMaking">
+      <div className="Invites">
+        <h1>Invites</h1>
+        <div className="content">
+        {
+          invites.map((invite, idx) => {
+            if (invite.status === 'online') {
+              return (
+                <button key={idx} className="Invite">
+                  <img src={invite.avatar} alt="avatar" />
+                  <p>{invite.name}</p>
+                </button>
+              )
+            }
+          })
+         }
+        </div>
       </div>
-      <div className="Random">
-        Find a Match
-      </div>
+      <button className="JoinQueue">Find a Match</button>
     </div>
 
   return (

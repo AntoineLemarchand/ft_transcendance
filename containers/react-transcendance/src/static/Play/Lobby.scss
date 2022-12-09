@@ -1,0 +1,64 @@
+@import 'static/gruvbox';
+
+$tabHeight: 2rem;
+$inviteHeight: 4rem;
+
+.Lobby {
+  height: 100%;
+  display: grid;
+  grid-template-rows: $tabHeight auto;
+  .tabs {
+    width: 100%;
+    button {
+      width: 50%;
+      height: $tabHeight;
+      cursor: pointer;
+    }
+  }
+
+  .MatchMaking {
+    display: grid;
+    color: color('textPrimary');
+    grid-template-rows: 1fr 1fr;
+
+    .Invites {
+      text-align: center;
+      overflow-y: scroll;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .content {
+        display: flex;
+        flex-direction: column;
+        overflow-y: scroll;
+        width: 70%;
+        height: calc(5 * $inviteHeight);
+        
+        .Invite {
+          width: 100%;
+          display: grid;
+          grid-template-columns: $inviteHeight auto;
+          img {height: $inviteHeight;}
+          background: color('blueSecondary');
+          cursor: pointer;
+
+          &:hover {background: color('bluePrimary');}
+
+          p {
+            font-size: 1rem;
+            margin: auto;
+          }
+        }
+      }
+    }
+
+    .JoinQueue {
+      width: 15rem;
+      height: 3rem;
+      font-size: 1.5rem;
+      margin: auto;
+      background: color('greenPrimary');
+      cursor: pointer;
+    }
+  }
+}

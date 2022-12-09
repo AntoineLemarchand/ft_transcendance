@@ -1,19 +1,5 @@
-@import 'static/gruvbox';
-
-$tabHeight: 2rem;
-
 .Play {
 	width: 100%;
 	height: 100%;
 	position: absolute;
-
-  .Lobby {
-    height: 100%;
-    display: grid;
-    grid-template-rows: $tabHeight auto;
-    .tabs {
-      width: 100%;
-      button {width: 50%; height: $tabHeight};
-    }
-  }
 }
