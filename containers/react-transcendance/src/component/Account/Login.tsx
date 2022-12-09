@@ -39,8 +39,7 @@ function Login() {
                             Accept: 'application/json',
                             'Content-Type': 'application/json'
                         },
-                    }).then((result) => {console.log('user infos'); result.text().then(body => console.log(body))})
-
+                    })
                     navigate('/home');
                 } else {
                     alert('Wrong credentials');
