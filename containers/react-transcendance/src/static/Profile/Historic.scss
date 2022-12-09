@@ -1,7 +1,7 @@
 @import 'static/gruvbox';
 
 .Historic {
-	overflow-y: hidden;
+	overflow: hidden;
 	display: grid;
 	grid-template-rows: 3rem auto;
 	height: 100%;
@@ -31,41 +31,35 @@
 		justify-content: flex-start;
 
 		.head, .body li {
-			display: flex;
+			display: grid;
+      grid-template-columns: 1rem 3fr 1fr 1fr;
 			p {
 				width: 100%;
 				margin: 0;
-				text-align: center;
-				border-right: solid 2px color('backGround2');
-
-				&:first-child {border-left: none;}
-				&:last-child {border-right: none;}
+        padding-left: 1rem;
+        overflow-x: scroll;
 			}
 		}
 
-		.head {
-			p {
-				&:first-child { flex-grow: 2; }
-				background: color('orangePrimary');
-				border-top: solid 2px color('backGround2');
-				border-bottom: solid 2px color('backGround2');
-			}
-		}
+    .head {
+      color: color('backGround2');
+      background: color('textSecondary');
+      p:first-child {padding: 0}
+    }
 
 		.body {
+      width: 100%;
 			margin: 0;
 			overflow-y: scroll;
+      overflow-x: hidden;
 			list-style: none;
 			padding: 0;
 			color: color('backGround2');
 			li {
-				p:first-child {
-					text-align: left;
-					overflow-x: scroll;
-				}
+        color: color('textPrimary');
 
-        &:nth-child(2n) {background: color(greyPrimary);}
-        &:nth-child(2n + 1) {background: color(greySecondary);}
+        &:nth-child(2n) {background: color('backGround1');}
+        &:nth-child(2n + 1) {background: color('backGround2');}
 			}
 		}
 	}

@@ -47,22 +47,13 @@ const matches = [
 
 
 function Historic(props: {isSelected: boolean}) {
-	const ChannelStyle = (match: any): React.CSSProperties => {
+	const ChannelStatus = (match: any): React.CSSProperties => {
 		if (match.gain > match.loss)
-			return {background: "#98971a"};
+			return {background: '#b8bb26'};
 		else if (match.gain < match.loss)
-			return {background: "#cc241d"};
+			return {background: '#cc241d'};
 		else
-			return {background: "#b16286"};
-	}
-
-	const ChannelStatus = (match: any): string => {
-		if (match.gain > match.loss)
-			return "won";
-		else if (match.gain < match.loss)
-			return "lost";
-		else
-			return "equality";
+			return {background: '#b16286'};
 	}
 
 	return (
@@ -74,18 +65,19 @@ function Historic(props: {isSelected: boolean}) {
 			</header>
 			<div className="content">
 				<div className="head">
-					<p>opponent</p>
-					<p>status</p>
-					<p>score</p>
+          <p/>
+          <p>Opponent</p>
+          <p>Scored</p>
+          <p>Lost</p>
 				</div>
 				<ul className="body">
 				{
 				matches.map((match, idx) =>
-						<li className="row" key={idx} 
-						style={ChannelStyle(match)}>
-							<p>&nbsp;{match.opponent}</p>
-							<p>{ChannelStatus(match)}</p>
-							<p>{match.gain}/{match.loss}</p>
+						<li className="row" key={idx}>
+              <span style={ChannelStatus(match)}/>
+							<p>{match.opponent}</p>
+							<p>{match.gain}</p>
+							<p>{match.loss}</p>
 						</li>
 						)
 				}
