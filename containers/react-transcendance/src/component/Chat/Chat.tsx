@@ -25,7 +25,7 @@ function Chat() {
 		socket?.emit("messageToServer", JSON.stringify({sender: sender, content: content, channel: channel}))
 	}
 
-	useEffect( () => {
+  const updateJoinedChannels = () => {
 		fetch('http://localhost:3000/user/channels', {
 				credentials: 'include',
 				method: 'GET',
@@ -39,6 +39,10 @@ function Chat() {
         setCurrentChannel(joinedChannel[0]);
       });
 		})
+  }
+
+	useEffect( () => {
+    updateJoinedChannels();
 	}, [setJoinedChannel, setCurrentChannel])
 
 	const displayChannelContent = (currentChannel: Channel) => {
@@ -66,11 +70,11 @@ function Chat() {
 
 	const ChannelButtonStyle = (channel: string) => {
 		return currentChannel === undefined
-    || channel.channelName === currentChannel.channelName ? {
+    || channel.channelName !== currentChannel.channelName ? {
+			backgroundColor:  '#458588',
+		} : {
 			backgroundColor:  '#83a598',
 			border: 'inset .2rem #a89984'
-		} : {
-			backgroundColor:  '#458588',
 		}
 	}
 
@@ -81,6 +85,7 @@ function Chat() {
 		<div className="Chat">
 			<NewChannelMenu
 				toggle={()=>SetNewConvMenu(!NewConvMenu)}
+        callback={updateJoinedChannels}
 				visible={NewConvMenu}/>
 			<input className="burger" type="checkbox" id="burgerToggle"/>
 			<label htmlFor="burgerToggle"><GiHamburgerMenu /></label>

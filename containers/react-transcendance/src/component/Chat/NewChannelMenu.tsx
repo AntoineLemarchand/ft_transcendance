@@ -4,6 +4,7 @@ import 'static/Chat/NewChannelMenu.scss';
 
 function NewChannelMenu(props: {
 	toggle: React.MouseEventHandler<HTMLDivElement>,
+  callback: Function,
 	visible: boolean,
 	}) {
 
@@ -25,6 +26,10 @@ function NewChannelMenu(props: {
       if (response.status !== 201)
         alert("Could not create nor find channel");
       else {
+        setChannelName('');
+        setChannelPassword('');
+        props.callback();
+        props.toggle();
       }
     })
   }
