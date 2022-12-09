@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import 'static/Play/Spectate.scss'
 
-import Play from './Play'
+import Game from './Game'
 
 function Spectate() {
 	
@@ -108,7 +108,7 @@ function Spectate() {
 		if (getState.spectateMode)
 		return (
 			<div className="spectateScreen" onClick={CloseGame}>
-				<Play /> 
+				<Game /> 
 			</div>
 		)
 	})

@@ -3,12 +3,13 @@
 $boardHeight: 25%;
 $boardWidth: 3%;
 
+
 .Game {
   width: 100%;
   height: 100%;
   position: relative;
 
-  .player {
+  &>.player {
     height: $boardHeight;
     width: $boardWidth;
     display: block;

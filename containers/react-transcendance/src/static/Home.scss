@@ -7,10 +7,12 @@
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  height: 80%;
 	.content {
 		width: 80%;
 
-		display: inline;
+		display: grid;
+    grid-template-rows: 2fr 3fr 2fr;
     text-align: center;
 
 		h1 {color: color('orangePrimary');}

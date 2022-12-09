@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import 'static/Play/Game.scss'
+import GameStatus from './GameStatus'
 
 function Game() {
 
@@ -10,6 +11,7 @@ function Game() {
   const [pLeftPos, setPLeftPos] = useState(37.5);
   const [pRightPos, setPRightPos] = useState(37.5);
   const [ballPos, setBallPos] = useState({x: 10, y: 10});
+
 
   const keypressHandler = (event: any) => {
     if (event.code === "KeyJ" && pLeftPos < 75)
@@ -43,6 +45,7 @@ function Game() {
     <span className="separator" />
     <span className="player right" style={{top: pRightPos + '%'}}/>
     <span className="ball" style={ballStyle}/>
+    <GameStatus />
   </div>
   )
 }

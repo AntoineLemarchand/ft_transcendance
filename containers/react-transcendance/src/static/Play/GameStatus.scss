@@ -1,0 +1,37 @@
+@import 'static/gruvbox';
+
+$statusHeight: 5rem;
+
+.GameStatus {
+  height: $statusHeight;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  .player {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: color('backGround2');
+
+    &:last-child {flex-direction: row-reverse;}
+
+    .picture {height: $statusHeight;}
+
+    .name {color: color('textPrimary')}
+
+    .score {
+      height: 100%;
+      width: calc($statusHeight / 2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+    }
+  }
+}
+
+@media screen and (max-width: 30rem) {
+  .GameStatus .player .name {display: none}
+}

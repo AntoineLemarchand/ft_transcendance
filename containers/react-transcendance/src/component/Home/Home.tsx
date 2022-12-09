@@ -1,8 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'
 
 import 'static/Home.scss'
 
 function Home() {
+  const navigate = useNavigate();
 	return (
 		<div className="Home">
 			<div className="content">
@@ -18,7 +20,7 @@ function Home() {
 				some stats in <a href="#Profile">your profile</a>.
 				</p>
 			</div>
-				<button>Find a Match</button>
+				<button onClick={()=>navigate("/game")}>Find a Match</button>
 		</div>
 	)
 }
