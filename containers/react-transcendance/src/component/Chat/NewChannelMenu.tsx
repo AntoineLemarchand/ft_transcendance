@@ -12,6 +12,10 @@ function NewChannelMenu(props: {
   const [channelPassword, setChannelPassword] = useState('');
 
   const NewChannel = () => {
+    if (channelName === '') {
+      alert("Please provide at least a channel name")
+      return;
+    }
     fetch('http://localhost:3000/channel/join', {
       credentials: 'include',
       method: 'POST',
