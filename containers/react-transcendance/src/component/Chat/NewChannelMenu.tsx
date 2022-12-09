@@ -7,43 +7,39 @@ function NewChannelMenu(props: {
 	visible: boolean,
 	}) {
 
-	const [choiceIndex, setChoiceIndex] = useState(1);
+  const [channelName, setChannelName] = useState('');
+  const [channelPassword, setChannelPassword] = useState('');
 
-	const MenuClick = (event: any) => {
-		event.stopPropagation();
-	}
-
-	const TabStyle = (index: number): React.CSSProperties => {
-		return index === choiceIndex ? {background: '#98971a'} : {background: '#b8bb26'}
-	}
+  const NewChannel = () => {
+    fetch('http://localhost:3000/channel/join', {
+      credentials: 'include',
+      method: 'POST',
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify({
+          'channelName': channelName,
+          'channelPassword': channelPassword,
+      }),
+    }).then(response=>{
+      if (response.status !== 201)
+        alert("Could not create nor find channel");
+      else {
+      }
+    })
+  }
 
 	return (
 		<div className="NewChannelMenu" style={
 			{display: !props.visible ? "none" : "flex"}} onClick={props.toggle}>
-			<div className="choiceBox" onClick={MenuClick}>
-				<header>
-					<button
-						onClick={()=>setChoiceIndex(1)}
-						style={TabStyle(1)}
-						>Direct message</button>
-					<button
-						onClick={()=>setChoiceIndex(2)}
-						style={TabStyle(2)}
-						>Group message</button>
-				</header>
-				<div className="content">
-					<div className="choice" style={choiceIndex !== 1 ?
-						{display: "none"}: {}}>
-						<input type="text" placeholder="UserName"/>
-						<button>Contact user</button>
-					</div>
-					<div className="choice" style={choiceIndex !== 2 ?
-						{display: "none"}: {}}>
-						<input type="text" placeholder="Name"/>
-						<input type="text" placeholder="Password"/>
-						<button>Create Conversation</button>
-					</div>
-				</div>
+			<div className="choiceBox" onClick={(event=>{event.stopPropagation()})}>
+          <input type="text"
+            placeholder="Name"
+            onChange={(event)=>{setChannelName(event.target.value)}}/>
+          <input type="password"
+            placeholder="Password"
+            onChange={(event)=>{setChannelPassword(event.target.value)}}/>
+          <button onClick={NewChannel}>Create Conversation</button>
 			</div>
 		</div>
 	)

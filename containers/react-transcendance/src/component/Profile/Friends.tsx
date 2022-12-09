@@ -47,7 +47,7 @@ function Friends(props: {isSelected: boolean}) {
       {
         friends.map((friend: any, idx: number) => {
           return (
-            <div className="friend">
+            <div className="friend" key={idx}>
               <img src={friend.avatar} alt="friend avatar"/>
               <p>{friend.name}</p>
               <div className="status">

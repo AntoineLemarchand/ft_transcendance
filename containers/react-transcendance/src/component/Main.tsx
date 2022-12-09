@@ -1,4 +1,5 @@
 import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { useCookies } from 'react-cookie';
 
 import 'static/Main.scss'
 
@@ -19,8 +20,10 @@ function Main(props: {component: any}) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const tab = location.pathname.split('/')[1];
+  const [,,removeCookie] = useCookies(['auth']);
 
 	const ProcessLogout = () => {
+    removeCookie('auth');
 		navigate('/');
 	}
 

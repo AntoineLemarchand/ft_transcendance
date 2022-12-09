@@ -53,7 +53,7 @@ function SignIn() {
   })
   .then(response => {
     if (response.status === 201) {
-      navigate('/dashboard');
+      navigate('/home');
     } else {
       alert('Wrong credentials');
     }
