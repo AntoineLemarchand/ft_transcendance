@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Channel, Message } from './channel.entities';
 import { ChannelRepository } from './channel.repository.mock';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
@@ -9,6 +9,7 @@ export class ChannelService {
   constructor(
     private channelRepository: ChannelRepository,
     private broadcastingGateway: BroadcastingGateway,
+    @Inject(forwardRef(() => UserService))
     private userService: UserService,
   ) {}
   async sendMessage(message: Message): Promise<void> {
@@ -28,8 +29,8 @@ export class ChannelService {
     await this.broadcastingGateway.emitMessage('', message);
   }
 
-  async addChannel(channelname: string, ownername: string): Promise<void> {
-    await this.channelRepository.create(channelname, ownername).catch(() => {
+  async addChannel(channelName: string, ownername: string): Promise<void> {
+    await this.channelRepository.create(channelName, ownername).catch(() => {
       throw new HttpException(
         'This channel exists already',
         HttpStatus.UNAUTHORIZED,
@@ -45,8 +46,8 @@ export class ChannelService {
     return await this.channelRepository.findAll();
   }
 
-  async getChannelByName(channelname: string) {
-    return await this.channelRepository.findOne(channelname);
+  async getChannelByName(channelName: string) {
+    return await this.channelRepository.findOne(channelName);
   }
 
   async joinChannel(
@@ -57,6 +58,6 @@ export class ChannelService {
     await this.getChannelByName(channelName).catch(
       async () => await this.addChannel(channelName, userName),
     );
-    await this.userService.addChannelname(userName, channelName);
+    await this.userService.addChannelName(userName, channelName);
   }
 }

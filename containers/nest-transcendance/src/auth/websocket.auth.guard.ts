@@ -1,8 +1,8 @@
 import {
-  CanActivate,
+  CanActivate, forwardRef,
   HttpException,
-  HttpStatus,
-  Injectable,
+  HttpStatus, Inject,
+  Injectable
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { Observable } from 'rxjs';
@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class WsGuard implements CanActivate {
   constructor(
+    @Inject(forwardRef(() => UserService))
     private userService: UserService,
     private jwtService: JwtService,
   ) {}

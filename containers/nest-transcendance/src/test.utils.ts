@@ -114,18 +114,18 @@ export const getChannels = async (
 export const doesChannelExist = async (
   callerModule: INestApplication,
   jwt: string,
-  channelname: string,
+  channelName: string,
 ) => {
   const response = await getChannels(callerModule, jwt);
   const channels = response.body.channels;
   const allChannels: Channel[] = <Channel[]>JSON.parse(channels);
   const tmp = allChannels.find(
-    (channel: any) => channel.channelName == channelname,
+    (channel: any) => channel.channelName == channelName,
   );
   return tmp !== undefined;
 };
 
-export async function getMatchingChannelnames(
+export async function getMatchingChannelNames(
   callerModule: INestApplication,
   jwt: string,
   regexString: string,
@@ -133,18 +133,18 @@ export async function getMatchingChannelnames(
   const result = await request(callerModule.getHttpServer())
     .get('/channel/getMatchingNames/' + regexString)
     .set('Authorization', 'Bearer ' + jwt);
-  const channelnames = result.body.channels;
-  const allChannels = <string[]>JSON.parse(channelnames);
+  const channelNames = result.body.channels;
+  const allChannels = <string[]>JSON.parse(channelNames);
   return allChannels;
 }
 
 export async function getChannelByName(
   callerModule: INestApplication,
   jwt: string,
-  channelname: string,
+  channelName: string,
 ): Promise<Channel | undefined> {
   const raw = await request(callerModule.getHttpServer())
-    .get('/channel/findOne/' + channelname)
+    .get('/channel/findOne/' + channelName)
     .set('Authorization', 'Bearer ' + jwt);
   const fromJson = JSON.parse(raw.body.channel);
   const result = Object.create(Channel.prototype);

@@ -32,11 +32,11 @@ export class ChannelController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('findOne/:channelname')
+  @Get('findOne/:channelName')
   async getChannelByName(@Param() params: any) {
     try {
       const result = await this.channelService.getChannelByName(
-        params.channelname,
+        params.channelName,
       );
       return { channel: JSON.stringify(result) };
     } catch (e) {

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { Message } from './channel.entities';
 import { ChannelRepository } from './channel.repository.mock';
@@ -8,7 +8,7 @@ import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [Message, AuthModule, UserModule],
+  imports: [Message, AuthModule, forwardRef(() => UserModule)],
   providers: [ChannelService, ChannelRepository, BroadcastingGateway],
   exports: [ChannelService, Message],
   controllers: [ChannelController],

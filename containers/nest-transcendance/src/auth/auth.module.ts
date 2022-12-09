@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalStrategy } from './auth.local.strategy';
 import { UserModule } from '../user/user.module';
@@ -9,12 +9,14 @@ import { JwtStrategy } from './auth.jwt.strategy';
 import { AuthController } from './auth.controller';
 import User from '../user/user.entities';
 import { WsGuard } from './websocket.auth.guard';
+import { ChannelModule } from '../channel/channel.module';
 
 @Module({
   providers: [AuthService, LocalStrategy, JwtStrategy],
   imports: [
-    UserModule,
+    forwardRef(() => UserModule),
     PassportModule,
+    forwardRef(() => ChannelModule),
     User,
     JwtModule.register({
       secret: environment.JWT_SECRET_PASSWORD,

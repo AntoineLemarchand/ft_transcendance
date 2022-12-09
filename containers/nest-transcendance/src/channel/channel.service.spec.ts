@@ -64,7 +64,7 @@ describe('Sending a message', () => {
 });
 
 describe('Joining a channel', () => {
-  it('should add the channelname to the user', async () => {
+  it('should add the channelName to the user', async () => {
     await channelService.joinChannel('Thomas', 'welcom', 'channelPassword');
   });
 

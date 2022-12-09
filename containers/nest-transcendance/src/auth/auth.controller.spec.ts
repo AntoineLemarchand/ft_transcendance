@@ -68,6 +68,6 @@ describe('AuthController', () => {
 
     expect(result.status).toBe(200);
     expect(result.body.userInfo).toBeDefined();
-    expect(result.body.userInfo.channelnames[0]).toBe('welcome');
+    expect(result.body.userInfo.channelNames[0]).toBe('welcome');
   });
 });
