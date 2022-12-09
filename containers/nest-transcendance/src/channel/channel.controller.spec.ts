@@ -31,12 +31,31 @@ describe('joining a channel', () => {
 
   it('should return 201 and create a new channel if correct input is provided', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
     const result = await testUtils.joinChannel(app, jwt, 'newChannelName');
 
     expect(result.status).toBe(201);
     expect(
       await testUtils.doesChannelExist(app, jwt, 'newChannelName'),
     ).toBeTruthy();
+  });
+
+  it('should return the new channel on join', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const result = await testUtils.joinChannel(app, jwt, 'newChannelName');
+
+    expect(result.status).toBe(201);
+    expect(result.body.channel).toBeDefined();
+  });
+
+  it('should return 409 when already joined', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    await testUtils.joinChannel(app, jwt, 'newChannelName');
+    const result = await testUtils.joinChannel(app, jwt, 'newChannelName');
+
+    expect(result.status).toBe(409);
   });
 });
 

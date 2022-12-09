@@ -10,7 +10,7 @@ describe('UserController', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      imports: [AppModule]
+      imports: [AppModule],
     })
       .overrideProvider(BroadcastingGateway)
       .useValue(jest.fn())
@@ -34,7 +34,7 @@ describe('UserController', () => {
 
     const result = await testUtils.addFriend(app, jwt, 'JayDee');
     const friendsList = JSON.parse(
-      (await testUtils.getFriends(app, jwt)).body.friends
+      (await testUtils.getFriends(app, jwt)).body.friends,
     );
 
     expect(result.status).toBe(401);
@@ -79,7 +79,7 @@ describe('UserController', () => {
 
     const result = await testUtils.removeFriend(app, jwt, 'JayDee');
     const friendsList = JSON.parse(
-      (await testUtils.getFriends(app, jwt)).body.friends
+      (await testUtils.getFriends(app, jwt)).body.friends,
     );
 
     expect(result.status).toBe(200);
@@ -118,12 +118,12 @@ describe('UserController', () => {
     expect(result.body.channels[1].channelName).toBe('newChannelName');
   });
 
-	it('should be subscribed to the welcome channel on creation', async () => {
+  it('should be subscribed to the welcome channel on creation', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
     const result = await testUtils.getUserData(app, jwt, 'Thomas');
 
     expect(result.status).toBe(200);
     expect(result.body.userInfo.channelNames.length).toBe(1);
-	}) 
+  });
 });
