@@ -146,6 +146,7 @@ $headerHeight: 3rem;
     .channelMenu {
       position: absolute;
       visibility: hidden;
+      top: $headerHeight;
       opacity: 0%;
       z-index: 1;
       width: 100%;

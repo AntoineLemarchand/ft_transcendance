@@ -17,6 +17,7 @@ $inviteHeight: 4rem;
   }
 
   .MatchMaking {
+    overflow-y: scroll;
     display: grid;
     color: color('textPrimary');
     grid-template-rows: 1fr 1fr;

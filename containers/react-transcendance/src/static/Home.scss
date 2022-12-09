@@ -1,37 +1,30 @@
 @import './gruvbox';
 
 .Home {
-	position: absolute;
-	display: inline;
+  width: 100%;
+  overflow-y: scroll;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
   align-items: center;
-  height: 80%;
-	.content {
-		width: 80%;
+  text-align: center;
+  h1 {color: color('orangePrimary');}
 
-		display: grid;
-    grid-template-rows: 2fr 3fr 2fr;
-    text-align: center;
+  p {
+    margin: auto;
+    color: color('textPrimary');
 
-		h1 {color: color('orangePrimary');}
+    a {
+      color: color('aquaSecondary');
+      text-decoration: none;
 
-		p {
-			color: color('textPrimary');
-
-			a {
-				color: color('aquaSecondary');
-				text-decoration: none;
-
-				&:hover {background: color('greySecondary');}
-			}
-		}
-	}
+      &:hover {background: color('greySecondary');}
+    }
+  }
 
 	button {
 		width: 60%;
 		height: 5rem;
+    margin: 2rem 0;
 		color: color('backGround2');
 		background: color('greenSecondary');
 		font-size: 2rem;
@@ -40,4 +33,9 @@
 		&:hover {background: color('greenPrimary');}
 		&:active {background: color('greenSecondary');}
 	}
+
+  &>p {
+    color: color('textPrimary');
+    width: 50%;
+  }
 }

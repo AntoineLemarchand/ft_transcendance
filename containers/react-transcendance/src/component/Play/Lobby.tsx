@@ -104,7 +104,7 @@ function Lobby() {
               return (
                 <button key={idx} className="Invite">
                   <img src={invite.avatar} alt="avatar" />
-                  <p>{invite.name}</p>
+                  <p>{invite.name.slice(0,10) + (invite.name.length > 10 ? '...' : '')}</p>
                 </button>
               )
             }
