@@ -47,6 +47,6 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Get('channels')
     async getChannels(@Request() req: any) {
-        return {channels: this.userService.getChannels(req.user.name)};
+        return {channels: await this.userService.getChannels(req.user.name)};
     }
 }

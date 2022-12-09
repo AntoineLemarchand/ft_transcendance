@@ -41,7 +41,7 @@ describe('joining a channel', () => {
 });
 
 describe('retrieving a channel', () => {
-  it('should return 404 on non existing channelname', async () => {
+  it('should return 404 on non existing channelName', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
     await request(app.getHttpServer())
@@ -72,7 +72,7 @@ describe('searching channels by name', () => {
     await testUtils.joinChannel(app, jwt, 'newChannelName2');
     await testUtils.joinChannel(app, jwt, 'otherChannelName1');
 
-    const matchingChannels = await testUtils.getMatchingChannelnames(
+    const matchingChannels = await testUtils.getMatchingChannelNames(
       app,
       jwt,
       'new',

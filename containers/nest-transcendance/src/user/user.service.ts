@@ -1,12 +1,16 @@
 /* eslint-disable prettier/prettier */
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import User from './user.entities';
+import { ChannelService } from '../channel/channel.service';
+import { Channel } from '../channel/channel.entities';
 
 @Injectable()
 export class UserService {
   users: User[];
 
-	constructor() {
+	constructor(
+		@Inject(forwardRef(() => ChannelService))
+		private channelService: ChannelService) {
 		this.users = [new User('Thomas', 'test')]
 	}
 
@@ -63,12 +67,15 @@ export class UserService {
 		return user;
 	}
 
-	getChannels(username: string) {
-		const user = this.getInfo(username)
-		return user.getChannelnames();
+	async getChannels(username: string) {
+		const user = this.getInfo(username);
+		const result: Channel[] = [];
+		for (const channelName of user.getChannelNames())
+			result.push(await this.channelService.getChannelByName(channelName));
+		return result;
 	}
 
-	addChannelname(username: string, channelName: string) {
+	addChannelName(username: string, channelName: string) {
 		const user: User = this.getInfo(username)
 		return user.addChannelName(channelName);
 	}

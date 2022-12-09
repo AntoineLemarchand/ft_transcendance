@@ -2,7 +2,7 @@ import { Channel } from '../channel/channel.entities';
 
 export default class User {
   private friends: string[] = [];
-  private channelnames: string[] = ['welcome'];
+  private channelNames: string[] = ['welcome'];
   constructor(private name: string, private password: string) {}
 
   getName() {
@@ -38,11 +38,11 @@ export default class User {
     return JSON.parse(JSON.stringify(this));
   }
 
-  getChannelnames() {
-    return this.channelnames;
+  getChannelNames() {
+    return this.channelNames;
   }
 
   addChannelName(channelName: string) {
-    this.channelnames.push(channelName);
+    this.channelNames.push(channelName);
   }
 }

@@ -12,8 +12,8 @@ beforeEach(async () => {
   channelRepository.clear();
 });
 
-async function createAChannel(channelname = 'channelName') {
-  const result = await channelRepository.create(channelname, 'creatorUserName');
+async function createAChannel(channelName = 'channelName') {
+  const result = await channelRepository.create(channelName, 'creatorUserName');
   return result;
 }
 
