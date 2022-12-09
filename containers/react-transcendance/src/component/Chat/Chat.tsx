@@ -15,7 +15,7 @@ import {Channel, Message, putMessageInChannels} from "../../utils/Message";
 function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
 	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([])
-	const [currentChannel, setCurrentChannel ] =  useState<Channel | undefined>(undefined)
+	const [currentChannel, setCurrentChannel ] =  useState<Channel>(joinedChannel[0])
 	const [currentMessage, setCurrentMessage ] =  useState('')
 	const [socket, setSocket] = useState<Socket>()
 	const UserName = 'Thomas';
@@ -25,26 +25,8 @@ function Chat() {
 		socket?.emit("messageToServer", JSON.stringify({sender: sender, content: content, channel: channel}))
 	}
 
-	const getChannel = (channelName: string) => {
-				fetch('http://localhost:3000/user/channels', {
-						credentials: 'include',
-						method: 'GET',
-						headers: {
-								Accept: 'application/json',
-								'Content-Type': 'application/json'
-						},
-				})
-				.then(result => result.text()
-					.then((body: string) => {
-							let channelJSON = JSON.parse(JSON.parse(body).channel);
-							setJoinedChannel(joinedChannel.concat(channelJSON as Channel));
-							setCurrentChannel(joinedChannel[0]);
-						}
-				));
-	}
-
 	useEffect( () => {
-		fetch('http://localhost:3000/user/info/Thomas', {
+		fetch('http://localhost:3000/user/channels', {
 				credentials: 'include',
 				method: 'GET',
 				headers: {
@@ -52,18 +34,17 @@ function Chat() {
 						'Content-Type': 'application/json'
 				},
 		}).then((result) => {
-			result.text().then(body => {
-				setJoinedChannel(JSON.parse(body).userInfo.channelnames);
-				setCurrentChannel(joinedChannel[0]);
-			})
+      result.text().then((text)=> {
+        setJoinedChannel(JSON.parse(text).channels);
+        setCurrentChannel(joinedChannel[0]);
+      });
 		})
 	}, [setJoinedChannel, setCurrentChannel])
 
-	const displayChannelContent = (currentChannel: Channel | undefined) => {
+	const displayChannelContent = (currentChannel: Channel) => {
 		if (currentChannel === undefined)
 			return <></>;
-			/*
-		return currentChannel.map((message: Message, idx: number) =>
+		return currentChannel.messages.map((message: Message, idx: number) =>
 		<li key={idx}
 			className="message" style={
 			{textAlign: message.sender === UserName ? "right" : "left"}}>
@@ -73,7 +54,6 @@ function Chat() {
 			</p>
 		</li>
 	)
-	*/
 	}
 
 	const OnKeyDown = ((event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -85,7 +65,8 @@ function Chat() {
 	})
 
 	const ChannelButtonStyle = (channel: string) => {
-		return channel === currentChannel ? {
+		return currentChannel === undefined
+    || channel.channelName === currentChannel.channelName ? {
 			backgroundColor:  '#83a598',
 			border: 'inset .2rem #a89984'
 		} : {
@@ -106,7 +87,6 @@ function Chat() {
 			<div className="channelMenu">
 				<header>
 					<input type="text" onFocus={focusSearch} placeholder="search"/>
-					<p>coucou</p>
 					<NewChannelButton toggle={()=>SetNewConvMenu(!NewConvMenu)}/>
 				</header>
 				<div className="channelList">
@@ -117,7 +97,7 @@ function Chat() {
 								onClick={()=>setCurrentChannel(channel)}
 								style={
 									ChannelButtonStyle(channel)
-								}>{channel}</button>
+								}>{channel.channelName}</button>
 						)}
 				</div>
 			</div>
