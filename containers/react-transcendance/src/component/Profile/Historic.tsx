@@ -70,7 +70,7 @@ function Historic(props: {isSelected: boolean}) {
 			<header>
 			<p>games played: {matches.length}</p>
 			<p>Won: {matches.filter(item=>item.gain > item.loss).length}</p>
-			<p>Loss: {matches.filter(item=>item.gain < item.loss).length}</p>
+			<p>Lost: {matches.filter(item=>item.gain < item.loss).length}</p>
 			</header>
 			<div className="content">
 				<div className="head">
