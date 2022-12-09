@@ -63,8 +63,8 @@ function SignIn() {
 	return (
 		<div className="Prompt">
 			<input type="text" placeholder="Username" onChange={UpdateUsername}/>
-			<input type="text" placeholder="Password" onChange={UpdatePassword}/>
-			<input type="text" placeholder="Confirm Password" onChange={UpdateConfirmation}/>
+			<input type="password" placeholder="Password" onChange={UpdatePassword}/>
+			<input type="password" placeholder="Confirm Password" onChange={UpdateConfirmation}/>
       <div className="buttonBox">
         <button className="signin" onClick={ProcessSignIn}>Sign in</button>
       </div>
