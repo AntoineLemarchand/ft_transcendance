@@ -1,0 +1,45 @@
+@import 'static/gruvbox';
+
+$friendLineHeight: 4.5rem;
+
+.Friends {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 4rem auto;
+  text-align: center;
+  color: color('textPrimary');
+  overflow-y: scroll;
+
+  .friendList {
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    .friend {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: color(backGround2);
+
+      img {
+        height: $friendLineHeight;
+        width: $friendLineHeight;
+      }
+
+      .status {
+        margin-right: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        span {
+          margin-left: 1rem;
+          display: block;
+          width: 1rem;
+          height: 1rem;
+          border-radius: 100%;
+        }
+      }
+    }
+  }
+}

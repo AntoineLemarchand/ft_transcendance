@@ -41,7 +41,7 @@ function Login() {
                         },
                     }).then((result) => {console.log('user infos'); result.text().then(body => console.log(body))})
 
-                    navigate('/dashboard');
+                    navigate('/home');
                 } else {
                     alert('Wrong credentials');
                 }
@@ -53,7 +53,7 @@ function Login() {
     }
 
     const ProcessOauth = () => {
-        navigate('/dashboard');
+        navigate('/home');
     }
 
     const UpdatePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
