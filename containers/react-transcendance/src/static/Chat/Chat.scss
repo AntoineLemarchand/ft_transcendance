@@ -15,6 +15,7 @@ $headerHeight: 3rem;
 		background: color('greySecondary');
 		display: grid;
 		grid-template-rows: 3rem auto;
+    overflow-y: hidden;
 		header {
 			height: 3rem;
 			display: grid;
