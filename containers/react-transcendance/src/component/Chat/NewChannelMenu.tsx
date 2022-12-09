@@ -26,9 +26,9 @@ function NewChannelMenu(props: {
       if (response.status !== 201)
         alert("Could not create nor find channel");
       else {
+        props.callback();
         setChannelName('');
         setChannelPassword('');
-        props.callback();
         props.toggle();
       }
     })
@@ -40,10 +40,14 @@ function NewChannelMenu(props: {
 			<div className="choiceBox" onClick={(event=>{event.stopPropagation()})}>
           <input type="text"
             placeholder="Name"
-            onChange={(event)=>{setChannelName(event.target.value)}}/>
+            onChange={(event)=>{setChannelName(event.target.value)}}
+            value={channelName}
+            />
           <input type="password"
             placeholder="Password"
-            onChange={(event)=>{setChannelPassword(event.target.value)}}/>
+            onChange={(event)=>{setChannelPassword(event.target.value)}}
+            value={channelPassword}
+            />
           <button onClick={NewChannel}>Create Conversation</button>
 			</div>
 		</div>

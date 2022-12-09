@@ -53,7 +53,7 @@ function SignIn() {
   })
   .then(response => {
     if (response.status === 201) {
-      navigate('/login');
+      navigate('/');
     } else {
       alert('Wrong credentials');
     }
