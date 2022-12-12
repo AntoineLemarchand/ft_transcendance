@@ -55,7 +55,7 @@
 			list-style: none;
 			padding: 0;
 			color: color('backGround2');
-			li {
+			.row {
         color: color('textPrimary');
 
         &:nth-child(2n) {background: color('backGround1');}
