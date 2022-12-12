@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 
 import { GiHamburgerMenu } from 'react-icons/gi'
-//import {io,  Socket } from 'socket.io-client'
+import {io,  Socket } from 'socket.io-client'
 
 import 'static/Chat/Chat.scss'
 
@@ -10,40 +10,59 @@ import ChatName from './ChatName'
 import NewChannelButton from './NewChannelButton'
 import NewChannelMenu from './NewChannelMenu'
 import {Channel, Message, putMessageInChannels} from "../../utils/Message";
-//import { useCookies } from 'react-cookie';
+import { useCookies } from 'react-cookie';
 
 function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
+	const [isSearching, setIsSearching] = useState(false)
 	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([])
-	const [currentChannel, setCurrentChannel ] =  useState<Channel>(joinedChannel[0])
+	const [currentChannel, setCurrentChannel ] =  useState<Channel>()
 	const [currentMessage, setCurrentMessage ] =  useState('')
+  const [cookies] = useCookies(['auth']);
 	const [socket, setSocket] = useState<Socket>()
-	const UserName = 'Thomas';
-
-
-	const send = (sender: string, content: string, channel: string) =>{
-		socket?.emit("messageToServer", JSON.stringify({sender: sender, content: content, channel: channel}))
-	}
 
   const updateJoinedChannels = () => {
-		fetch('http://localhost:3000/user/channels', {
-				credentials: 'include',
-				method: 'GET',
-				headers: {
-						Accept: 'application/json',
-						'Content-Type': 'application/json'
-				},
-		}).then((result) => {
+    fetch('http://localhost:3000/user/channels', {
+        credentials: 'include',
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+    }).then((result) => {
       result.text().then((text)=> {
         setJoinedChannel(JSON.parse(text).channels);
-        setCurrentChannel(joinedChannel[0]);
+        if (currentChannel === undefined)
+          setCurrentChannel(joinedChannel[0]);
       });
-		})
+    })
   }
 
 	useEffect( () => {
     updateJoinedChannels();
-	}, [setJoinedChannel, setCurrentChannel])
+    setSocket(
+      io("http://localhost:8001", {
+        withCredentials: true,
+        query: {auth: cookies.auth},
+      })
+    );
+	}, [])
+
+	const send = (sender: string, content: string, channel: string) =>{
+		socket?.emit("messageToServer",
+      JSON.stringify({sender: sender, content: content, channel: channel}))
+	}
+
+	useEffect(() => {
+    const messageListener = (payload: string) => {
+      const message: Message = JSON.parse(payload);
+      const allChannels = putMessageInChannels(message, joinedChannel)
+      setJoinedChannel(allChannels);
+    }
+		socket?.on("messageToClient", messageListener)
+		return () => {socket?.off("messageToClient", messageListener)}
+	}, [socket, joinedChannel])
+
 
 	const displayChannelContent = (currentChannel: Channel) => {
 		if (currentChannel === undefined)
@@ -51,19 +70,18 @@ function Chat() {
 		return currentChannel.messages.map((message: Message, idx: number) =>
 		<li key={idx}
 			className="message" style={
-			{textAlign: message.sender === UserName ? "right" : "left"}}>
-			<ChatName username={UserName} sender={message.sender}/>
+			{textAlign: message.sender === "TODO" ? "right" : "left"}}>
+			<ChatName username={message.UserName} sender={message.sender}/>
 			<p className="content">
 				{message.content}
 			</p>
 		</li>
-	)
-	}
+	)}
 
 	const OnKeyDown = ((event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
+		if (event.key === 'Enter' && currentChannel !== undefined) {
 			let messageContent: string = (event.target as any).value;
-			send(UserName, messageContent, currentChannel.name);
+			send("TODO", messageContent, currentChannel.channelName);
 			setCurrentMessage('');
 		}
 	})
@@ -79,6 +97,7 @@ function Chat() {
 	}
 
 	const focusSearch = (event: React.FocusEvent<HTMLInputElement>) => {
+    setIsSearching(true);
 	}
 
 	return (
@@ -92,7 +111,10 @@ function Chat() {
 			<div className="channelMenu">
 				<header>
 					<input type="text" onFocus={focusSearch} placeholder="search"/>
-					<NewChannelButton toggle={()=>SetNewConvMenu(!NewConvMenu)}/>
+					<NewChannelButton
+            toggle={()=>SetNewConvMenu(!NewConvMenu)}
+            style={isSearching ? {display: "none"} : {}}
+          />
 				</header>
 				<div className="channelList">
 					{
@@ -100,9 +122,8 @@ function Chat() {
 							<button
 								key={idx}
 								onClick={()=>setCurrentChannel(channel)}
-								style={
-									ChannelButtonStyle(channel)
-								}>{channel.channelName}</button>
+								style={ChannelButtonStyle(channel)}>
+                {channel.channelName}</button>
 						)}
 				</div>
 			</div>

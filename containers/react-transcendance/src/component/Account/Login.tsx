@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useState} from 'react'
+import { useState, useEffect } from 'react'
 import {useNavigate} from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
@@ -10,11 +10,16 @@ import {ReactComponent as SchoolLogo} from 'static/logo.svg'
 function Login() {
 
     const navigate = useNavigate();
-    const [, setCookie] = useCookies(['auth']);
+    const [cookie, setCookie] = useCookies(['auth']);
     const [state, setState] = useState({
         username: 'Thomas',
         password: 'test',
     });
+
+    useEffect(() => {
+    if (cookie['auth'] !== undefined)
+      navigate('/home')
+    })
 
     const ProcessLogin = () => {
         fetch('http://localhost:3000/auth/login', {
