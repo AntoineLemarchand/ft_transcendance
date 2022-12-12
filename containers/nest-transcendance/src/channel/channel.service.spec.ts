@@ -84,7 +84,11 @@ describe('Administrating a channel', () => {
       'channelName',
       'channelPassword',
     );
-    await channelService.banUserFromChannel('bannedUserName', 'channelName');
+    await channelService.banUserFromChannel(
+      'Thomas',
+      'bannedUserName',
+      'channelName',
+    );
 
     try {
       await channelService.joinChannel(
@@ -101,11 +105,22 @@ describe('Administrating a channel', () => {
   it('should not be allowed to ban unless admin', async () => {
     await userService.createUser(new User('randomUser', ''));
     await channelService.joinChannel(
-      'Owner',
+      'Thomas',
       'channelName',
       'channelPassword',
     );
-    await channelService.banUserFromChannel('bannedUserName', 'channelName');
+
+    try {
+      await channelService.banUserFromChannel(
+        'randomUser',
+        'Thomas',
+        'channelName'
+      );
+    } catch (e) {
+      return;
+    }
+
+    throw new Error('banUserFromChannel did not throw');
   });
 });
 

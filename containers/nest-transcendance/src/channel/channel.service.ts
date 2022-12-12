@@ -74,10 +74,13 @@ export class ChannelService {
   }
 
   async banUserFromChannel(
+    usernameOfExecutor: string,
     bannedUserName: string,
     channelName: string,
   ): Promise<void> {
     const channel: Channel = await this.channelRepository.findOne(channelName);
+    if (channel.isAdmin(usernameOfExecutor) == false)
+      throw new Error('This user is not an admin');
     channel.banUser(bannedUserName);
   }
 }

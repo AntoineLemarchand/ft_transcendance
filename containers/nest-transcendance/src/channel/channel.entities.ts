@@ -45,4 +45,8 @@ export class Channel {
   isUserBanned(userName: string) {
     return this.bannedUsers.includes(userName);
   }
+
+  isAdmin(usernameOfExecutor: string) {
+    return this.admins.includes(usernameOfExecutor);
+  }
 }

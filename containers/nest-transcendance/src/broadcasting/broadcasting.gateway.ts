@@ -23,8 +23,8 @@ export class BroadcastingGateway {
   //todo: invoke guard to check valid token
   @UseGuards(WsGuard)
   @SubscribeMessage('messageToServer')
-  handleMessage(client: any, payload: string): void {
-    const message: Message = JSON.parse(payload);
+  handleMessage(client: Socket, data: string): void {
+    const message: Message = JSON.parse(data);
     console.log(
       'Received :>' +
         message.content +
