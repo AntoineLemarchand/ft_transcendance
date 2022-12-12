@@ -9,9 +9,7 @@ import {
     Param,
 } from '@nestjs/common';
 import {UserService} from './user.service';
-import User from "./user.entities";
 import {JwtAuthGuard} from '../auth/jwt.auth.guard';
-import {userInfo} from "os";
 
 @Controller()
 export class UserController {

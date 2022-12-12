@@ -13,11 +13,13 @@ export class Message {
 export class Channel {
   messages: Message[];
   private admins: string[];
+  private bannedUsers: string[];
 
   constructor(private channelName: string,
               creatorUserName: string) {
     this.messages = [];
     this.admins = [creatorUserName];
+    this.bannedUsers = [];
   }
 
   getAdmins(): string[] {
@@ -34,5 +36,13 @@ export class Channel {
 
   getName(): string {
     return this.channelName;
+  }
+
+  banUser(bannedUserName: string) {
+    this.bannedUsers.push(bannedUserName);
+  }
+
+  isUserBanned(userName: string) {
+    return this.bannedUsers.includes(userName);
   }
 }

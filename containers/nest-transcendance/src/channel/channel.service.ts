@@ -3,7 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Inject,
-  Injectable
+  Injectable,
 } from '@nestjs/common';
 import { Channel, Message } from './channel.entities';
 import { ChannelRepository } from './channel.repository.mock';
@@ -16,9 +16,8 @@ export class ChannelService {
     private channelRepository: ChannelRepository,
     private broadcastingGateway: BroadcastingGateway,
     @Inject(forwardRef(() => UserService))
-    private userService: UserService
-  ) {
-  }
+    private userService: UserService,
+  ) {}
 
   async sendMessage(message: Message): Promise<void> {
     await this.channelRepository
@@ -29,7 +28,7 @@ export class ChannelService {
       .catch(async () => {
         const newChannel = await this.channelRepository.create(
           message.channel,
-          message.sender
+          message.sender,
         );
         newChannel.addMessage(message);
       });
@@ -43,7 +42,7 @@ export class ChannelService {
       .catch(() => {
         throw new HttpException(
           'This channel exists already',
-          HttpStatus.UNAUTHORIZED
+          HttpStatus.UNAUTHORIZED,
         );
       });
   }
@@ -63,12 +62,22 @@ export class ChannelService {
   async joinChannel(
     userName: string,
     channelName: string,
-    channelPassword: string
+    channelPassword: string,
   ): Promise<Channel> {
     const channel = await this.getChannelByName(channelName).catch(async () => {
       return await this.addChannel(channelName, userName);
     });
+    if (await channel.isUserBanned(userName))
+      return Promise.reject(new Error('the user is banned'));
     await this.userService.addChannelName(userName, channelName);
     return channel as Channel;
+  }
+
+  async banUserFromChannel(
+    bannedUserName: string,
+    channelName: string,
+  ): Promise<void> {
+    const channel: Channel = await this.channelRepository.findOne(channelName);
+    channel.banUser(bannedUserName);
   }
 }
