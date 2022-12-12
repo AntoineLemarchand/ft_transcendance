@@ -1,4 +1,10 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable
+} from '@nestjs/common';
 import { Channel, Message } from './channel.entities';
 import { ChannelRepository } from './channel.repository.mock';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
@@ -10,8 +16,10 @@ export class ChannelService {
     private channelRepository: ChannelRepository,
     private broadcastingGateway: BroadcastingGateway,
     @Inject(forwardRef(() => UserService))
-    private userService: UserService,
-  ) {}
+    private userService: UserService
+  ) {
+  }
+
   async sendMessage(message: Message): Promise<void> {
     await this.channelRepository
       .findOne(message.channel)
@@ -21,7 +29,7 @@ export class ChannelService {
       .catch(async () => {
         const newChannel = await this.channelRepository.create(
           message.channel,
-          message.sender,
+          message.sender
         );
         newChannel.addMessage(message);
       });
@@ -29,13 +37,15 @@ export class ChannelService {
     await this.broadcastingGateway.emitMessage('', message);
   }
 
-  async addChannel(channelName: string, ownername: string): Promise<void> {
-    await this.channelRepository.create(channelName, ownername).catch(() => {
-      throw new HttpException(
-        'This channel exists already',
-        HttpStatus.UNAUTHORIZED,
-      );
-    });
+  async addChannel(channelName: string, ownername: string): Promise<Channel> {
+    return await this.channelRepository
+      .create(channelName, ownername)
+      .catch(() => {
+        throw new HttpException(
+          'This channel exists already',
+          HttpStatus.UNAUTHORIZED
+        );
+      });
   }
 
   async findMatching(regexSearchString: string): Promise<string[]> {
@@ -53,11 +63,12 @@ export class ChannelService {
   async joinChannel(
     userName: string,
     channelName: string,
-    channelPassword: string,
-  ) {
-    await this.getChannelByName(channelName).catch(
-      async () => await this.addChannel(channelName, userName),
-    );
+    channelPassword: string
+  ): Promise<Channel> {
+    const channel = await this.getChannelByName(channelName).catch(async () => {
+      return await this.addChannel(channelName, userName);
+    });
     await this.userService.addChannelName(userName, channelName);
+    return channel as Channel;
   }
 }

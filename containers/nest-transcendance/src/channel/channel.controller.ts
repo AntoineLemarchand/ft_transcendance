@@ -14,14 +14,21 @@ import { ChannelService } from './channel.service';
 @Controller()
 export class ChannelController {
   constructor(private channelService: ChannelService) {}
+
   @UseGuards(JwtAuthGuard)
   @Post('join')
   async addChannel(@Request() req: any) {
-    await this.channelService.joinChannel(
-      req.user.name,
-      req.body.channelName,
-      req.body.channelPassword,
-    );
+    try {
+      return {
+        channel: await this.channelService.joinChannel(
+          req.user.name,
+          req.body.channelName,
+          req.body.channelPassword,
+        ),
+      };
+    } catch (e) {
+      throw new HttpException(e.what, HttpStatus.CONFLICT);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
