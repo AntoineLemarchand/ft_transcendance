@@ -74,12 +74,6 @@ main {
 				}
 			}
 			&:nth-child(5):hover {
-				background: color('aquaPrimary');
-				&:active {
-					background: color('aquaSecondary');
-				}
-			}
-			&:nth-child(6):hover {
 				background: color('redPrimary');
 				&:active {
 					background: color('redSecondary');
