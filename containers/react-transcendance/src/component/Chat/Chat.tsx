@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 
 import { GiHamburgerMenu } from 'react-icons/gi'
 import {io,  Socket } from 'socket.io-client'
@@ -46,6 +46,7 @@ function Chat() {
         query: {auth: cookies.auth},
       })
     );
+		//eslint-disable-next-line
 	}, [])
 
 	const send = (sender: string, content: string, channel: string) =>{
