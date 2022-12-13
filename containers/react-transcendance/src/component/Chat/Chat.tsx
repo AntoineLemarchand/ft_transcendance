@@ -65,14 +65,14 @@ function Chat() {
 	}, [socket, joinedChannel])
 
 
-	const displayChannelContent = (currentChannel: Channel) => {
+	const displayChannelContent = (currentChannel: Channel | undefined) => {
 		if (currentChannel === undefined)
 			return <></>;
 		return currentChannel.messages.map((message: Message, idx: number) =>
 		<li key={idx}
 			className="message" style={
 			{textAlign: message.sender === "TODO" ? "right" : "left"}}>
-			<ChatName username={message.UserName} sender={message.sender}/>
+			<ChatName username={message.sender} sender={message.sender}/>
 			<p className="content">
 				{message.content}
 			</p>
@@ -97,8 +97,12 @@ function Chat() {
 		}
 	}
 
-	const focusSearch = (event: React.FocusEvent<HTMLInputElement>) => {
+	const EnableSearch = (event: React.FocusEvent<HTMLInputElement>) => {
     setIsSearching(true);
+	}
+
+	const DisableSearch = (event: React.FocusEvent<HTMLInputElement>) => {
+    setIsSearching(false);
 	}
 
 	return (
@@ -110,8 +114,11 @@ function Chat() {
 			<input className="burger" type="checkbox" id="burgerToggle"/>
 			<label htmlFor="burgerToggle"><GiHamburgerMenu /></label>
 			<div className="channelMenu">
-				<header>
-					<input type="text" onFocus={focusSearch} placeholder="search"/>
+				<header
+					style={isSearching ? {display: "block"} : {}}
+				>
+					<input type="text" onFocus={EnableSearch} onBlur={DisableSearch}
+						placeholder="search"/>
 					<NewChannelButton
             toggle={()=>SetNewConvMenu(!NewConvMenu)}
             style={isSearching ? {display: "none"} : {}}
@@ -123,7 +130,7 @@ function Chat() {
 							<button
 								key={idx}
 								onClick={()=>setCurrentChannel(channel)}
-								style={ChannelButtonStyle(channel)}>
+								style={ChannelButtonStyle(channel.channelName)}>
                 {channel.channelName}</button>
 						)}
 				</div>
