@@ -5,9 +5,9 @@ import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { ChannelRepository } from './channel.repository.mock';
 import { UserService } from '../user/user.service';
 import User from '../user/user.entities';
-import * as testUtils from '../test.utils';
 jest.spyOn(Channel.prototype, 'addMessage');
 jest.spyOn(BroadcastingGateway.prototype, 'emitMessage');
+// jest.spyOn(BroadcastingGateway.prototype, 'addUserToRoom');
 jest.mock('../broadcasting/broadcasting.gateway');
 
 let channelService: ChannelService;

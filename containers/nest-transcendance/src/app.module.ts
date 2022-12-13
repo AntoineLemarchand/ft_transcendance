@@ -8,6 +8,7 @@ import User from './user/user.entities';
 import { RouterModule } from '@nestjs/core';
 import { BroadcastingGateway } from './broadcasting/broadcasting.gateway';
 import { ChannelModule } from './channel/channel.module';
+import { BroadcastingModule } from './broadcasting/broadcasting.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ChannelModule } from './channel/channel.module';
     GameModule,
     AuthModule,
     ChannelModule,
+    BroadcastingModule,
     User,
     RouterModule.register([
       {
