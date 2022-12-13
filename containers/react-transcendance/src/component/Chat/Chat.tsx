@@ -2,24 +2,28 @@ import React, {useEffect} from 'react';
 import { useState } from 'react'
 
 import { GiHamburgerMenu } from 'react-icons/gi'
-import {io,  Socket } from 'socket.io-client'
 
 import 'static/Chat/Chat.scss'
 
 import ChatName from './ChatName'
-import NewChannelButton from './NewChannelButton'
 import NewChannelMenu from './NewChannelMenu'
+import ChannelMenu from './ChannelMenu'
 import {Channel, Message, putMessageInChannels} from "../../utils/Message";
+import {io,  Socket } from 'socket.io-client'
 import { useCookies } from 'react-cookie';
 
 function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
-	const [isSearching, setIsSearching] = useState(false)
-	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([])
 	const [currentChannel, setCurrentChannel ] =  useState<Channel>()
 	const [currentMessage, setCurrentMessage ] =  useState('')
   const [cookies] = useCookies(['auth']);
 	const [socket, setSocket] = useState<Socket>()
+	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([])
+
+	const send = (sender: string, content: string, channel: string) =>{
+		socket?.emit("messageToServer",
+      JSON.stringify({sender: sender, content: content, channel: channel}))
+	}
 
   const updateJoinedChannels = () => {
     fetch('http://localhost:3000/user/channels', {
@@ -38,8 +42,9 @@ function Chat() {
     })
   }
 
+
 	useEffect( () => {
-    updateJoinedChannels();
+		updateJoinedChannels();
     setSocket(
       io("http://localhost:8001", {
         withCredentials: true,
@@ -48,11 +53,6 @@ function Chat() {
     );
 		//eslint-disable-next-line
 	}, [])
-
-	const send = (sender: string, content: string, channel: string) =>{
-		socket?.emit("messageToServer",
-      JSON.stringify({sender: sender, content: content, channel: channel}))
-	}
 
 	useEffect(() => {
     const messageListener = (payload: string) => {
@@ -87,24 +87,6 @@ function Chat() {
 		}
 	})
 
-	const ChannelButtonStyle = (channel: string) => {
-		return currentChannel === undefined
-    || channel.channelName !== currentChannel.channelName ? {
-			backgroundColor:  '#458588',
-		} : {
-			backgroundColor:  '#83a598',
-			border: 'inset .2rem #a89984'
-		}
-	}
-
-	const EnableSearch = (event: React.FocusEvent<HTMLInputElement>) => {
-    setIsSearching(true);
-	}
-
-	const DisableSearch = (event: React.FocusEvent<HTMLInputElement>) => {
-    setIsSearching(false);
-	}
-
 	return (
 		<div className="Chat">
 			<NewChannelMenu
@@ -113,28 +95,12 @@ function Chat() {
 				visible={NewConvMenu}/>
 			<input className="burger" type="checkbox" id="burgerToggle"/>
 			<label htmlFor="burgerToggle"><GiHamburgerMenu /></label>
-			<div className="channelMenu">
-				<header
-					style={isSearching ? {display: "block"} : {}}
-				>
-					<input type="text" onFocus={EnableSearch} onBlur={DisableSearch}
-						placeholder="search"/>
-					<NewChannelButton
-            toggle={()=>SetNewConvMenu(!NewConvMenu)}
-            style={isSearching ? {display: "none"} : {}}
-          />
-				</header>
-				<div className="channelList">
-					{
-						joinedChannel.map((channel, idx) =>
-							<button
-								key={idx}
-								onClick={()=>setCurrentChannel(channel)}
-								style={ChannelButtonStyle(channel.channelName)}>
-                {channel.channelName}</button>
-						)}
-				</div>
-			</div>
+			<ChannelMenu
+				currentChannel={currentChannel}
+				setCurrentChannel={setCurrentChannel}
+				toggleMenu={SetNewConvMenu}
+				joinedChannel={joinedChannel}
+			/>
 			<ul className="channelContent">
 				<div className="chatArea">
 					{displayChannelContent(currentChannel)}
