@@ -51,7 +51,7 @@ describe('Sending a message', () => {
 
     await channelService.sendMessage(messageToBeSent);
 
-    expect(broadcasting.emitMessage).toHaveBeenCalled();
+    expect(broadcasting.emitMessage).toHaveBeenCalledWith(messageToBeSent.channel, messageToBeSent);
   });
 
   it('creates the corresponding channel if it does not exist', async () => {
@@ -90,16 +90,34 @@ describe('Administrating a channel', () => {
       'channelName',
     );
 
-    try {
-      await channelService.joinChannel(
+    await expect(() =>
+      channelService.joinChannel(
         'bannedUserName',
         'channelName',
         'channelPassword',
-      );
-    } catch (e) {}
+      ),
+    ).rejects.toThrow();
+  });
 
-    const user = (await userService.getUser('bannedUserName')) as User;
-    expect(user.getChannelNames().includes('channelName')).toBeFalsy();
+  it('should remove the channel from the user when banned', async () => {
+    await userService.createUser(new User('bannedUserName', ''));
+    await channelService.joinChannel(
+      'Thomas',
+      'channelName',
+      'channelPassword',
+    );
+    await channelService.joinChannel(
+      'bannedUserName',
+      'channelName',
+      'channelPassword',
+    );
+    await channelService.banUserFromChannel(
+      'Thomas',
+      'bannedUserName',
+      'channelName',
+    );
+
+    expect(userService.getUser('bannedUserName')?.getChannelNames()).toEqual(['welcome']);
   });
 
   it('should not be allowed to ban unless admin', async () => {
@@ -110,17 +128,9 @@ describe('Administrating a channel', () => {
       'channelPassword',
     );
 
-    try {
-      await channelService.banUserFromChannel(
-        'randomUser',
-        'Thomas',
-        'channelName'
-      );
-    } catch (e) {
-      return;
-    }
-
-    throw new Error('banUserFromChannel did not throw');
+    await expect(() =>
+      channelService.banUserFromChannel('randomUser', 'Thomas', 'channelName'),
+    ).rejects.toThrow();
   });
 });
 

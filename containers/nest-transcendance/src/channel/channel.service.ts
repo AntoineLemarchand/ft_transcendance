@@ -33,7 +33,7 @@ export class ChannelService {
         newChannel.addMessage(message);
       });
     //todo: find syntax to differentiate between messages and game states etc
-    await this.broadcastingGateway.emitMessage('', message);
+    await this.broadcastingGateway.emitMessage(message.channel, message);
   }
 
   async addChannel(channelName: string, ownername: string): Promise<Channel> {
@@ -82,5 +82,6 @@ export class ChannelService {
     if (channel.isAdmin(usernameOfExecutor) == false)
       throw new Error('This user is not an admin');
     channel.banUser(bannedUserName);
+    this.userService.removeChannelName(bannedUserName, channelName)
   }
 }

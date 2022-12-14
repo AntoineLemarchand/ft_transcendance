@@ -5,27 +5,28 @@ jest.mock('socket.io', () => {
   return {
     Socket: jest.fn().mockImplementation(() => {
       return {
-        join: jest.fn().mockImplementation((deviceId: string) => {
-          console.log('banbna');
-        }),
-        Socket: () => {
-          console.log('banbna');
-        },
+        join: jest.fn().mockImplementation((username: string) => {}),
+        leave: jest.fn().mockImplementation((deviceId: string) => {}),
       };
     }),
     Server: jest.fn().mockImplementation(() => {
       return {
-        in: (l: string) => {
-          console.log('banbna');
+        sockets: {
+          sockets: new Map<string, Socket>([
+            // @ts-ignore
+            ['defaultDeviceId', new Socket()],
+            // @ts-ignore
+            ['deviceId0', new Socket()],
+            // @ts-ignore
+            ['deviceId1', new Socket()],
+          ]),
         },
-        // @ts-ignore
-        sockets: { sockets: new Map<string, Socket>([['defaultDeviceId', new Socket()]]) },
       };
     }),
   };
 });
 
-describe('Connecting to a room', () => {
+describe('Connecting a new device', () => {
   it('should add the deviceId to the map', () => {
     const handler = new RoomHandler(new Server({}));
 
@@ -33,15 +34,6 @@ describe('Connecting to a room', () => {
 
     const result = handler.getUserInstances('username');
     expect(result[0]).toBe('deviceId0');
-  });
-
-  it('should call the server to let the deviceIds join the room', () => {
-    const d = new Server();
-    const handler = new RoomHandler(d);
-
-    handler.addUserInstance('username', 'defaultDeviceId');
-
-    expect((handler.server.sockets.sockets.get('defaultDeviceId') as Socket).join).toHaveBeenCalled();
   });
 
   it('should add the deviceId to the map without overriding the other device ids', () => {
@@ -55,6 +47,23 @@ describe('Connecting to a room', () => {
     expect(result[1]).toBe('deviceId1');
   });
 
+  it('should join the new deviceId to all the given rooms', () => {
+    const handler = new RoomHandler(new Server({}));
+    const spy = jest.spyOn(handler, 'join');
+
+    handler.addUserInstance('username', 'deviceId0', [
+      'roomName1',
+      'roomName2',
+      'roomName3',
+    ]);
+
+    expect(spy.mock.calls).toEqual([
+      ['username', 'roomName1'],
+      ['username', 'roomName2'],
+      ['username', 'roomName3'],
+    ]);
+  });
+
   it('should return an empty list when not found', () => {
     const handler = new RoomHandler(new Server({}));
 
@@ -64,16 +73,55 @@ describe('Connecting to a room', () => {
   });
 });
 
-describe('Removing from room', () => {
-  it('should remove the specified deviceId', () => {
-    const handler = new RoomHandler(new Server({}));
+describe('Joining a room', () => {
+  it('should call the server to let the deviceIds join the room', () => {
+    const handler = new RoomHandler(new Server());
     handler.addUserInstance('username', 'deviceId0');
     handler.addUserInstance('username', 'deviceId1');
 
-    handler.removeUserInstance('username', 'deviceId1');
+    handler.join('username', 'roomName');
+
+    expect(
+      (handler.server.sockets.sockets.get('deviceId0') as Socket).join,
+    ).toHaveBeenCalledWith('roomName');
+    expect(
+      (handler.server.sockets.sockets.get('deviceId1') as Socket).join,
+    ).toHaveBeenCalledWith('roomName');
+  });
+});
+
+describe('Removing deviceId', () => {
+  it('should remove the specified deviceId from all rooms', () => {
+    const handler = new RoomHandler(new Server({}));
+    const spy = jest.spyOn(handler, 'leave');
+    handler.addUserInstance('username', 'deviceId0');
+    handler.addUserInstance('username', 'deviceId1');
+
+    handler.removeUserInstance('username', 'deviceId1', [
+      'roomName1',
+      'roomName2',
+    ]);
 
     const result = handler.getUserInstances('username');
     expect(result[0]).toBe('deviceId0');
     expect(result.length).toBe(1);
+    expect(spy.mock.calls).toEqual([
+      ['username', 'roomName1'],
+      ['username', 'roomName2'],
+    ]);
+  });
+});
+
+describe('Removing from room', () => {
+  it('should call leave on removing deviceId', () => {
+    const handler = new RoomHandler(new Server());
+    handler.addUserInstance('username', 'deviceId0');
+    handler.addUserInstance('username', 'deviceId1');
+
+    handler.leave('username', 'roomName');
+
+    expect(
+      (handler.server.sockets.sockets.get('deviceId1') as Socket).leave,
+    ).toHaveBeenCalledWith('roomName');
   });
 });
