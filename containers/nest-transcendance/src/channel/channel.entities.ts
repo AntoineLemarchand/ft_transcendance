@@ -15,11 +15,18 @@ export class Channel {
   private admins: string[];
   private bannedUsers: string[];
 
-  constructor(private channelName: string,
-              creatorUserName: string) {
+  constructor(
+    private channelName: string,
+    creatorUserName: string,
+    private password = '',
+  ) {
     this.messages = [];
     this.admins = [creatorUserName];
     this.bannedUsers = [];
+  }
+
+  getPassword(): string {
+    return this.password;
   }
 
   getAdmins(): string[] {

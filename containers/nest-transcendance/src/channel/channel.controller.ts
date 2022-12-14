@@ -19,17 +19,13 @@ export class ChannelController {
   @UseGuards(JwtAuthGuard)
   @Post('join')
   async addChannel(@Request() req: any) {
-    try {
-      return {
-        channel: await this.channelService.joinChannel(
-          req.user.name,
-          req.body.channelName,
-          req.body.channelPassword,
-        ),
-      };
-    } catch (e) {
-      throw new HttpException(e.what, HttpStatus.CONFLICT);
-    }
+    return {
+      channel: await this.channelService.joinChannel(
+        req.user.name,
+        req.body.channelName,
+        req.body.channelPassword,
+      ),
+    };
   }
 
   @UseGuards(JwtAuthGuard)

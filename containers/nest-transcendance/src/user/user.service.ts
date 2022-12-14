@@ -75,10 +75,10 @@ export class UserService {
 		return result;
 	}
 
-	addChannelName(username: string, channelName: string) {
+	async addChannelName(username: string, channelName: string) {
 		const user: User = this.getInfo(username);
 		if (user.getChannelNames().includes(channelName))
-			throw new Error('user has already joined the channel');
+			throw new HttpException('user has already joined the channel', HttpStatus.CONFLICT);
 		return user.addChannelName(channelName);
 	}
 

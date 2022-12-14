@@ -67,7 +67,7 @@ export class BroadcastingGateway
   }
 
   async putUserInRoom(username: string, channelName: string) {
-    this.roomHandler.join(username, channelName);
+    await this.roomHandler.join(username, channelName);
   }
 
   private getUsernameFromToken(client: Socket) {
