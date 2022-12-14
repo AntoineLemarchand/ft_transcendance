@@ -6,9 +6,10 @@ import { ChannelController } from './channel.controller';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
+import { BroadcastingModule } from '../broadcasting/broadcasting.module';
 
 @Module({
-  imports: [Message, AuthModule, forwardRef(() => UserModule)],
+  imports: [Message, AuthModule, forwardRef(() => UserModule), forwardRef(() => BroadcastingModule)],
   providers: [ChannelService, ChannelRepository, BroadcastingGateway],
   exports: [ChannelService, Message],
   controllers: [ChannelController],

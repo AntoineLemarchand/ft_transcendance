@@ -45,4 +45,10 @@ export default class User {
   addChannelName(channelName: string) {
     this.channelNames.push(channelName);
   }
+
+  removeChannelName(channelName: string) {
+    this.channelNames = this.channelNames.filter(
+      (tmpName) => tmpName != channelName,
+    );
+  }
 }

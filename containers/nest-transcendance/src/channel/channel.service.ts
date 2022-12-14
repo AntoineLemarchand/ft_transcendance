@@ -33,7 +33,7 @@ export class ChannelService {
         newChannel.addMessage(message);
       });
     //todo: find syntax to differentiate between messages and game states etc
-    await this.broadcastingGateway.emitMessage('', message);
+    await this.broadcastingGateway.emitMessage(message.channel, message);
   }
 
   async addChannel(channelName: string, ownername: string): Promise<Channel> {
@@ -74,10 +74,14 @@ export class ChannelService {
   }
 
   async banUserFromChannel(
+    usernameOfExecutor: string,
     bannedUserName: string,
     channelName: string,
   ): Promise<void> {
     const channel: Channel = await this.channelRepository.findOne(channelName);
+    if (channel.isAdmin(usernameOfExecutor) == false)
+      throw new Error('This user is not an admin');
     channel.banUser(bannedUserName);
+    this.userService.removeChannelName(bannedUserName, channelName)
   }
 }
