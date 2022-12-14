@@ -41,10 +41,6 @@ export class BroadcastingGateway
   @SubscribeMessage('messageToServer')
   handleMessage(client: Socket, data: string): void {
     const message: Message = JSON.parse(data);
-    console.log(client.id + typeof client.id);
-    Array.from(this.server.sockets.sockets.values()).forEach((content) => {
-      console.log(content.id);
-    });
     console.log(
       'Received :>' +
         message.content +
@@ -58,7 +54,8 @@ export class BroadcastingGateway
 
   //todo: find syntax to differentiate between messages and game states etc
   emitMessage(eventName: string, message: Message) {
-    // this.server.emit(eventName, JSON.stringify(message));
+    console.log('emitting message ')
+    console.log(message)
     this.server.in(eventName).emit('messageToClient', JSON.stringify(message));
   }
 
@@ -70,6 +67,10 @@ export class BroadcastingGateway
       await this.userService.getChannels(username)
     ).map((channel) => channel.getName());
     this.roomHandler.addUserInstance(username, client.id, channelNames);
+  }
+
+  async putUserInRoom(username: string, channelName: string){
+    this.roomHandler.join(username, channelName);
   }
 
   async handleDisconnect(client: Socket) {

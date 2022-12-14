@@ -70,6 +70,7 @@ export class ChannelService {
     if (await channel.isUserBanned(userName))
       return Promise.reject(new Error('the user is banned'));
     await this.userService.addChannelName(userName, channelName);
+    this.broadcastingGateway.putUserInRoom(userName, channelName);
     return channel as Channel;
   }
 
