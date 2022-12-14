@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useCookies } from 'react-cookie';
 
@@ -21,18 +21,19 @@ function Main(props: {component: any}) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const tab = location.pathname.split('/')[1];
-  const [cookie,,removeCookie] = useCookies(['auth']);
+  const [cookie, setCookie, removeCookie] = useCookies(['auth', 'userInfo']);
 
 	const ProcessLogout = () => {
+		console.log("removing auth cookie");
     removeCookie('auth');
 		navigate('/');
 	}
 
 	const pages = [
-		{ icon: <FaHome/>, ref: 'home', component: <Home/>},
+		{ icon: <FaHome/>, ref: 'home', component: <Home />},
 		{ icon: <FaTableTennis/>, ref: 'game', component: <Play/>},
 		{ icon: <FaCommentDots/>, ref: 'chat', component: <Chat/>},
-		{ icon: <FaUser/>, ref: 'profile', component: <Profile/>},
+		{ icon: <FaUser/>, ref: 'profile', component: <Profile />},
 	];
 
 	const tabStyle= (ref: string): React.CSSProperties  => {
@@ -45,7 +46,8 @@ function Main(props: {component: any}) {
   useEffect(() => {
     if (cookie['auth'] === undefined)
       navigate('/')
-  })
+  }, [])
+
 
 	return (
 			<main>
