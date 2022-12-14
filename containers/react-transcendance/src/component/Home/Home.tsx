@@ -1,11 +1,19 @@
-import React from 'react';
+import { useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useCookies } from 'react-cookie'
 
 import 'static/Home.scss'
 import { RiCopyleftLine } from 'react-icons/ri'
 
 function Home() {
   const navigate = useNavigate();
+	const [cookie] = useCookies(['auth']);
+
+	useEffect(() => {
+		if (cookie['auth'] !== undefined)
+			navigate('/home')
+	}, [])
+
 	return (
 		<div className="Home">
       <h1>Welcome !</h1>
@@ -23,9 +31,9 @@ function Home() {
       
       <p><RiCopyleftLine fill="#ebdbb2"/> 2023<br/>
         Jessica Boisserand,
-        Antoine Lemarchand,
-        Justine Saint-Jalmes and
-        Frederik Schlüter </p>
+        <a href="https://antoinelemarchand.xyz">Antoine Lemarchand</a>,
+        Justine Saint-Jalmes 
+        and <a href="https://fleanegan.github.io/portfolio">Frederik Schlüter</a> </p>
 		</div>
 	)
 }
