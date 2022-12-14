@@ -10,7 +10,7 @@ function NotFound() {
 		<div className="NotFound" style={style}>
 			<h1>404</h1>
 			<h2>Page not found.</h2>
-			<Link to="/home"><button>Home</button></Link>
+			<Link to="/home"><button style={{padding: "3rem"}}>Home</button></Link>
 		</div>
 	)
 }

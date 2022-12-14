@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import 'static/Chat/ChatName.scss'
 
@@ -27,7 +28,6 @@ function ChatName(props: {username: string, sender: string}) {
 
 	const options = [
 		"Make Admin",
-		"Profile",
 		"Block",
 		"Invite to play",
 		"Mute",
@@ -44,6 +44,7 @@ function ChatName(props: {username: string, sender: string}) {
 			<div className="options" style={DropDownStyle} onClick={ToggleUserMenu}>
 				<div className="optionList" onClick={(event)=>{event.stopPropagation()}}>
 				<h3 style={MessageSenderStyle}>{props.sender}</h3>
+				<Link to={"/profile/" + props.sender}><button>Profile</button></Link>
 				{
 					options.map( (option, idx) => 
 						<button key={idx} style={ButtonStyle}>{option}</button>
