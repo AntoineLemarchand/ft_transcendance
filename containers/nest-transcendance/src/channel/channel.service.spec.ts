@@ -74,6 +74,12 @@ describe('Joining a channel', () => {
     const user = (await userService.getUser('Thomas')) as User;
     expect(user.getChannelNames().includes('welcom')).toBeTruthy();
   });
+
+  it('should add the deviceID of the user to all channelNames ', async () => {
+    await channelService.joinChannel('Thomas', 'ab', 'channelPassword');
+
+    expect(broadcasting.putUserInRoom).toHaveBeenCalledWith('Thomas', 'ab');
+  });
 });
 
 describe('Administrating a channel', () => {

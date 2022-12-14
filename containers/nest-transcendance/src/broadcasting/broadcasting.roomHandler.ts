@@ -51,7 +51,7 @@ export class RoomHandler {
   }
 
   leave(username: string, roomName: string) {
-    const deviceIds = this.instanceMap.get(username) as string[];
+    const deviceIds = this.getDeviceIdsFor(username);
     for (const deviceId of deviceIds)
       (this.server.sockets.sockets.get(deviceId) as Socket).leave(roomName);
   }
