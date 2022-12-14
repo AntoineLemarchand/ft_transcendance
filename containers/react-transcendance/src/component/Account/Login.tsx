@@ -37,6 +37,19 @@ function Login() {
 									return JSON.parse(body).access_token
 							})
 							setCookie('auth', token)
+							setCookie('userInfo', state.username)
+							fetch('http://localhost:3000/user/info', {
+									credentials: 'include',
+									method: 'GET',
+									headers: {
+											Accept: 'application/json',
+											'Content-Type': 'application/json'
+									},
+							}).then((result) => {
+								result.text().then((text)=> {
+									setCookie('userInfo', JSON.parse(text).userInfo);
+								})
+							})
 							navigate('/home');
 					} else {
 							alert('Wrong credentials');

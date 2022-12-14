@@ -7,7 +7,7 @@ import { RiCopyleftLine } from 'react-icons/ri'
 
 function Home() {
   const navigate = useNavigate();
-	const [cookie] = useCookies(['auth']);
+	const [cookie] = useCookies(['auth', 'userInfo']);
 
 	useEffect(() => {
 		if (cookie['auth'] !== undefined)
@@ -16,7 +16,7 @@ function Home() {
 
 	return (
 		<div className="Home">
-      <h1>Welcome !</h1>
+      <h1>Welcome {cookie['userInfo'].name}!</h1>
       <p>
       The aim of this website is for you
       to <Link to="/game">play pong</Link> with

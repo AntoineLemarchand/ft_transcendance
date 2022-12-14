@@ -16,7 +16,7 @@ function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
 	const [currentChannel, setCurrentChannel ] =  useState<Channel>()
 	const [currentMessage, setCurrentMessage ] =  useState('')
-  const [cookies] = useCookies(['auth']);
+  const [cookie] = useCookies(['auth', 'userInfo']);
 	const [socket, setSocket] = useState<Socket>()
 	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([])
 
@@ -47,7 +47,7 @@ function Chat() {
     setSocket(
       io("http://localhost:8001", {
         withCredentials: true,
-        query: {auth: cookies.auth},
+        query: {auth: cookie.auth},
       })
     );
 		//eslint-disable-next-line
@@ -70,7 +70,7 @@ function Chat() {
 		return currentChannel.messages.map((message: Message, idx: number) =>
 		<li key={idx}
 			className="message" style={
-			{textAlign: message.sender === "TODO" ? "right" : "left"}}>
+			{textAlign: message.sender === cookie['userInfo'].name ? "right" : "left"}}>
 			<ChatName username={message.sender} sender={message.sender}/>
 			<p className="content">
 				{message.content}
@@ -81,7 +81,7 @@ function Chat() {
 	const OnKeyDown = ((event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter' && currentChannel !== undefined) {
 			let messageContent: string = (event.target as any).value;
-			send("TODO", messageContent, currentChannel.channelName);
+			send(cookie['userInfo'].name, messageContent, currentChannel.channelName);
 			setCurrentMessage('');
 		}
 	})
