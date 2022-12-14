@@ -39,7 +39,9 @@ export class BroadcastingGateway
   @UseGuards(WsGuard)
   @SubscribeMessage('messageToServer')
   handleMessage(client: Socket, data: string): void {
-    this.channelService.sendMessage(JSON.parse(data));
+    const message = JSON.parse(data);
+    message.sender = this.getUsernameFromToken(client);
+    this.channelService.sendMessage(message);
   }
 
   //todo: find syntax to differentiate between messages and game states etc

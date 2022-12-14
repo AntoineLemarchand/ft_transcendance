@@ -5,20 +5,20 @@ import { AppModule } from '../app.module';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import * as request from 'supertest';
 
-describe('UserController', () => {
-  let app: INestApplication;
+let app: INestApplication;
 
-  beforeEach(async () => {
-    const module = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(BroadcastingGateway)
-      .useValue(jest.fn())
-      .compile();
-    app = module.createNestApplication();
-    await app.init();
-  });
+beforeEach(async () => {
+  const module = await Test.createTestingModule({
+    imports: [AppModule],
+  })
+    .overrideProvider(BroadcastingGateway)
+    .useValue(jest.fn())
+    .compile();
+  app = module.createNestApplication();
+  await app.init();
+});
 
+describe('Making friends', () => {
   it('should return 404 on adding unexisting friend', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
@@ -85,7 +85,9 @@ describe('UserController', () => {
     expect(result.status).toBe(200);
     expect(friendsList.length).toBe(0);
   });
+});
 
+describe('Getting user info', () => {
   it('should return 404 on non existing user info', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
@@ -127,7 +129,9 @@ describe('UserController', () => {
     expect(result.body.channels[0].channelName).toBe('welcome');
     expect(result.body.channels[1].channelName).toBe('newChannelName');
   });
+});
 
+describe('Login', () => {
   it('should be subscribed to the welcome channel on creation', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
@@ -135,5 +139,20 @@ describe('UserController', () => {
 
     expect(result.status).toBe(200);
     expect(result.body.userInfo.channelNames.length).toBe(1);
+  });
+});
+
+describe('fetching all users', () => {
+  it('should return only the names', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.signinUser(app, 'lambdaUserName', 'password');
+
+    const result = await request(app.getHttpServer())
+      .get('/user')
+      .set('Authorization', 'Bearer ' + jwt);
+
+    expect(result.status).toBe(200);
+    expect(result.body.usernames.length).toBe(2);
+    expect(result.body.usernames).toEqual(['Thomas', 'lambdaUserName']);
   });
 });

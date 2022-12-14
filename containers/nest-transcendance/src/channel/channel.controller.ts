@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -58,5 +59,29 @@ export class ChannelController {
       params.regexString,
     );
     return { channels: JSON.stringify(matchingChannels) };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('getMatchingNames')
+  async findAllChannelNames(@Request() req: any) {
+    const matchingChannels = await this.channelService.findMatching('');
+    return { channels: JSON.stringify(matchingChannels) };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('user')
+  async banUser(@Request() req: any) {
+    const matchingChannel = await this.channelService.getChannelByName(
+      req.body.channelName,
+    );
+    try {
+      await this.channelService.banUserFromChannel(
+        req.user.name,
+        req.body.bannedUserName,
+        req.body.channelName,
+      );
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.UNAUTHORIZED);
+    }
   }
 }

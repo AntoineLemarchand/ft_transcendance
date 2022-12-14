@@ -49,6 +49,12 @@ export class UserController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('')
+    async getAllUserNames(@Request() req: any) {
+        return {usernames: this.userService.getAllUsernames()};
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get('channels')
     async getChannels(@Request() req: any) {
         return {channels: await this.userService.getChannels(req.user.name)};

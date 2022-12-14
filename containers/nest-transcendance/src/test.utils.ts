@@ -111,6 +111,21 @@ export const getChannels = async (
     .set('Authorization', 'Bearer ' + jwt);
 };
 
+export const banFromChannel = async (
+  callerModule: INestApplication,
+  jwt: string,
+  channelName: string,
+  bannedUserName: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .delete('/channel/user')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      channelName: channelName,
+      bannedUserName: bannedUserName,
+    });
+};
+
 export const doesChannelExist = async (
   callerModule: INestApplication,
   jwt: string,
