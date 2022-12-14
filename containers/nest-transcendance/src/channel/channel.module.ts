@@ -9,7 +9,7 @@ import { UserModule } from '../user/user.module';
 import { BroadcastingModule } from '../broadcasting/broadcasting.module';
 
 @Module({
-  imports: [Message, AuthModule, forwardRef(() => UserModule), forwardRef(() => BroadcastingModule)],
+  imports: [Message, forwardRef(() => AuthModule), forwardRef(() => UserModule), forwardRef(() => BroadcastingModule)],
   providers: [ChannelService, ChannelRepository, BroadcastingGateway],
   exports: [ChannelService, Message],
   controllers: [ChannelController],

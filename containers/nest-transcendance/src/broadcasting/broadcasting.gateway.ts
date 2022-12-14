@@ -32,58 +32,45 @@ export class BroadcastingGateway
     private channelService: ChannelService,
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
-  ) {
-  }
+  ) {}
 
   //todo: call database layer and store messages
   //todo: invoke guard to check valid token
   @UseGuards(WsGuard)
   @SubscribeMessage('messageToServer')
   handleMessage(client: Socket, data: string): void {
-    const message: Message = JSON.parse(data);
-    console.log(
-      'Received :>' +
-        message.content +
-        '< from: >' +
-        message.sender +
-        '< for channel: ' +
-        message.channel,
-    );
-    this.channelService.sendMessage(message);
+    this.channelService.sendMessage(JSON.parse(data));
   }
 
   //todo: find syntax to differentiate between messages and game states etc
   emitMessage(eventName: string, message: Message) {
-    console.log('emitting message ')
-    console.log(message)
     this.server.in(eventName).emit('messageToClient', JSON.stringify(message));
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
-    if (!this.roomHandler)
-      this.roomHandler = new RoomHandler(this.server);
+    if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);
     const username = this.getUsernameFromToken(client);
-    const channelNames: string[] = (
-      await this.userService.getChannels(username)
-    ).map((channel) => channel.getName());
+    const channelNames: string[] = (await this.userService
+      .getUser(username)
+      ?.getChannelNames()) as string[];
     this.roomHandler.addUserInstance(username, client.id, channelNames);
   }
 
-  async putUserInRoom(username: string, channelName: string){
-    this.roomHandler.join(username, channelName);
+  async handleDisconnect(client: Socket) {
+    const username = this.getUsernameFromToken(client);
+    const channelNames: string[] = (await this.userService
+      .getUser(username)
+      ?.getChannelNames()) as string[];
+    this.roomHandler.removeUserInstance(username, client.id, channelNames);
   }
 
-  async handleDisconnect(client: Socket) {
-    const username = this.getUsernameFromToken(client)
-    const channelNames: string[] = (
-      await this.userService.getChannels(username)
-    ).map((channel) => channel.getName());
-    this.roomHandler.removeUserInstance(username, client.id, channelNames);
+  async putUserInRoom(username: string, channelName: string) {
+    this.roomHandler.join(username, channelName);
   }
 
   private getUsernameFromToken(client: Socket) {
     return JSON.parse(
-      atob((client.handshake.query.auth as string).split('.')[1])
+      atob((client.handshake.query.auth as string).split('.')[1]),
     ).user.name;
   }
 }
