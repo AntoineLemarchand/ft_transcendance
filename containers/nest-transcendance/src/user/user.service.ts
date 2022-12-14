@@ -86,4 +86,8 @@ export class UserService {
 		const user: User = this.getInfo(username);
 		return user.removeChannelName(channelName);
 	}
+
+	getAllUsernames(): string[] {
+		return (this.users.map((user) => user.getName()))
+	}
 }

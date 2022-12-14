@@ -4,13 +4,14 @@ import * as testUtils from '../test.utils';
 import { AppModule } from '../app.module';
 import * as request from 'supertest';
 import { Channel } from './channel.entities';
-import { getChannels } from '../test.utils';
 import { UserService } from '../user/user.service';
+import { ChannelService } from './channel.service';
 
 jest.mock('../broadcasting/broadcasting.gateway');
 
 let app: INestApplication;
 let userService: UserService;
+let channelService: ChannelService;
 
 beforeEach(async () => {
   const module = await Test.createTestingModule({
@@ -18,6 +19,7 @@ beforeEach(async () => {
   }).compile();
   app = module.createNestApplication();
   userService = module.get<UserService>(UserService);
+  channelService = module.get<ChannelService>(ChannelService);
   await app.init();
 });
 
@@ -103,6 +105,21 @@ describe('searching channels by name', () => {
     expect(matchingChannels.length).toBe(2);
     expect(matchingChannels[0]).toBe('newChannelName1');
     expect(matchingChannels[1]).toBe('newChannelName2');
+  });
+
+  it('should return the names of all joined channels', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.joinChannel(app, jwt, 'newChannelName1');
+    await testUtils.joinChannel(app, jwt, 'newChannelName2');
+    await testUtils.joinChannel(app, jwt, 'otherChannelName1');
+
+    const matchingChannels = await testUtils.getMatchingChannelNames(
+      app,
+      jwt,
+      '',
+    );
+
+    expect(matchingChannels.length).toEqual((await channelService.getChannels()).length);
   });
 });
 

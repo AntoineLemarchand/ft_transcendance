@@ -141,3 +141,18 @@ describe('Login', () => {
     expect(result.body.userInfo.channelNames.length).toBe(1);
   });
 });
+
+describe('fetching all users', () => {
+  it('should return only the names', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.signinUser(app, 'lambdaUserName', 'password');
+
+    const result = await request(app.getHttpServer())
+      .get('/user')
+      .set('Authorization', 'Bearer ' + jwt);
+
+    expect(result.status).toBe(200);
+    expect(result.body.usernames.length).toBe(2);
+    expect(result.body.usernames).toEqual(['Thomas', 'lambdaUserName']);
+  });
+});

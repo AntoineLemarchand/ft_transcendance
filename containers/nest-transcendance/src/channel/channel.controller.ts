@@ -62,6 +62,13 @@ export class ChannelController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('getMatchingNames')
+  async findAllChannelNames(@Request() req: any) {
+    const matchingChannels = await this.channelService.findMatching('');
+    return { channels: JSON.stringify(matchingChannels) };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Delete('user')
   async banUser(@Request() req: any) {
     const matchingChannel = await this.channelService.getChannelByName(
