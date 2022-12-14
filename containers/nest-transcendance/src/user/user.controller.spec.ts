@@ -104,6 +104,16 @@ describe('UserController', () => {
     expect(result.body.userInfo.name).toBe('Thomas');
   });
 
+  it('should take username from token if empty query', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const result = await testUtils.getUserData(app, jwt, '');
+
+    expect(result.status).toBe(200);
+    expect(result.body.userInfo).toBeDefined();
+    expect(result.body.userInfo.name).toBe('Thomas');
+  });
+
   it('should return 201 and all user channels', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
     await testUtils.joinChannel(app, jwt, 'newChannelName', 'password');
