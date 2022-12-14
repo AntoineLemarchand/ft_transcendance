@@ -5,16 +5,19 @@ import { AppModule } from '../app.module';
 import * as request from 'supertest';
 import { Channel } from './channel.entities';
 import { getChannels } from '../test.utils';
+import { UserService } from '../user/user.service';
 
 jest.mock('../broadcasting/broadcasting.gateway');
 
 let app: INestApplication;
+let userService: UserService;
 
 beforeEach(async () => {
   const module = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
   app = module.createNestApplication();
+  userService = module.get<UserService>(UserService);
   await app.init();
 });
 
@@ -100,5 +103,48 @@ describe('searching channels by name', () => {
     expect(matchingChannels.length).toBe(2);
     expect(matchingChannels[0]).toBe('newChannelName1');
     expect(matchingChannels[1]).toBe('newChannelName2');
+  });
+});
+
+async function createUserAndJoinToChannel(
+  username: string,
+  channelName: string,
+) {
+  const jwt = (await testUtils.signinUser(app, username, 'password')).body
+    .access_token;
+  await testUtils.joinChannel(app, jwt, channelName);
+  return jwt;
+}
+
+describe('administrating a channel', () => {
+  it('should return 401 if not authorized to execute administrator tasks', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await createUserAndJoinToChannel('bannedUserName', 'welcome');
+
+    const response = await testUtils.banFromChannel(
+      app,
+      jwt,
+      'welcome',
+      'bannedUserName',
+    );
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 200 on success and remove member from channel', async () => {
+    const jwt = await createUserAndJoinToChannel('Karsten', 'KarstensChannel');
+    await createUserAndJoinToChannel('bannedUserName', 'KarstensChannel');
+
+    const response = await testUtils.banFromChannel(
+      app,
+      jwt,
+      'KarstensChannel',
+      'bannedUserName',
+    );
+
+    expect(response.status).toBe(200);
+    expect(userService.getUser('bannedUserName')?.getChannelNames()).toEqual([
+      'welcome',
+    ]);
   });
 });
