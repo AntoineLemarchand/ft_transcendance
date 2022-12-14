@@ -22,6 +22,7 @@ function DisplayList(props: {
 	}
 
 	const JoinChannel = (event: any) => {
+		event.stopPropagation();
     fetch('http://localhost:3000/channel/join', {
       credentials: 'include',
       method: 'POST',
@@ -89,6 +90,11 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
     setIsSearching(true);
 	}
 
+	const DisableSearch = () => {
+		if (document.activeElement.id === "channelList") return;
+    setIsSearching(false);
+	}
+
 	const SearchQuery = (event: any) => {
 		if (!isSearching)
 			return;
@@ -126,7 +132,12 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 				<header
 					style={isSearching ? {display: "block"} : {}}
 				>
-					<input type="text" onFocus={EnableSearch} placeholder="search" onChange={SearchQuery}/>
+					<input type="text"
+						onFocus={EnableSearch}
+						onBlur={()=>setTimeout(DisableSearch, 500)}
+						onChange={SearchQuery}
+						placeholder="search"
+						/>
 					<NewChannelButton
             toggle={()=>props.toggleMenu(true)}
             style={isSearching ? {display: "none"} : {}}
