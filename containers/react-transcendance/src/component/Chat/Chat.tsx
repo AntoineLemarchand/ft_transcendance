@@ -99,6 +99,7 @@ function Chat() {
 				setCurrentChannel={setCurrentChannel}
 				toggleMenu={SetNewConvMenu}
 				joinedChannel={joinedChannel}
+				updateJoinedChannels={updateJoinedChannels}
 			/>
 			<ul className="channelContent">
 				<div className="chatArea">

@@ -8,6 +8,8 @@ function DisplayList(props: {
 	isSearching: boolean,
 	currentChannel: Channel | undefined,
 	setCurrentChannel: Function,
+	updateJoinedChannels: Function,
+	setIsSearching: Function,
 	}) {
 	const ChannelButtonStyle = (channel: Channel) => {
 		return props.currentChannel === undefined
@@ -19,6 +21,26 @@ function DisplayList(props: {
 		}
 	}
 
+	const JoinChannel = (event: any) => {
+    fetch('http://localhost:3000/channel/join', {
+      credentials: 'include',
+      method: 'POST',
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify({
+          'channelName': event.target.value,
+          'channelPassword': '',
+      }),
+    }).then(response=>{
+      if (response.status !== 201)
+        alert("unable to join");
+      else {
+				props.updateJoinedChannels();
+				props.setIsSearching(false);
+      }
+    })
+	}
 
 	if (props.isSearching) {
 		return (
@@ -27,6 +49,8 @@ function DisplayList(props: {
 					props.searchedChannels.map((name: string, idx: number)=> 
 							<button
 								key={idx}
+								onClick={JoinChannel}
+								value={name}
 								>
                 {name}</button>
 					)
@@ -52,8 +76,10 @@ function DisplayList(props: {
 
 function ChannelMenu(props: {currentChannel: Channel | undefined,
 	setCurrentChannel: Function,
-	toggleMenu: Function
-	joinedChannel: Channel[]}) {
+	toggleMenu: Function,
+	joinedChannel: Channel[],
+	updateJoinedChannels: Function,
+	}) {
 
 	const [isSearching, setIsSearching] = useState(false);
 	const [searchedChannels, setSearchedChannels] = useState<string[]>([]);
@@ -61,10 +87,6 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 
 	const EnableSearch = () => {
     setIsSearching(true);
-	}
-
-	const DisableSearch = () => {
-    setIsSearching(false);
 	}
 
 	const SearchQuery = (event: any) => {
@@ -90,8 +112,7 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 				<header
 					style={isSearching ? {display: "block"} : {}}
 				>
-					<input type="text" onFocus={EnableSearch} onBlur={DisableSearch}
-						placeholder="search" onChange={SearchQuery}/>
+					<input type="text" onFocus={EnableSearch} placeholder="search" onChange={SearchQuery}/>
 					<NewChannelButton
             toggle={()=>props.toggleMenu(true)}
             style={isSearching ? {display: "none"} : {}}
@@ -103,6 +124,8 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 					isSearching={isSearching}
 					currentChannel={props.currentChannel}
 					setCurrentChannel={props.setCurrentChannel}
+					updateJoinedChannels={props.updateJoinedChannels}
+					setIsSearching={setIsSearching}
 				/>
 			</div>
 		);
