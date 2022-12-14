@@ -1,6 +1,7 @@
+import * as React from 'react'
 import { FaPlus } from 'react-icons/fa'
 
-function NewChannelButton(props: {toggle: Function}) {
+function NewChannelButton(props: {toggle: Function, style: React.CSSProperties}) {
 	const ToggleNewChannelMenu = () => {
 		props.toggle();
 	}
@@ -9,6 +10,7 @@ function NewChannelButton(props: {toggle: Function}) {
 	<button
 		className="NewChannelButton"
 		onClick={ToggleNewChannelMenu}
+    style={props.style}
 		>
 		<FaPlus />
 	</button>
