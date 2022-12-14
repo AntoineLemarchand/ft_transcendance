@@ -7,13 +7,11 @@ import { WsGuard } from '../auth/websocket.auth.guard';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  providers: [BroadcastingGateway, WsGuard],
   imports: [
     forwardRef(() => UserModule),
     forwardRef(() => ChannelModule),
     forwardRef(() => AuthModule),
     User,
   ],
-  exports: [BroadcastingGateway],
 })
 export class BroadcastingModule {}
