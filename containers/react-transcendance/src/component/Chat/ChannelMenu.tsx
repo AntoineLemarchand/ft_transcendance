@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import NewChannelButton from './NewChannelButton'
 import {Channel} from "../../utils/Message";
 
@@ -101,11 +101,25 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
         },
     }).then((result) => {
       result.text().then((text)=> {
-				console.log(JSON.parse(text).channels);
         setSearchedChannels(JSON.parse(JSON.parse(text).channels));
       });
     })
 	}
+
+	useEffect(()=> {
+    fetch('http://localhost:3000/channel/getMatchingNames/' , {
+        credentials: 'include',
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+    }).then((result) => {
+      result.text().then((text)=> {
+        setSearchedChannels(JSON.parse(JSON.parse(text).channels));
+      });
+    })
+	}, [])
 
 	return (
 			<div className="channelMenu">
