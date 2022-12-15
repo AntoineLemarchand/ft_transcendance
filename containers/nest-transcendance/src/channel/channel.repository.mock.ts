@@ -27,10 +27,17 @@ export class ChannelRepository {
     return;
   }
 
-  async create(channelName: string, creatorUserName: string): Promise<Channel> {
+  async create(
+    channelName: string,
+    creatorUserName: string,
+    password = '',
+  ): Promise<Channel> {
     if (this.channels.has(channelName))
       return Promise.reject(new Error('this channel exists already'));
-    this.channels.set(channelName, new Channel(channelName, creatorUserName));
+    this.channels.set(
+      channelName,
+      new Channel(channelName, creatorUserName, password),
+    );
     return this.channels.get(channelName) as Channel;
   }
 

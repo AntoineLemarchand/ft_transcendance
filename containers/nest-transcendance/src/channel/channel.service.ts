@@ -20,29 +20,24 @@ export class ChannelService {
   ) {}
 
   async sendMessage(message: Message): Promise<void> {
-    await this.channelRepository
-      .findOne(message.channel)
-      .then((channel) => {
-        channel.addMessage(message);
-      })
-      .catch(async () => {
-        const newChannel = await this.channelRepository.create(
-          message.channel,
-          message.sender,
-        );
-        newChannel.addMessage(message);
-      });
+    await this.channelRepository.findOne(message.channel).then((channel) => {
+      channel.addMessage(message);
+    });
     //todo: find syntax to differentiate between messages and game states etc
     await this.broadcastingGateway.emitMessage(message.channel, message);
   }
 
-  async addChannel(channelName: string, ownername: string): Promise<Channel> {
+  async addChannel(
+    channelName: string,
+    ownername: string,
+    password: string,
+  ): Promise<Channel> {
     return await this.channelRepository
-      .create(channelName, ownername)
+      .create(channelName, ownername, password)
       .catch(() => {
         throw new HttpException(
           'This channel exists already',
-          HttpStatus.UNAUTHORIZED,
+          HttpStatus.CONFLICT,
         );
       });
   }
@@ -65,13 +60,22 @@ export class ChannelService {
     channelPassword: string,
   ): Promise<Channel> {
     const channel = await this.getChannelByName(channelName).catch(async () => {
-      return await this.addChannel(channelName, userName);
+      return await this.addChannel(channelName, userName, channelPassword);
     });
-    if (await channel.isUserBanned(userName))
-      return Promise.reject(new Error('the user is banned'));
+    await isJoiningAllowed();
     await this.userService.addChannelName(userName, channelName);
-    this.broadcastingGateway.putUserInRoom(userName, channelName);
+    await this.broadcastingGateway.putUserInRoom(userName, channelName);
     return channel as Channel;
+
+    async function isJoiningAllowed() {
+      if (await channel.isUserBanned(userName))
+        throw new HttpException('the user is banned', HttpStatus.UNAUTHORIZED);
+      if (
+        (await channel.getPassword()) &&
+        (await channel.getPassword()) != channelPassword
+      )
+        throw new HttpException('wrong password', HttpStatus.UNAUTHORIZED);
+    }
   }
 
   async banUserFromChannel(
@@ -83,6 +87,6 @@ export class ChannelService {
     if (channel.isAdmin(usernameOfExecutor) == false)
       throw new Error('This user is not an admin');
     channel.banUser(bannedUserName);
-    this.userService.removeChannelName(bannedUserName, channelName)
+    this.userService.removeChannelName(bannedUserName, channelName);
   }
 }

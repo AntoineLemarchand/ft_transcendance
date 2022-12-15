@@ -53,18 +53,6 @@ describe('Sending a message', () => {
 
     expect(broadcasting.emitMessage).toHaveBeenCalledWith(messageToBeSent.channel, messageToBeSent);
   });
-
-  it('creates the corresponding channel if it does not exist', async () => {
-    const messageToBeSent = new Message();
-    messageToBeSent.channel = 'nonExistingChannelName';
-
-    await channelService.sendMessage(messageToBeSent);
-
-    const nowExistingChannel = await channelRepository.findOne(
-      'nonExistingChannelName',
-    );
-    expect(nowExistingChannel.addMessage).toHaveBeenCalled();
-  });
 });
 
 describe('Joining a channel', () => {

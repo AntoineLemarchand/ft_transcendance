@@ -45,6 +45,15 @@ describe('joining a channel', () => {
     ).toBeTruthy();
   });
 
+  it('should make nonempty password obligatory for others to join', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.createUserAndJoinToChannel(app, 'lambdaUserName', 'newChannelName', 'channelPassword');
+
+    const result = await testUtils.joinChannel(app, jwt, 'newChannelName', '');
+
+    expect(result.status).toBe(401);
+  });
+
   it('should return the new channel on join', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
@@ -123,20 +132,10 @@ describe('searching channels by name', () => {
   });
 });
 
-async function createUserAndJoinToChannel(
-  username: string,
-  channelName: string,
-) {
-  const jwt = (await testUtils.signinUser(app, username, 'password')).body
-    .access_token;
-  await testUtils.joinChannel(app, jwt, channelName);
-  return jwt;
-}
-
 describe('administrating a channel', () => {
   it('should return 401 if not authorized to execute administrator tasks', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    await createUserAndJoinToChannel('bannedUserName', 'welcome');
+    await testUtils.createUserAndJoinToChannel(app, 'bannedUserName', 'welcome', 'channelPassword');
 
     const response = await testUtils.banFromChannel(
       app,
@@ -149,8 +148,8 @@ describe('administrating a channel', () => {
   });
 
   it('should return 200 on success and remove member from channel', async () => {
-    const jwt = await createUserAndJoinToChannel('Karsten', 'KarstensChannel');
-    await createUserAndJoinToChannel('bannedUserName', 'KarstensChannel');
+    const jwt = await testUtils.createUserAndJoinToChannel(app, 'Karsten', 'KarstensChannel', 'channelPassword');
+    await testUtils.createUserAndJoinToChannel(app, 'bannedUserName', 'KarstensChannel', 'channelPassword');
 
     const response = await testUtils.banFromChannel(
       app,

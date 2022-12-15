@@ -126,6 +126,17 @@ export const banFromChannel = async (
     });
 };
 
+export async function createUserAndJoinToChannel(
+  callerModule: INestApplication,
+  username: string,
+  channelName: string,
+  channelPassword?: string) {
+  const jwt = (await signinUser(callerModule, username, 'password')).body
+    .access_token;
+  await joinChannel(callerModule, jwt, channelName, channelPassword);
+  return jwt;
+}
+
 export const doesChannelExist = async (
   callerModule: INestApplication,
   jwt: string,
