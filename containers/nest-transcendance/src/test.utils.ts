@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import { Response } from 'supertest';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
-import { Channel } from './channel/channel.entities';
+import { Channel, ChannelType } from './channel/channel.entities';
 
 export async function extractBearerToken(loginResponse: Promise<Test>) {
   const jwt: string = await loginResponse.then((response: Response) => {
@@ -92,13 +92,14 @@ export const joinChannel = async (
   jwt: string,
   channelName: string,
   channelPassword = 'default',
-) => {
+  type: ChannelType = ChannelType.Normal) => {
   return request(callerModule.getHttpServer())
     .post('/channel/join')
     .set('Authorization', 'Bearer ' + jwt)
     .send({
       channelName: channelName,
       channelPassword: channelPassword,
+      channelType: ChannelType.Private,
     });
 };
 

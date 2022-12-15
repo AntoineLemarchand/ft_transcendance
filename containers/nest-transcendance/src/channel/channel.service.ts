@@ -5,7 +5,7 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { Channel, Message } from './channel.entities';
+import { Channel, ChannelType, Message } from './channel.entities';
 import { ChannelRepository } from './channel.repository.mock';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { UserService } from '../user/user.service';
@@ -31,9 +31,10 @@ export class ChannelService {
     channelName: string,
     ownername: string,
     password: string,
+    channelType: ChannelType,
   ): Promise<Channel> {
     return await this.channelRepository
-      .create(channelName, ownername, password)
+      .create(channelName, ownername, password, channelType)
       .catch(() => {
         throw new HttpException(
           'This channel exists already',
@@ -58,16 +59,28 @@ export class ChannelService {
     userName: string,
     channelName: string,
     channelPassword: string,
+    channelType = ChannelType.Normal,
   ): Promise<Channel> {
     const channel = await this.getChannelByName(channelName).catch(async () => {
-      return await this.addChannel(channelName, userName, channelPassword);
+      return await this.addChannel(
+        channelName,
+        userName,
+        channelPassword,
+        channelType,
+      );
     });
     await isJoiningAllowed();
-    await this.userService.addChannelName(userName, channelName);
-    await this.broadcastingGateway.putUserInRoom(userName, channelName);
-    return channel as Channel;
+    return await this.addUserToChannel(userName, channelName, channel);
 
     async function isJoiningAllowed() {
+      if (
+        channel.getType() == ChannelType.Private &&
+        userName != channel.getAdmins()[0]
+      )
+        throw new HttpException(
+          'joining a private channel is not allowed',
+          HttpStatus.UNAUTHORIZED,
+        );
       if (await channel.isUserBanned(userName))
         throw new HttpException('the user is banned', HttpStatus.UNAUTHORIZED);
       if (
@@ -76,6 +89,16 @@ export class ChannelService {
       )
         throw new HttpException('wrong password', HttpStatus.UNAUTHORIZED);
     }
+  }
+
+  private async addUserToChannel(
+    userName: string,
+    channelName: string,
+    channel: Channel,
+  ) {
+    await this.userService.addChannelName(userName, channelName);
+    await this.broadcastingGateway.putUserInRoom(userName, channelName);
+    return channel as Channel;
   }
 
   async banUserFromChannel(
@@ -88,5 +111,24 @@ export class ChannelService {
       throw new Error('This user is not an admin');
     channel.banUser(bannedUserName);
     this.userService.removeChannelName(bannedUserName, channelName);
+  }
+
+  async inviteToChannel(
+    executorName: string,
+    invitedName: string,
+    channelName: string,
+  ) {
+    const channel = await this.getChannelByName(channelName).catch(
+      (exception) => {
+        throw new HttpException(exception, HttpStatus.NOT_FOUND);
+      },
+    );
+    if (channel.isAdmin(executorName) == false)
+      throw new HttpException(
+        'only admins can invite',
+        HttpStatus.UNAUTHORIZED,
+      );
+    await this.addUserToChannel(invitedName, channelName, channel);
+    await channel.unbanUser(invitedName);
   }
 }

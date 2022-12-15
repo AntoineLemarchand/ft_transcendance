@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { ChannelService } from './channel.service';
+import { ChannelType } from './channel.entities';
 
 @Controller()
 export class ChannelController {
@@ -19,13 +20,27 @@ export class ChannelController {
   @UseGuards(JwtAuthGuard)
   @Post('join')
   async addChannel(@Request() req: any) {
+    let channelType = ChannelType.Normal;
+    if (req.body.channelType && req.body.channelType == ChannelType.Private)
+      channelType = ChannelType.Private;
     return {
       channel: await this.channelService.joinChannel(
         req.user.name,
         req.body.channelName,
         req.body.channelPassword,
+        channelType,
       ),
     };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('invite')
+  async inviteToChannel(@Request() req: any) {
+    await this.channelService.inviteToChannel(
+      req.user.name,
+      req.body.username,
+      req.body.channelName,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

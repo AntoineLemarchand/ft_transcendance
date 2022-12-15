@@ -3,9 +3,10 @@ import { INestApplication } from '@nestjs/common';
 import * as testUtils from '../test.utils';
 import { AppModule } from '../app.module';
 import * as request from 'supertest';
-import { Channel } from './channel.entities';
+import { Channel, ChannelType } from './channel.entities';
 import { UserService } from '../user/user.service';
 import { ChannelService } from './channel.service';
+import { exhaustiveTypeException } from 'tsconfig-paths/lib/try-path';
 
 jest.mock('../broadcasting/broadcasting.gateway');
 
@@ -25,11 +26,7 @@ beforeEach(async () => {
 
 describe('joining a channel', () => {
   it('should not be allowed to create a channel if the user is not logged in ', async () => {
-    const result = await testUtils.joinChannel(
-      app,
-      'invalid token',
-      'newChannelName',
-    );
+    const result = await testUtils.joinChannel(app, 'invalid token', 'newChannelName', 'default');
 
     expect(result.status).toBe(401);
   });
@@ -37,7 +34,7 @@ describe('joining a channel', () => {
   it('should return 201 and create a new channel if correct input is provided', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
-    const result = await testUtils.joinChannel(app, jwt, 'newChannelName');
+    const result = await testUtils.joinChannel(app, jwt, 'newChannelName', 'default');
 
     expect(result.status).toBe(201);
     expect(
@@ -54,10 +51,51 @@ describe('joining a channel', () => {
     expect(result.status).toBe(401);
   });
 
+  it('should create a private Channel when joining first', async () => {
+    const jwtCreator = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.joinChannel(app, jwtCreator, 'privateChannel', '', ChannelType.Private);
+    const jwtJoiner = (await testUtils.signinUser(app, 'outsider', 'password')).body.access_token;
+
+    const result = await testUtils.joinChannel(app, jwtJoiner, 'privateChannel', '');
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should add people to private channels on invite', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.joinChannel(app, jwt, 'privateChannel', '', ChannelType.Private);
+    await testUtils.signinUser(app, 'outsider', 'password');
+
+    const result = await request(app.getHttpServer())
+      .post('/channel/invite')
+      .set('Authorization', 'Bearer ' + jwt)
+      .send({
+        channelName: 'privateChannel',
+        username: 'outsider',
+      });
+
+    expect(result.status).toBe(201);
+    expect(
+      (await userService.getUser('outsider'))
+        ?.getChannelNames()
+        .includes('privateChannel'),
+    ).toBeTruthy();
+  });
+
+  it('should return 401 when inviting people to private channels and not admin', async () => {
+    const jwtCreator = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.joinChannel(app, jwtCreator, 'privateChannel', '', ChannelType.Private);
+    const jwtJoiner = (await testUtils.signinUser(app, 'outsider', 'password')).body.access_token;
+
+    const result = await testUtils.joinChannel(app, jwtJoiner, 'privateChannel', '');
+
+    expect(result.status).toBe(401);
+  });
+
   it('should return the new channel on join', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
-    const result = await testUtils.joinChannel(app, jwt, 'newChannelName');
+    const result = await testUtils.joinChannel(app, jwt, 'newChannelName', 'default');
 
     expect(result.status).toBe(201);
     expect(result.body.channel).toBeDefined();
@@ -66,8 +104,8 @@ describe('joining a channel', () => {
   it('should return 409 when already joined', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
-    await testUtils.joinChannel(app, jwt, 'newChannelName');
-    const result = await testUtils.joinChannel(app, jwt, 'newChannelName');
+    await testUtils.joinChannel(app, jwt, 'newChannelName', 'default');
+    const result = await testUtils.joinChannel(app, jwt, 'newChannelName', 'default');
 
     expect(result.status).toBe(409);
   });
@@ -101,9 +139,9 @@ describe('retrieving a channel', () => {
 describe('searching channels by name', () => {
   it('should return a list of channel names', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    await testUtils.joinChannel(app, jwt, 'newChannelName1');
-    await testUtils.joinChannel(app, jwt, 'newChannelName2');
-    await testUtils.joinChannel(app, jwt, 'otherChannelName1');
+    await testUtils.joinChannel(app, jwt, 'newChannelName1', 'default');
+    await testUtils.joinChannel(app, jwt, 'newChannelName2', 'default');
+    await testUtils.joinChannel(app, jwt, 'otherChannelName1', 'default');
 
     const matchingChannels = await testUtils.getMatchingChannelNames(
       app,
@@ -118,9 +156,9 @@ describe('searching channels by name', () => {
 
   it('should return the names of all joined channels', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    await testUtils.joinChannel(app, jwt, 'newChannelName1');
-    await testUtils.joinChannel(app, jwt, 'newChannelName2');
-    await testUtils.joinChannel(app, jwt, 'otherChannelName1');
+    await testUtils.joinChannel(app, jwt, 'newChannelName1', 'default');
+    await testUtils.joinChannel(app, jwt, 'newChannelName2', 'default');
+    await testUtils.joinChannel(app, jwt, 'otherChannelName1', 'default');
 
     const matchingChannels = await testUtils.getMatchingChannelNames(
       app,

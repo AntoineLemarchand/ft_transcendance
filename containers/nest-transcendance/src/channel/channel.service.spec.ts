@@ -1,10 +1,11 @@
 import { Test } from '@nestjs/testing';
-import { Channel, Message } from './channel.entities';
+import { Channel, ChannelType, Message } from './channel.entities';
 import { ChannelService } from './channel.service';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { ChannelRepository } from './channel.repository.mock';
 import { UserService } from '../user/user.service';
 import User from '../user/user.entities';
+
 jest.spyOn(Channel.prototype, 'addMessage');
 jest.spyOn(BroadcastingGateway.prototype, 'emitMessage');
 // jest.spyOn(BroadcastingGateway.prototype, 'addUserToRoom');
@@ -30,7 +31,7 @@ beforeEach(async () => {
 });
 
 function initChannelWithMessage() {
-  channelRepository.create('newChannel', 'admin');
+  channelRepository.create('newChannel', 'admin', '');
   const messageToBeSent = new Message();
   messageToBeSent.channel = 'newChannel';
   return messageToBeSent;
@@ -51,7 +52,10 @@ describe('Sending a message', () => {
 
     await channelService.sendMessage(messageToBeSent);
 
-    expect(broadcasting.emitMessage).toHaveBeenCalledWith(messageToBeSent.channel, messageToBeSent);
+    expect(broadcasting.emitMessage).toHaveBeenCalledWith(
+      messageToBeSent.channel,
+      messageToBeSent,
+    );
   });
 });
 
@@ -67,6 +71,20 @@ describe('Joining a channel', () => {
     await channelService.joinChannel('Thomas', 'ab', 'channelPassword');
 
     expect(broadcasting.putUserInRoom).toHaveBeenCalledWith('Thomas', 'ab');
+  });
+
+  it('should throw if attempting to join an existing private channel', async () => {
+    await userService.createUser(new User('outsider', 'password'));
+    await channelService.joinChannel(
+      'Thomas',
+      'privateChannel',
+      '',
+      ChannelType.Private,
+    );
+
+    await expect(() =>
+      channelService.joinChannel('outsider', 'privateChannel', ''),
+    ).rejects.toThrow();
   });
 });
 
@@ -111,7 +129,9 @@ describe('Administrating a channel', () => {
       'channelName',
     );
 
-    expect(userService.getUser('bannedUserName')?.getChannelNames()).toEqual(['welcome']);
+    expect(userService.getUser('bannedUserName')?.getChannelNames()).toEqual([
+      'welcome',
+    ]);
   });
 
   it('should not be allowed to ban unless admin', async () => {
@@ -125,6 +145,88 @@ describe('Administrating a channel', () => {
     await expect(() =>
       channelService.banUserFromChannel('randomUser', 'Thomas', 'channelName'),
     ).rejects.toThrow();
+  });
+
+  it('should add a user on invite', async () => {
+    await userService.createUser(new User('randomUser', ''));
+    await channelService.joinChannel(
+      'Thomas',
+      'privateChannel',
+      'channelPassword',
+      ChannelType.Private,
+    );
+
+    await channelService.inviteToChannel(
+      'Thomas',
+      'randomUser',
+      'privateChannel',
+    );
+
+    expect(
+      await userService
+        .getUser('randomUser')
+        ?.getChannelNames()
+        .includes('privateChannel'),
+    ).toBeTruthy();
+  });
+
+  it('should throw on invite while not beeing admin', async () => {
+    await userService.createUser(new User('randomUser', ''));
+    await userService.createUser(new User('anotherRandomUser', ''));
+    await channelService.joinChannel(
+      'Thomas',
+      'privateChannel',
+      'channelPassword',
+      ChannelType.Private,
+    );
+    await channelService.inviteToChannel(
+      'Thomas',
+      'randomUser',
+      'privateChannel',
+    );
+
+    await expect(() =>
+      channelService.inviteToChannel(
+        'randomUser',
+        'anotherRandomUser',
+        'privateChannel',
+      ),
+    ).rejects.toThrow();
+  });
+
+  it('should throw on invite on non existing channel', async () => {
+    await userService.createUser(new User('randomUser', ''));
+
+    await expect(() =>
+      channelService.inviteToChannel('Thomas', 'randomUser', 'privateChannel'),
+    ).rejects.toThrow();
+  });
+
+  it('should unban user on invite', async () => {
+    await userService.createUser(new User('randomUser', ''));
+    await channelService.joinChannel(
+      'Thomas',
+      'channelName',
+      'channelPassword',
+    );
+    await channelService.joinChannel(
+      'randomUser',
+      'channelName',
+      'channelPassword',
+    );
+    await channelService.banUserFromChannel(
+      'Thomas',
+      'randomUser',
+      'channelName',
+    );
+
+    await channelService.inviteToChannel('Thomas', 'randomUser', 'channelName');
+
+    expect(
+      (await channelService.getChannelByName('channelName')).isUserBanned(
+        'randomUser',
+      ),
+    ).toBeFalsy();
   });
 });
 
