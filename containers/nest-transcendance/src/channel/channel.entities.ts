@@ -10,6 +10,12 @@ export class Message {
   }
 }
 
+export enum ChannelType {
+  Normal,
+  Private,
+  DirectMesage,
+}
+
 export class Channel {
   messages: Message[];
   private admins: string[];
@@ -19,6 +25,7 @@ export class Channel {
     private channelName: string,
     creatorUserName: string,
     private password = '',
+    private type = ChannelType.Normal,
   ) {
     this.messages = [];
     this.admins = [creatorUserName];
@@ -55,5 +62,15 @@ export class Channel {
 
   isAdmin(usernameOfExecutor: string) {
     return this.admins.includes(usernameOfExecutor);
+  }
+
+  getType() {
+    return this.type;
+  }
+
+  unbanUser(username: string) {
+    this.bannedUsers = this.bannedUsers.filter(
+      (tmpUsername) => tmpUsername != username,
+    );
   }
 }

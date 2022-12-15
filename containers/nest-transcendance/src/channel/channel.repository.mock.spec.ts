@@ -13,7 +13,7 @@ beforeEach(async () => {
 });
 
 async function createAChannel(channelName = 'channelName') {
-  const result = await channelRepository.create(channelName, 'creatorUserName');
+  const result = await channelRepository.create(channelName, 'creatorUserName', '');
   return result;
 }
 
@@ -30,7 +30,7 @@ describe('creating a channel', () => {
     createAChannel();
 
     channelRepository
-      .create('channelName', 'anotherGuyWithTheSameIdea')
+      .create('channelName', 'anotherGuyWithTheSameIdea', '')
       .catch(() => {});
 
     const allChannels = await channelRepository.findAll();

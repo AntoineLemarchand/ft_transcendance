@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Channel, Message } from './channel.entities';
+import { ChannelType } from './channel.entities';
 
 @Injectable()
 export class ChannelRepository {
@@ -31,12 +32,12 @@ export class ChannelRepository {
     channelName: string,
     creatorUserName: string,
     password = '',
-  ): Promise<Channel> {
+    channelType: ChannelType = ChannelType.Normal): Promise<Channel> {
     if (this.channels.has(channelName))
       return Promise.reject(new Error('this channel exists already'));
     this.channels.set(
       channelName,
-      new Channel(channelName, creatorUserName, password),
+      new Channel(channelName, creatorUserName, password, channelType),
     );
     return this.channels.get(channelName) as Channel;
   }
