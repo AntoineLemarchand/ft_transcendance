@@ -19,7 +19,7 @@ $headerHeight: 3rem;
 		header {
 			height: 3rem;
 			display: grid;
-			grid-template-columns: auto 3rem;
+			grid-template-columns: 1fr 1fr;
 
 			* {
 				height: 100%;

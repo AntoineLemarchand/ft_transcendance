@@ -17,7 +17,7 @@ function Profile() {
 	const params = useParams();
 	const [ tabIndex, setTabIndex ] = useState(0);
 	const [ user, setUser ] = useState<User>();
-	const [ cookie ] = useCookies(['auth'])
+	const [ cookie ] = useCookies(['auth', 'userInfo'])
 
 	const TabStyle = (index: number): React.CSSProperties =>{
 		return index === tabIndex ? {

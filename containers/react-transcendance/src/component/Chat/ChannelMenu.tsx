@@ -1,15 +1,11 @@
-import { useState, useEffect } from 'react'
-import NewChannelButton from './NewChannelButton'
-import {Channel} from "../../utils/Message";
+import ToggleButton from './ToggleButton'
+import { Channel } from "../../utils/Message";
+import { FaPlus, FaSearch } from 'react-icons/fa'
 
 function DisplayList(props: {
-	joinedChannels: Channel[],
-	searchedChannels: string[],
-	isSearching: boolean,
-	currentChannel: Channel | undefined,
-	setCurrentChannel: Function,
-	updateJoinedChannels: Function,
-	setIsSearching: Function,
+		joinedChannels: Channel[],
+		currentChannel: Channel | undefined,
+		setCurrentChannel: Function,
 	}) {
 	const ChannelButtonStyle = (channel: Channel) => {
 		return props.currentChannel === undefined
@@ -21,136 +17,44 @@ function DisplayList(props: {
 		}
 	}
 
-	const JoinChannel = (event: any) => {
-		event.stopPropagation();
-    fetch('http://localhost:3000/channel/join', {
-      credentials: 'include',
-      method: 'POST',
-      headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-      },
-      body: JSON.stringify({
-          'channelName': event.target.value,
-          'channelPassword': '',
-      }),
-    }).then(response=>{
-      if (response.status !== 201)
-        alert("unable to join");
-      else {
-				props.updateJoinedChannels();
-				props.setIsSearching(false);
-      }
-    })
-	}
-
-	if (props.isSearching) {
-		return (
-				<div className="channelList">
-				{
-					props.searchedChannels.map((name: string, idx: number)=> 
-							<button
-								key={idx}
-								onClick={JoinChannel}
-								value={name}
-								>
-                {name}</button>
-					)
-				}
-				</div>
-		)
-	} else {
-		return (
-			<div className="channelList">
-			{
-			props.joinedChannels.map((channel: Channel, idx: number) =>
-				<button
-					key={idx}
-					style={ChannelButtonStyle(channel)}
-					onClick={()=>props.setCurrentChannel(channel)}
-					>
-					{channel.channelName}</button>
-			)}
-			</div>
-		)
-	}
+	return (
+		<div className="channelList">
+		{
+		props.joinedChannels.map((channel: Channel, idx: number) =>
+			<button
+				key={idx}
+				style={ChannelButtonStyle(channel)}
+				onClick={()=>props.setCurrentChannel(channel)}
+				>
+				{channel.channelName}</button>
+		)}
+		</div>
+	)
 }
 
 function ChannelMenu(props: {currentChannel: Channel | undefined,
 	setCurrentChannel: Function,
-	toggleMenu: Function,
 	joinedChannel: Channel[],
-	updateJoinedChannels: Function,
+	SetNewConvMenu: Function,
+	SetSearchMenu: Function,
 	}) {
-
-	const [isSearching, setIsSearching] = useState(false);
-	const [searchedChannels, setSearchedChannels] = useState<string[]>([]);
-	const [query, setQuery] = useState('');
-
-	const EnableSearch = () => {
-    setIsSearching(true);
-	}
-
-	const DisableSearch = () => {
-		if (document.activeElement.id === "channelList") return;
-    setIsSearching(false);
-	}
-
-	const SearchQuery = (event: any) => {
-		if (!isSearching)
-			return;
-    fetch('http://localhost:3000/channel/getMatchingNames/' + event.target.value, {
-        credentials: 'include',
-        method: 'GET',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-        },
-    }).then((result) => {
-      result.text().then((text)=> {
-        setSearchedChannels(JSON.parse(JSON.parse(text).channels));
-      });
-    })
-	}
-
-	useEffect(()=> {
-    fetch('http://localhost:3000/channel/getMatchingNames/' , {
-        credentials: 'include',
-        method: 'GET',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-        },
-    }).then((result) => {
-      result.text().then((text)=> {
-        setSearchedChannels(JSON.parse(JSON.parse(text).channels));
-      });
-    })
-	}, [])
 
 	return (
 			<div className="channelMenu">
-				<header
-					style={isSearching ? {display: "block"} : {}}
-				>
-					<input type="text"
-						onFocus={EnableSearch}
-						onBlur={()=>setTimeout(DisableSearch, 500)}
-						onChange={SearchQuery}
-						placeholder="search"
-						/>
-					<NewChannelButton
-            toggle={()=>props.toggleMenu(true)}
-            style={isSearching ? {display: "none"} : {}}
+				<header>
+					<ToggleButton
+						toggle={()=>props.SetSearchMenu(true)}
+						icon={<FaSearch />}
+          />
+					<ToggleButton
+						toggle={()=>props.SetNewConvMenu(true)}
+						icon={<FaPlus />}
           />
 				</header>
 				<DisplayList
 					joinedChannels={props.joinedChannel}
-					searchedChannels={searchedChannels}
-					isSearching={isSearching}
 					currentChannel={props.currentChannel}
 					setCurrentChannel={props.setCurrentChannel}
-					updateJoinedChannels={props.updateJoinedChannels}
-					setIsSearching={setIsSearching}
 				/>
 			</div>
 		);

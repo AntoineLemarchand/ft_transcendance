@@ -6,7 +6,7 @@ import { GiHamburgerMenu } from 'react-icons/gi'
 import 'static/Chat/Chat.scss'
 
 import ChatName from './ChatName'
-import NewChannelMenu from './NewChannelMenu'
+import * as Menus from './ChatMenus'
 import ChannelMenu from './ChannelMenu'
 import {Channel, Message, putMessageInChannels} from "../../utils/Message";
 import {io,  Socket } from 'socket.io-client'
@@ -14,6 +14,7 @@ import { useCookies } from 'react-cookie';
 
 function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
+	const [SearchMenu, SetSearchMenu] = useState(false)
 	const [currentChannel, setCurrentChannel ] =  useState<Channel>()
 	const [currentMessage, setCurrentMessage ] =  useState('')
   const [cookie] = useCookies(['auth', 'userInfo']);
@@ -88,18 +89,23 @@ function Chat() {
 
 	return (
 		<div className="Chat">
-			<NewChannelMenu
-				toggle={()=>SetNewConvMenu(!NewConvMenu)}
+			<Menus.NewChannelMenu
+				toggle={()=>{SetNewConvMenu(!NewConvMenu)}}
         callback={updateJoinedChannels}
 				visible={NewConvMenu}/>
+			<Menus.SearchMenu
+				toggle={()=>{SetSearchMenu(!SearchMenu)}}
+        callback={updateJoinedChannels}
+				visible={SearchMenu}
+			/>
 			<input className="burger" type="checkbox" id="burgerToggle"/>
 			<label htmlFor="burgerToggle"><GiHamburgerMenu /></label>
 			<ChannelMenu
 				currentChannel={currentChannel}
 				setCurrentChannel={setCurrentChannel}
-				toggleMenu={SetNewConvMenu}
 				joinedChannel={joinedChannel}
-				updateJoinedChannels={updateJoinedChannels}
+				SetNewConvMenu={SetNewConvMenu}
+				SetSearchMenu={SetSearchMenu}
 			/>
 			<ul className="channelContent">
 				<div className="chatArea">
