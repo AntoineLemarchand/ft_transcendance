@@ -90,4 +90,14 @@ export class UserService {
 	getAllUsernames(): string[] {
 		return (this.users.map((user) => user.getName()))
 	}
+
+	async findMatching(regexSearchString: string): Promise<string[]> {
+			const result: string[] = [];
+
+			await this.users.forEach(async (value, key, map) => {
+			if (new RegExp(regexSearchString, 'g').test(await value.getName()))
+				result.push(value.getName());
+		});
+		return result;
+	}
 }

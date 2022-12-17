@@ -114,19 +114,50 @@ describe('Getting user info', () => {
     expect(result.body.userInfo.name).toBe('Thomas');
   });
 
-  // it('should return 201 and all user channels', async () => {
-  //   const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-  //   await testUtils.joinChannel(app, jwt, 'newChannelName', 'password');
-  //
-  //   const result = await request(app.getHttpServer())
-  //     .get('/user/channels/')
-  //     .set('Authorization', 'Bearer ' + jwt);
-  //
-  //   expect(result.status).toBe(200);
-  //   expect(result.body.channels).toBeDefined();
-  //   expect(result.body.channels[0].channelName).toBe('welcome');
-  //   expect(result.body.channels[1].channelName).toBe('newChannelName');
-  // });
+  it('should return 201 and all user channels', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.joinChannel(app, jwt, 'newChannelName', 'password');
+
+    const result = await request(app.getHttpServer())
+      .get('/user/channels/')
+      .set('Authorization', 'Bearer ' + jwt);
+
+    expect(result.status).toBe(200);
+    expect(result.body.channels).toBeDefined();
+    expect(result.body.channels[0].channelName).toBe('welcome');
+    expect(result.body.channels[1].channelName).toBe('newChannelName');
+  });
+
+  it('should return 200 and matching usernames', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.signinUser(app, 'Tom', 'password');
+    await testUtils.signinUser(app, 'Camembert', 'password');
+
+    const result = await request(app.getHttpServer())
+      .get('/user/getMatchingNames/T')
+      .set('Authorization', 'Bearer ' + jwt);
+
+    expect(result.status).toBe(200);
+    expect(result.body.usernames).toBeDefined();
+    expect(result.body.usernames[0]).toEqual('Thomas');
+    expect(result.body.usernames[1]).toEqual('Tom');
+  });
+
+  it('should return 200 and all usernames', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.signinUser(app, 'Tom', 'password');
+    await testUtils.signinUser(app, 'Camembert', 'password');
+
+    const result = await request(app.getHttpServer())
+      .get('/user/getMatchingNames/')
+      .set('Authorization', 'Bearer ' + jwt);
+
+    expect(result.status).toBe(200);
+    expect(result.body.usernames).toBeDefined();
+    expect(result.body.usernames[0]).toEqual('Thomas');
+    expect(result.body.usernames[1]).toEqual('Tom');
+    expect(result.body.usernames[2]).toEqual('Camembert');
+  });
 });
 
 describe('Login', () => {
@@ -137,20 +168,5 @@ describe('Login', () => {
 
     expect(result.status).toBe(200);
     expect(result.body.userInfo.channelNames.length).toBe(1);
-  });
-});
-
-describe('fetching all users', () => {
-  it('should return only the names', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    await testUtils.signinUser(app, 'lambdaUserName', 'password');
-
-    const result = await request(app.getHttpServer())
-      .get('/user')
-      .set('Authorization', 'Bearer ' + jwt);
-
-    expect(result.status).toBe(200);
-    expect(result.body.usernames.length).toBe(2);
-    expect(result.body.usernames).toEqual(['Thomas', 'lambdaUserName']);
   });
 });
