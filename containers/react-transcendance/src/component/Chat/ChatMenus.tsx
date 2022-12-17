@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import 'static/Chat/ChatMenus.scss';
 import { Channel } from "../../utils/Message";
-
+import { FaUser, FaUsers } from 'react-icons/fa'
 export function NewChannelMenu(props: {
 	toggle: React.MouseEventHandler<HTMLDivElement>,
   callback: Function,
@@ -144,7 +144,7 @@ export function SearchMenu( props: {
 							searchedChannels.map((channel: string, idx: number) => {
 								return (
 									<button key={idx} value={channel} onClick={tryConnection}>
-										{channel}
+										<FaUsers /> {channel}
 									</button>
 								)
 							})
