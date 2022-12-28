@@ -26,7 +26,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('friend')
   async getFriends(@Request() req: any) {
-    return { friends: JSON.stringify(this.userService.getFriends(req.user.name)) };
+    return { friends: this.userService.getFriends(req.user.name) };
   }
 
   @UseGuards(JwtAuthGuard)

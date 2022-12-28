@@ -31,9 +31,7 @@ describe('Making friends', () => {
     await testUtils.addFriend(app, jwt, 'JayDee');
 
     const result = await testUtils.addFriend(app, jwt, 'JayDee');
-    const friendsList = JSON.parse(
-      (await testUtils.getFriends(app, jwt)).body.friends,
-    );
+    const friendsList = (await testUtils.getFriends(app, jwt)).body.friends;
 
     expect(result.status).toBe(401);
     expect(friendsList.length).toBe(1);
@@ -57,7 +55,7 @@ describe('Making friends', () => {
 
     expect(result.status).toBe(200);
     expect(result.body.friends).toBeDefined();
-    expect(JSON.parse(result.body.friends).length).toBe(1);
+    expect(result.body.friends.length).toBe(1);
   });
 
   it('should return 404 when removing nonexistant friend', async () => {
@@ -76,9 +74,7 @@ describe('Making friends', () => {
     testUtils.addFriend(app, jwt, 'JayDee');
 
     const result = await testUtils.removeFriend(app, jwt, 'JayDee');
-    const friendsList = JSON.parse(
-      (await testUtils.getFriends(app, jwt)).body.friends,
-    );
+    const friendsList = (await testUtils.getFriends(app, jwt)).body.friends;
 
     expect(result.status).toBe(200);
     expect(friendsList.length).toBe(0);
