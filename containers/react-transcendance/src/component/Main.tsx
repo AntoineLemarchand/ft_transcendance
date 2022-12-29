@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useCookies } from 'react-cookie';
 
@@ -21,7 +21,7 @@ function Main(props: {component: any}) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const tab = location.pathname.split('/')[1];
-  const [cookie, setCookie, removeCookie] = useCookies(['auth', 'userInfo']);
+  const [cookie,, removeCookie] = useCookies(['auth', 'userInfo']);
 
 	const ProcessLogout = () => {
 		console.log("removing auth cookie");
@@ -46,7 +46,7 @@ function Main(props: {component: any}) {
   useEffect(() => {
     if (cookie['auth'] === undefined)
       navigate('/')
-  }, [])
+  }, [cookie, navigate])
 
 
 	return (

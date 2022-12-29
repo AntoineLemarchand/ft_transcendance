@@ -12,7 +12,7 @@ function Home() {
 	useEffect(() => {
 		if (cookie['auth'] !== undefined)
 			navigate('/home')
-	}, [])
+	}, [cookie, navigate])
 
 	return (
 		<div className="Home">
