@@ -47,7 +47,7 @@ export class ChannelController {
   @Get('findAll')
   async getChannels() {
     const allChannels = await this.channelService.getChannels();
-    return { channels: JSON.stringify(allChannels) };
+    return { channels: allChannels };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -57,7 +57,7 @@ export class ChannelController {
       const result = await this.channelService.getChannelByName(
         params.channelName,
       );
-      return { channel: JSON.stringify(result) };
+      return { channel: result };
     } catch (e) {
       throw new HttpException(e.name, HttpStatus.NOT_FOUND);
     }
@@ -69,14 +69,14 @@ export class ChannelController {
     const matchingChannels = await this.channelService.findMatching(
       params.regexString,
     );
-    return { channels: JSON.stringify(matchingChannels) };
+    return { channels: matchingChannels };
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('getMatchingNames')
   async findAllChannelNames(@Request() req: any) {
     const matchingChannels = await this.channelService.findMatching('');
-    return { channels: JSON.stringify(matchingChannels) };
+    return { channels: matchingChannels };
   }
 
   @UseGuards(JwtAuthGuard)

@@ -23,7 +23,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: ExpressResponse,
   ): Promise<{ access_token: string }> {
     const token = this.authService.login(req.user as Identity);
-    res.cookie('token', JSON.stringify({ access_token: token }));
+    res.cookie('token', { access_token: token });
     return token;
   }
 
@@ -33,7 +33,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: ExpressResponse,
   ) {
     const token = this.authService.createUser(userCandidate);
-    res.cookie('token', JSON.stringify({ access_token: token }));
+    res.cookie('token', { access_token: token });
     return token;
   }
 }

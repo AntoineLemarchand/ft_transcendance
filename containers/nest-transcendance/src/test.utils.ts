@@ -145,7 +145,7 @@ export const doesChannelExist = async (
 ) => {
   const response = await getChannels(callerModule, jwt);
   const channels = response.body.channels;
-  const allChannels: Channel[] = <Channel[]>JSON.parse(channels);
+  const allChannels: Channel[] = channels;
   const tmp = allChannels.find(
     (channel: any) => channel.channelName == channelName,
   );
@@ -161,7 +161,7 @@ export async function getMatchingChannelNames(
     .get('/channel/getMatchingNames/' + regexString)
     .set('Authorization', 'Bearer ' + jwt);
   const channelNames = result.body.channels;
-  const allChannels = <string[]>JSON.parse(channelNames);
+  const allChannels = channelNames;
   return allChannels;
 }
 
@@ -173,7 +173,7 @@ export async function getChannelByName(
   const raw = await request(callerModule.getHttpServer())
     .get('/channel/findOne/' + channelName)
     .set('Authorization', 'Bearer ' + jwt);
-  const fromJson = JSON.parse(raw.body.channel);
+  const fromJson = raw.body.channel;
   const result = Object.create(Channel.prototype);
   Object.assign(result, fromJson);
   return result;

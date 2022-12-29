@@ -80,8 +80,8 @@ export function SearchMenu( props: {
             'Content-Type': 'application/json'
         },
     }).then((result) => {
-      result.text().then((text)=> {
-        setSearchedChannels(JSON.parse(JSON.parse(text).channels));
+      result. text().then((text)=> {
+        setSearchedChannels(JSON.parse(text).channels);
       });
     })
     fetch('http://localhost:3000/user/getMatchingNames/' + query , {
