@@ -1,10 +1,8 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { useCookies } from 'react-cookie'
 
 import 'static/Profile/Profile.scss'
-import {ReactComponent as SchoolLogo} from 'static/logo.svg'
 
 import Historic from './Historic'
 import Friends from './Friends'
@@ -17,7 +15,6 @@ function Profile() {
 	const params = useParams();
 	const [ tabIndex, setTabIndex ] = useState(0);
 	const [ user, setUser ] = useState<User>();
-	const [ cookie ] = useCookies(['auth', 'userInfo'])
 
 	const TabStyle = (index: number): React.CSSProperties =>{
 		return index === tabIndex ? {
@@ -42,7 +39,7 @@ function Profile() {
 				setUser(JSON.parse(text).userInfo);
 			});
 		})
-	}, [])
+	}, [params.uid])
 
 	return (
 			<div className="Profile">

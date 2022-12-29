@@ -167,12 +167,13 @@ export function SearchMenu( props: {
 						}
 						{
 							searchedUsers.map((username: string, idx: number) => {
-								if (username !== cookie['userInfo'].name)
+								if (username !== cookie['userInfo'].name) {
 									return (
 										<button key={idx} value={username} onClick={tryConnection}>
 											<FaUser /> {username}
 										</button>
 									)
+                } else { return <></> }
 							})
 						}
 				</div>
