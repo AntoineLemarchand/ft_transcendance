@@ -107,8 +107,6 @@ function Lobby() {
                   <p>{invite.name.slice(0,10) + (invite.name.length > 10 ? '...' : '')}</p>
                 </button>
               )
-            } else {
-              return <></>
             }
           })
          }
