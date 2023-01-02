@@ -61,6 +61,7 @@ export class ChannelService {
     channelPassword: string,
     channelType = ChannelType.Normal,
   ): Promise<Channel> {
+    checkName();
     const channel = await this.getChannelByName(channelName).catch(async () => {
       return await this.addChannel(
         channelName,
@@ -72,6 +73,13 @@ export class ChannelService {
     await isJoiningAllowed();
     return await this.addUserToChannel(userName, channelName, channel);
 
+    function checkName() {
+      if (channelName.includes('_') && channelType != ChannelType.DirectMesage)
+        throw new HttpException(
+          'channelnames cannot contain underscores',
+          HttpStatus.FORBIDDEN,
+        );
+    }
     async function isJoiningAllowed() {
       if (
         channel.getType() == ChannelType.Private &&
@@ -130,5 +138,33 @@ export class ChannelService {
       );
     await this.addUserToChannel(invitedName, channelName, channel);
     await channel.unbanUser(invitedName);
+  }
+  async createDirectMessageChannelFor(
+    invitingUsername: string,
+    invitedUsername: string,
+  ) {
+    const channelName = invitingUsername + '_' + invitedUsername;
+    await this.joinChannel(
+      invitingUsername,
+      channelName,
+      '',
+      ChannelType.DirectMesage,
+    );
+    await this.inviteToChannel(invitingUsername, invitedUsername, channelName);
+    await this.makeAdmin(invitingUsername, invitedUsername, channelName);
+  }
+
+  async makeAdmin(
+    executor: string,
+    adminCandidateUsername: string,
+    channelName: string,
+  ) {
+    const channel = await this.channelRepository.findOne(channelName);
+    if (channel.isAdmin(executor) == false)
+      throw new HttpException(
+        'only admins can make other user admins',
+        HttpStatus.UNAUTHORIZED,
+      );
+    channel.addAdmin(adminCandidateUsername);
   }
 }

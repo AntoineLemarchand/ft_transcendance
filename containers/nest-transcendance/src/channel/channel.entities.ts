@@ -73,4 +73,8 @@ export class Channel {
       (tmpUsername) => tmpUsername != username,
     );
   }
+
+  addAdmin(adminCandidateUsername: string) {
+    this.admins.push(adminCandidateUsername);
+  }
 }
