@@ -13,9 +13,10 @@ $usercardHeight: 6rem;
 		width: 100%;
 		height: $usercardHeight;
 
-		display: grid;
-		grid-template-columns:$usercardHeight auto;
+		display: flex;
 		color: color('backGround2');
+
+		h1 {margin-left: 2rem;}
 
 		.profileHeader {
 			height: $usercardHeight;
@@ -27,6 +28,7 @@ $usercardHeight: 6rem;
 				transform: translateX(-50%);
 				z-index: 0;
 			}
+
 		}
 
 		h1 {

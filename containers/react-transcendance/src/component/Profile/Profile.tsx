@@ -45,9 +45,9 @@ function Profile() {
 			<div className="Profile">
 				<div className="userCard">
 					<div className="profileHeader">
-						<img src='' alt="JD" />
+						<img src='https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fvoi.2Fvar.2Fvoi.2Fstorage.2Fimages.2Fmedia.2Fimages.2Fles-potins-du-jour.2Fpotins-26-novembre-2009.2Fshrek.2F5584668-1-fre-FR.2Fshrek.2Ejpg/753x565/cr/wqkgIC8gVm9pY2k%3D/crop-from/top/video-shrek-4-decouvrez-le-premier-teaser.jpg' alt="JD" />
 					</div>
-					<h1>{user !== undefined && user.name}</h1>
+				<h1>{user !== undefined && user.name}</h1>
 				</div>
 				<div className="tabs">
 					<button
