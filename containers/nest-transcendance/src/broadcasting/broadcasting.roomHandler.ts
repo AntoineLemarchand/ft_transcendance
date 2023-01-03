@@ -46,6 +46,8 @@ export class RoomHandler {
 
   async join(username: string, roomName: string) {
     const deviceIds = this.instanceMap.get(username) as string[];
+    if (deviceIds === undefined)
+      return;
     for (const deviceId of deviceIds)
       (this.server.sockets.sockets.get(deviceId) as Socket).join(roomName);
   }

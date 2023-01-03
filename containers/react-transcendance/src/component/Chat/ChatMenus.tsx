@@ -132,7 +132,7 @@ export function SearchMenu( props: {
 		})
 	}
 
-	const newDirectMessage = async (channelName: string, channelPassword: string)
+	const newDirectMessage = async (targetUsername: string)
 		:Promise<number> => {
     return await fetch('http://localhost:3000/channel/join', {
       credentials: 'include',
@@ -141,7 +141,7 @@ export function SearchMenu( props: {
           'Content-type': 'application/json; charset=UTF-8',
       },
       body: JSON.stringify({
-          'targetUsername': channelName,
+          'targetUsername': targetUsername,
           'channelType': 'directMessage',
       }),
     }).then(response=>{
@@ -152,7 +152,7 @@ export function SearchMenu( props: {
 	}
 
 	const directMessage = (event: any) => {
-		connectToChannel(event.target.value, '').then(result=> {
+		newDirectMessage(event.target.value).then(result=> {
 			if (result === 401)
         alert("request failed")
 			else
