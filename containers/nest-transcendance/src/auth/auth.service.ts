@@ -33,8 +33,8 @@ export class AuthService {
     };
   }
 
-  createUser(userCandidate: CreateUserDTO) {
-    const user = this.userService.getUser(userCandidate.username);
+  async createUser(userCandidate: CreateUserDTO) {
+    const user = await this.userService.getUser(userCandidate.username);
     if (user !== undefined)
       throw new HttpException('User already exists', HttpStatus.UNAUTHORIZED);
     this.userService.createUser(
