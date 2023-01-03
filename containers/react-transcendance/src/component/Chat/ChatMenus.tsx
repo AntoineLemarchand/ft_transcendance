@@ -101,6 +101,7 @@ export function SearchMenu( props: {
 	const closeSearch = () => {
 		setChannelName('');
 		props.toggle();
+    props.callback();
 	}
 
 	const connectToChannel = async (channelName: string, channelPassword: string)
