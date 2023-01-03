@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as testUtils from '../test.utils';
 import { AppModule } from '../app.module';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import * as request from 'supertest';
 
 describe('AuthController', () => {
   let app: INestApplication;
@@ -43,6 +44,12 @@ describe('AuthController', () => {
     return testUtils
       .signinUser(app, 'Thomas', 'test')
       .then((response) => expect(response.status).toBe(401));
+  });
+
+  it('should return 403 on underscore in username', async () => {
+    return testUtils
+      .signinUser(app, '_illegal_name', 'wrong password')
+      .then((response) => expect(response.status).toBe(403));
   });
 
   it('should return 201 and a token when creating user', async () => {

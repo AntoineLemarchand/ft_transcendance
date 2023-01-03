@@ -1,4 +1,10 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import User from '../user/user.entities';
@@ -37,6 +43,11 @@ export class AuthService {
     const user = await this.userService.getUser(userCandidate.username);
     if (user !== undefined)
       throw new HttpException('User already exists', HttpStatus.UNAUTHORIZED);
+    if (userCandidate.username.includes('_'))
+      throw new HttpException(
+        'no underscores in usernames',
+        HttpStatus.FORBIDDEN,
+      );
     this.userService.createUser(
       new User(userCandidate.username, userCandidate.password),
     );

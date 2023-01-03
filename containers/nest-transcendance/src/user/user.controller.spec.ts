@@ -2,8 +2,8 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as testUtils from '../test.utils';
 import { AppModule } from '../app.module';
-import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import * as request from 'supertest';
+
 jest.mock('../broadcasting/broadcasting.gateway');
 
 let app: INestApplication;
