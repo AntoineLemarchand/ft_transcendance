@@ -10,7 +10,7 @@ export class Message{
 }
 
 export class Channel{
-    constructor(public channelName: string, public messages: Message[] = []) {
+    constructor(public channelName: string, public messages: Message[] = [], public admins: string[]) {
     }
 }
 

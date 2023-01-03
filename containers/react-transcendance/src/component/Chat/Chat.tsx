@@ -72,7 +72,12 @@ function Chat() {
 		<li key={idx}
 			className="message" style={
 			{textAlign: message.sender === cookie['userInfo'].name ? "right" : "left"}}>
-			<ChatName username={message.sender} sender={message.sender}/>
+			<ChatName
+        username={message.sender}
+        sender={message.sender}
+        channel={currentChannel}
+        userName={cookie['userInfo'].name}
+      />
 			<p className="content">
 				{message.content}
 			</p>
