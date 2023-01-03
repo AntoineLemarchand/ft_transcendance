@@ -99,7 +99,7 @@ export const joinChannel = async (
     .send({
       channelName: channelName,
       channelPassword: channelPassword,
-      channelType: ChannelType.Private,
+      channelType: 'private',
     });
 };
 

@@ -154,6 +154,10 @@ export class ChannelService {
     await this.makeAdmin(invitingUsername, invitedUsername, channelName);
   }
 
+  test(){
+
+  }
+
   async makeAdmin(
     executor: string,
     adminCandidateUsername: string,

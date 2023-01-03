@@ -6,7 +6,6 @@ import * as request from 'supertest';
 import { Channel, ChannelType } from './channel.entities';
 import { UserService } from '../user/user.service';
 import { ChannelService } from './channel.service';
-import { exhaustiveTypeException } from 'tsconfig-paths/lib/try-path';
 
 jest.mock('../broadcasting/broadcasting.gateway');
 
@@ -108,6 +107,32 @@ describe('joining a channel', () => {
     const result = await testUtils.joinChannel(app, jwt, 'newChannelName', 'default');
 
     expect(result.status).toBe(409);
+  });
+});
+
+
+async function createDirectMessage(
+  callerModule: INestApplication,
+  jwt: string,
+  targetUsername: string) {
+  return request(callerModule.getHttpServer())
+    .post('/channel/join')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      targetUsername: targetUsername,
+      channelType: 'directMessage',
+    });
+}
+
+describe('creating a direct message channel', () => {
+  it('should call the creation function', async () => {
+    const spy = jest.spyOn(channelService, 'createDirectMessageChannelFor');
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.signinUser(app, 'Receiver', 'password');
+
+    await createDirectMessage(app, jwt, 'Receiver');
+
+    expect(spy).toBeCalledWith('Thomas', 'Receiver');
   });
 });
 

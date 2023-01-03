@@ -17,12 +17,29 @@ import { ChannelType } from './channel.entities';
 export class ChannelController {
   constructor(private channelService: ChannelService) {}
 
+  private getChannelType(name = 'normal') {
+    if (name === 'directMessage') return ChannelType.DirectMesage;
+    if (name === 'private') return ChannelType.Private;
+    return ChannelType.Normal;
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('join')
   async addChannel(@Request() req: any) {
-    let channelType = ChannelType.Normal;
-    if (req.body.channelType && req.body.channelType == ChannelType.Private)
-      channelType = ChannelType.Private;
+    if (!req.body.channelType)
+      throw new HttpException(
+        'no channel type specified',
+        HttpStatus.BAD_REQUEST,
+      );
+    const channelType = this.getChannelType(req.body.channelType);
+    if (req.body.channelType == 'directMessage') {
+      return {
+        channel: await this.channelService.createDirectMessageChannelFor(
+          req.user.name,
+          req.body.targetUsername,
+        ),
+      };
+    }
     return {
       channel: await this.channelService.joinChannel(
         req.user.name,
