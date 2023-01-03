@@ -71,8 +71,12 @@ export class BroadcastingGateway
   }
 
   private getUsernameFromToken(client: Socket) {
-    return JSON.parse(
-      atob((client.handshake.query.auth as string).split('.')[1]),
-    ).user.name;
+    try {
+      return JSON.parse(
+        atob((client.handshake.query.auth as string).split('.')[1]),
+      ).user.name;
+    } catch (e) {
+      console.log('not properly encoded token');
+    }
   }
 }
