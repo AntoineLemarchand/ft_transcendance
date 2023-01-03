@@ -1,10 +1,15 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Channel } from "../../utils/Message";
 
 import 'static/Chat/ChatName.scss'
 
-function ChatName(props: {username: string, sender: string}) {
+function ChatName(props: {username: string,
+  sender: string,
+  channel: Channel,
+  userName: string
+  }) {
 
 	const [ menuToggle, setMenuToggle ] = useState(false);
 
@@ -27,13 +32,22 @@ function ChatName(props: {username: string, sender: string}) {
 		{display: "block"} : {display: "none"}
 
 	const options = [
-		"Make Admin",
 		"Block",
 		"Invite to play",
-		"Mute",
-		"Ban"
 	]
 
+  const adminOption = [
+		"Make Admin",
+		"Mute",
+		"Ban"
+  ]
+
+  if (props.sender == props.userName)
+    return (
+      <div className="ChatName">
+        <Link to='/profile'>{props.sender}</Link>
+      </div>
+    )
 	return (
 	<div className="ChatName">
 		<div className="wrapper">
@@ -47,8 +61,12 @@ function ChatName(props: {username: string, sender: string}) {
 				<Link to={"/profile/" + props.sender}><button>Profile</button></Link>
 				{
 					options.map( (option, idx) => 
-						<button key={idx} style={ButtonStyle}>{option}</button>
-					)
+						<button key={idx} style={ButtonStyle}>{option}</button>)
+        }
+        {
+          props.channel.admins.includes(props.userName) &&
+					adminOption.map( (option, idx) => 
+						<button key={idx} style={ButtonStyle}>{option}</button>)
 				}
 				</div>
 			</div>

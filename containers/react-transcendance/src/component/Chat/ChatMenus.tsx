@@ -101,6 +101,7 @@ export function SearchMenu( props: {
 	const closeSearch = () => {
 		setChannelName('');
 		props.toggle();
+    props.callback();
 	}
 
 	const connectToChannel = async (channelName: string, channelPassword: string)
@@ -131,6 +132,34 @@ export function SearchMenu( props: {
 		})
 	}
 
+	const newDirectMessage = async (targetUsername: string)
+		:Promise<number> => {
+    return await fetch('http://localhost:3000/channel/join', {
+      credentials: 'include',
+      method: 'POST',
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify({
+          'targetUsername': targetUsername,
+          'channelType': 'directMessage',
+      }),
+    }).then(response=>{
+			return response.status;
+    }).catch(error=>{
+			return error.status;
+		})
+	}
+
+	const directMessage = (event: any) => {
+		newDirectMessage(event.target.value).then(result=> {
+			if (result === 401)
+        alert("request failed")
+			else
+        alert("request made it !")
+		})
+	}
+
 	const connectWithPassword = () => {
 		connectToChannel(channelName, channelPassword).then(result=> {
 			if (result === 401) {
@@ -156,6 +185,7 @@ export function SearchMenu( props: {
 						<input type="text"
 							placeholder="Search..."
 							onChange={(event)=>updateSearchedChannels(event.target.value)}/>
+            <div className="ChannelList">
 						{
 							searchedChannels.map((channel: string, idx: number) => {
 								return (
@@ -169,13 +199,14 @@ export function SearchMenu( props: {
 							searchedUsers.map((username: string, idx: number) => {
 								if (username !== cookie['userInfo'].name) {
 									return (
-										<button key={idx} value={username} onClick={tryConnection}>
+										<button key={idx} value={username} onClick={directMessage}>
 											<FaUser /> {username}
 										</button>
 									)
                 } else { return <></> }
 							})
 						}
+            </div>
 				</div>
 			</div>
 		)
