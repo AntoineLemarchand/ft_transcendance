@@ -6,7 +6,6 @@ import 'static/Profile/Profile.scss'
 
 import Historic from './Historic'
 import Friends from './Friends'
-import Settings from './Settings'
 
 import { User } from '../../utils/User'
 
@@ -47,7 +46,12 @@ function Profile() {
 					<div className="profileHeader">
 						<img src='https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fvoi.2Fvar.2Fvoi.2Fstorage.2Fimages.2Fmedia.2Fimages.2Fles-potins-du-jour.2Fpotins-26-novembre-2009.2Fshrek.2F5584668-1-fre-FR.2Fshrek.2Ejpg/753x565/cr/wqkgIC8gVm9pY2k%3D/crop-from/top/video-shrek-4-decouvrez-le-premier-teaser.jpg' alt="JD" />
 					</div>
-				<h1>{user !== undefined && user.name}</h1>
+          <h1>{user !== undefined && user.name}</h1>
+          <div className="TwoFactor"
+            style={{
+              background:'#b8bb26',
+            }}
+          >2FA</div>
 				</div>
 				<div className="tabs">
 					<button
@@ -58,15 +62,10 @@ function Profile() {
 						onClick={()=>setTabIndex(1)}
 						style={TabStyle(1)}
 						>Historic</button>
-					<button
-						onClick={()=>setTabIndex(2)}
-						style={TabStyle(2)}
-						>Settings</button>
 				</div>
 				<div className="content">
 					<Friends isSelected={tabIndex === 0}/>
 					<Historic isSelected={tabIndex === 1}/>
-					<Settings isSelected={tabIndex === 2}/>
 				</div>
 		</div>
 	)}
