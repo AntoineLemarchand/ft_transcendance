@@ -11,11 +11,6 @@ function Settings(props: {isSelected: boolean}) {
           <p>2FA status</p>
           <p>TO BE DETERMINED</p>
         </div>
-        <div className="setting avatar">
-          <p>Avatar</p>
-          <input type="file" accept="image/*"/>
-          <button>Update</button>
-        </div>
       </div>
     </div>
   )

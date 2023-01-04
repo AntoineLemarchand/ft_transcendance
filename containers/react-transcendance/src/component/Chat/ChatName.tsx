@@ -34,6 +34,7 @@ function ChatName(props: {username: string,
 	const options = [
 		"Block",
 		"Invite to play",
+		"Invite to channel",
 	]
 
   const adminOption = [

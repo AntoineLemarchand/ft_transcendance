@@ -65,6 +65,10 @@ function SignIn() {
 			<input type="text" placeholder="Username" onChange={UpdateUsername}/>
 			<input type="password" placeholder="Password" onChange={UpdatePassword}/>
 			<input type="password" placeholder="Confirm Password" onChange={UpdateConfirmation}/>
+      <div className="avatar">
+        <p>Avatar:</p>
+        <input type="file" accept="image/*"/>
+      </div>
       <div className="buttonBox">
         <button className="signin" onClick={ProcessSignIn}>Sign in</button>
       </div>
