@@ -166,3 +166,33 @@ describe('Login', () => {
     expect(result.body.userInfo.channelNames.length).toBe(1);
   });
 });
+
+describe('Blocking users', () => {
+  //beforeEach(async () => {
+  
+  //}
+  it('should add user to the blockedUsers list', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    testUtils.signinUser(app, 'Martin', 'yeye');
+    
+    const result = await testUtils.blockUser(app, jwt, 'Martin');
+    const blockedUsersList = (await testUtils.getBlockedUsers(app, jwt)).body.blockedUsers;
+
+    expect(result.status).toBe(201);
+    expect(blockedUsersList.length).toBe(1);
+  });
+
+  it('should remove user from the blockedUsers list', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    testUtils.signinUser(app, 'Martin', 'yeye');
+    
+    await testUtils.blockUser(app, jwt, 'Martin');
+
+    const result = await testUtils.unblockUser(app, jwt, 'Martin');
+    const blockedUsersList = (await testUtils.getBlockedUsers(app, jwt)).body.blockedUsers;
+
+    expect(result.status).toBe(200);
+    expect(blockedUsersList.length).toBe(0);
+  });
+});
+

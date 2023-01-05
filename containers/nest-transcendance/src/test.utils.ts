@@ -178,3 +178,38 @@ export async function getChannelByName(
   Object.assign(result, fromJson);
   return result;
 }
+
+export const blockUser = async (
+  callerModule: INestApplication,
+  jwt: string,
+  username: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .post('/user/blockedUser')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      username: username,
+    });
+};
+
+export const getBlockedUsers = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/user/blockedUser')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const unblockUser = async (
+  callerModule: INestApplication,
+  jwt: string,
+  username: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .delete('/user/blockedUser')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      username: username,
+    });
+};

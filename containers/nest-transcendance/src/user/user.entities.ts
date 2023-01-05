@@ -2,6 +2,7 @@ import { Channel } from '../channel/channel.entities';
 
 export default class User {
   private friends: string[] = [];
+  private blockedUsers: string[] = [];
   private channelNames: string[] = ['welcome'];
   constructor(private name: string, private password: string) {}
 
@@ -50,5 +51,26 @@ export default class User {
     this.channelNames = this.channelNames.filter(
       (tmpName) => tmpName != channelName,
     );
+  }
+  
+  getBlockedUsers() {
+    return this.blockedUsers;
+  }
+
+  blockUser(username: string) {
+    this.blockedUsers.forEach((name: string) => {
+      // error thrown not necessary?
+      if (name === username) throw new Error('already blocked');
+    });
+    this.blockedUsers.push(username);
+  }
+
+  unblockUser(username: string) {
+    for (let i = 0; i < this.blockedUsers.length; i++) {
+      if (this.blockedUsers[i] === username) {
+        this.blockedUsers.splice(i);
+        return;
+      }
+    }
   }
 }

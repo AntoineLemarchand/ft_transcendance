@@ -69,4 +69,25 @@ export class UserController {
     const matchingUsernames = await this.userService.findMatching('');
     return { usernames: matchingUsernames };
   }
+  
+  @UseGuards(JwtAuthGuard)
+  @Post('blockedUser')
+  async blockUser(@Request() req: any) {
+    this.userService.blockUser(req.user.name, req.body.username);
+    return req.username + ' is now blocked';
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('blockedUser')
+  async getBlockedUsers(@Request() req: any) {
+    return { blockedUsers: this.userService.getBlockedUsers(req.user.name) };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('blockedUser')
+  async unblockUser(@Request() req: any) {
+    this.userService.unblockUser(req.user.name, req.body.username);
+    return req.username + ' is no longer blocked';
+  }
+
 }

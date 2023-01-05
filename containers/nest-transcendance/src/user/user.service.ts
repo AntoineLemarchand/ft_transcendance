@@ -100,4 +100,25 @@ export class UserService {
 		});
 		return result;
 	}
+	
+  blockUser(username: string, userToBlock: string){
+		const user = this.getUser(userToBlock);
+		if (user === undefined)
+			throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
+		try {
+			(this.getUser(username) as User).blockUser(userToBlock);
+		} catch (e) {
+			throw new HttpException('is already blocked', HttpStatus.UNAUTHORIZED)
+		}
+	}
+	
+  getBlockedUsers(username: string){
+		const user = this.getUser(username) as User;
+		return user.getBlockedUsers();
+	}
+
+	unblockUser(username: string, userToUnblock: string){
+		(this.getUser(username) as User).unblockUser(userToUnblock);
+	}
+
 }
