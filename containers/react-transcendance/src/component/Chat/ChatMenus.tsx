@@ -28,6 +28,7 @@ export function NewChannelMenu(props: {
       body: JSON.stringify({
           'channelName': channelName,
           'channelPassword': channelPassword,
+          'channelType': 'standard',
       }),
     }).then(response=>{
       if (response.status !== 201)
@@ -115,6 +116,7 @@ export function SearchMenu( props: {
       body: JSON.stringify({
           'channelName': channelName,
           'channelPassword': channelPassword,
+          'channelType': 'standard',
       }),
     }).then(response=>{
 			return response.status;

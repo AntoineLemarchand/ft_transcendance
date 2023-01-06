@@ -31,18 +31,42 @@ function ChatName(props: {username: string,
 	const DropDownStyle = menuToggle ?
 		{display: "block"} : {display: "none"}
 
+  const BlockUser = (event: any) => {
+      fetch('http://localhost:3000/user/blockedUser', {
+        credentials: 'include',
+        method: 'GET',
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+      }).then((response) => {
+        response.text().then((content) => {
+          const method = JSON.parse(content).blockedUsers.indexOf(event.target.value) > -1 ? 'DELETE' : 'POST';
+            fetch('http://localhost:3000/user/blockedUser', {
+              credentials: 'include',
+              method: method,
+              headers: {
+                  'Content-type': 'application/json; charset=UTF-8',
+              },
+              body: JSON.stringify({
+                username: event.target.value
+              }),
+            })
+        })
+      })
+  }
+
 	const options = [
-		"Block",
-		"Invite to play",
+		{name: "Block/Unblock", action: BlockUser},
+		{name: "Invite to play", action: ()=>{}}
 	]
 
   const adminOption = [
-		"Make Admin",
-		"Mute",
-		"Ban"
+		{name: "Make Admin", action: BlockUser},
+		{name: "Mute", action: BlockUser},
+		{name: "Ban", action: BlockUser},
   ]
 
-  if (props.sender == props.userName)
+  if (props.sender === props.userName)
     return (
       <div className="ChatName">
         <Link to='/profile'>{props.sender}</Link>
@@ -61,12 +85,16 @@ function ChatName(props: {username: string,
 				<Link to={"/profile/" + props.sender}><button>Profile</button></Link>
 				{
 					options.map( (option, idx) => 
-						<button key={idx} style={ButtonStyle}>{option}</button>)
+						<button key={idx}
+              style={ButtonStyle}
+              value={props.sender}
+              onClick={option.action}
+              >{option.name}</button>)
         }
         {
           props.channel.admins.includes(props.userName) &&
 					adminOption.map( (option, idx) => 
-						<button key={idx} style={ButtonStyle}>{option}</button>)
+						<button key={idx} style={ButtonStyle}>{option.name}</button>)
 				}
 				</div>
 			</div>
