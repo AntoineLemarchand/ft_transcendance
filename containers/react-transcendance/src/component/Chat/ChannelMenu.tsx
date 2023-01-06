@@ -6,6 +6,7 @@ function DisplayList(props: {
 		joinedChannels: Channel[],
 		currentChannel: Channel | undefined,
 		setCurrentChannel: Function,
+    userName: string,
 	}) {
 	const ChannelButtonStyle = (channel: Channel) => {
 		return props.currentChannel === undefined
@@ -26,7 +27,11 @@ function DisplayList(props: {
 				style={ChannelButtonStyle(channel)}
 				onClick={()=>props.setCurrentChannel(channel)}
 				>
-				{channel.channelName}</button>
+				{
+          !channel.channelName.includes('_') ? channel.channelName :
+          '☺ ' + (channel.channelName.split('_')[0] === props.userName ?
+          channel.channelName.split('_')[1] : channel.channelName.split('_')[0])
+        }</button>
 		)}
 		</div>
 	)
@@ -37,8 +42,8 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 	joinedChannel: Channel[],
 	SetNewConvMenu: Function,
 	SetSearchMenu: Function,
+  userName: string,
 	}) {
-
 	return (
 			<div className="channelMenu">
 				<header>
@@ -55,6 +60,7 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 					joinedChannels={props.joinedChannel}
 					currentChannel={props.currentChannel}
 					setCurrentChannel={props.setCurrentChannel}
+          userName={props.userName}
 				/>
 			</div>
 		);

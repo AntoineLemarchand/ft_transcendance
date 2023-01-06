@@ -44,6 +44,19 @@ function Chat() {
     })
   }
 
+  const updateBlockedUsers = () => {
+    fetch('http://localhost:3000/user/blockedUser', {
+        credentials: 'include',
+        method: 'GET',
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+      }).then((response) => {
+        response.text().then((content) => {
+          setBlockedUsers(JSON.parse(content).blockedUsers);
+        })})
+  }
+
 	useEffect( () => {
 		updateJoinedChannels();
     setSocket(
@@ -66,16 +79,7 @@ function Chat() {
 	}, [socket, joinedChannel])
 
   useEffect(() => {
-    fetch('http://localhost:3000/user/blockedUser', {
-        credentials: 'include',
-        method: 'GET',
-        headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-        },
-      }).then((response) => {
-        response.text().then((content) => {
-          setBlockedUsers(JSON.parse(content).blockedUsers);
-        })})
+    updateBlockedUsers();
   }, [currentChannel])
 
 	const displayChannelContent = (currentChannel: Channel | undefined) => {
@@ -124,6 +128,7 @@ function Chat() {
 				joinedChannel={joinedChannel}
 				SetNewConvMenu={SetNewConvMenu}
 				SetSearchMenu={SetSearchMenu}
+        userName={cookie['userInfo'].name}
 			/>
 			<ul className="channelContent">
 				<div className="chatArea">
