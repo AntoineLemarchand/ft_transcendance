@@ -64,7 +64,8 @@ function Profile() {
 						>Historic</button>
 				</div>
 				<div className="content">
-					<Friends isSelected={tabIndex === 0}/>
+					<Friends isSelected={tabIndex === 0}
+          friends={user !== undefined ? user.friends : []}/>
 					<Historic isSelected={tabIndex === 1}/>
 				</div>
 		</div>
