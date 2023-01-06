@@ -2,6 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import {FaLockOpen, FaLock } from 'react-icons/fa'
+import {useNavigate} from 'react-router-dom';
 
 import 'static/Profile/Profile.scss'
 
@@ -14,6 +15,7 @@ import { User } from '../../utils/User'
 
 function Profile(props: {user: any}) {
 	const params = useParams();
+  const navigate = useNavigate();
 	const [ tabIndex, setTabIndex ] = useState(0);
 	const [ user, setUser ] = useState<User>();
 
@@ -36,6 +38,7 @@ function Profile(props: {user: any}) {
 						'Content-Type': 'application/json'
 				},
 		}).then((result) => {
+      if (result.status === 404) {navigate('/profile')}
 			result.text().then((text)=> {
 				setUser(JSON.parse(text).userInfo);
 			});

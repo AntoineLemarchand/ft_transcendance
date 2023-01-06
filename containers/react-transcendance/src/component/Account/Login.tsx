@@ -8,7 +8,6 @@ import 'static/Account/Prompt.scss'
 import {ReactComponent as SchoolLogo} from 'static/logo.svg'
 
 function Login() {
-
     const navigate = useNavigate();
     const [cookie, setCookie] = useCookies(['auth', 'userInfo']);
     const [state, setState] = useState({
