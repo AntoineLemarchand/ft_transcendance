@@ -37,7 +37,6 @@ function Login() {
 									return JSON.parse(body).access_token
 							})
 							setCookie('auth', token)
-							setCookie('userInfo', state.username)
 							fetch('http://localhost:3000/user/info', {
 									credentials: 'include',
 									method: 'GET',
@@ -48,6 +47,7 @@ function Login() {
 							}).then((result) => {
 								result.text().then((text)=> {
 									setCookie('userInfo', JSON.parse(text).userInfo);
+                  console.log(cookie['userInfo'])
 								})
 							})
 							navigate('/home');

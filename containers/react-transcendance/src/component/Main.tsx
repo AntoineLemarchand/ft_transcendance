@@ -24,7 +24,6 @@ function Main(props: {component: any}) {
   const [cookie,, removeCookie] = useCookies(['auth', 'userInfo']);
 
 	const ProcessLogout = () => {
-		console.log("removing auth cookie");
     removeCookie('auth');
 		navigate('/');
 	}
@@ -33,7 +32,7 @@ function Main(props: {component: any}) {
 		{ icon: <FaHome/>, ref: 'home', component: <Home />},
 		{ icon: <FaTableTennis/>, ref: 'game', component: <Play/>},
 		{ icon: <FaCommentDots/>, ref: 'chat', component: <Chat/>},
-		{ icon: <FaUser/>, ref: 'profile', component: <Profile />},
+		{ icon: <FaUser/>, ref: 'profile', component: <Profile username={cookie['userInfo']}/>},
 	];
 
 	const tabStyle= (ref: string): React.CSSProperties  => {

@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { useCookies } from 'react-cookie'
+
 import Main from './Main'
 import NotFound from './NotFound'
 import Header from './Header'
@@ -16,6 +18,7 @@ import Profile from './Profile/Profile'
 import '../static/App.scss'
 
 function App() {
+  const [cookie] = useCookies(['userInfo']);
 	return (
 	<div className="App">
 		<BrowserRouter>
@@ -28,8 +31,8 @@ function App() {
 			<Route path="/game/:gid" element={ <Main component={<Play />}/>}/>
 			<Route path="/spectate" element={ <Main component={<Spectate />}/>}/>
 			<Route path="/chat" element={ <Main component={<Chat />}/>}/>
-			<Route path="/profile" element={ <Main component={<Profile />}/>}/>
-			<Route path="/profile/:uid" element={ <Main component={<Profile />}/>}/>
+			<Route path="/profile" element={ <Main component={<Profile user={cookie['userInfo']}/>}/>}/>
+			<Route path="/profile/:uid" element={ <Main component={<Profile user={cookie['userInfo']}/>}/>}/>
 			<Route path="/*" element={ <NotFound /> }/>
 		</Routes>
 		</BrowserRouter>

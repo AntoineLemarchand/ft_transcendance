@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import {FaLockOpen, FaLock } from 'react-icons/fa'
 
 import 'static/Profile/Profile.scss'
 
@@ -10,7 +11,8 @@ import Friends from './Friends'
 import { User } from '../../utils/User'
 
 
-function Profile() {
+
+function Profile(props: {user: any}) {
 	const params = useParams();
 	const [ tabIndex, setTabIndex ] = useState(0);
 	const [ user, setUser ] = useState<User>();
@@ -51,7 +53,7 @@ function Profile() {
             style={{
               background:'#b8bb26',
             }}
-          >2FA</div>
+          >{user === undefined || user.name === props.user.name ? <FaLock/> : <p>wa</p>}</div>
 				</div>
 				<div className="tabs">
 					<button
