@@ -56,14 +56,8 @@ function ChatName(props: {username: string,
   }
 
 	const options = [
-<<<<<<< HEAD
 		{name: "Block/Unblock", action: BlockUser},
 		{name: "Invite to play", action: ()=>{}}
-=======
-		"Block",
-		"Invite to play",
-		"Invite to channel",
->>>>>>> cbae28c0a4c9cdebc671fbf53aa6f6ce4650ec14
 	]
 
   const adminOption = [

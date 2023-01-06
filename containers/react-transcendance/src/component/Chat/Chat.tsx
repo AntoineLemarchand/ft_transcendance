@@ -20,6 +20,7 @@ function Chat() {
   const [cookie] = useCookies(['auth', 'userInfo']);
 	const [socket, setSocket] = useState<Socket>()
 	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([])
+	const [blockedUsers, setBlockedUsers] = useState<string[]>([])
 
 	const send = (sender: string, content: string, channel: string) =>{
 		socket?.emit("messageToServer",
@@ -64,25 +65,37 @@ function Chat() {
 		return () => {socket?.off("messageToClient", messageListener)}
 	}, [socket, joinedChannel])
 
+  useEffect(() => {
+    fetch('http://localhost:3000/user/blockedUser', {
+        credentials: 'include',
+        method: 'GET',
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+      }).then((response) => {
+        response.text().then((content) => {
+          setBlockedUsers(JSON.parse(content).blockedUsers);
+        })})
+  }, [currentChannel])
 
 	const displayChannelContent = (currentChannel: Channel | undefined) => {
 		if (currentChannel === undefined)
 			return <></>;
-		return currentChannel.messages.map((message: Message, idx: number) =>
-		<li key={idx}
-			className="message" style={
-			{textAlign: message.sender === cookie['userInfo'].name ? "right" : "left"}}>
-			<ChatName
-        username={message.sender}
-        sender={message.sender}
-        channel={currentChannel}
-        userName={cookie['userInfo'].name}
-      />
-			<p className="content">
-				{message.content}
-			</p>
-		</li>
-	)}
+    return currentChannel.messages.map((message: Message, idx: number) =>
+      <li key={idx}
+        className="message" style={
+        {textAlign: message.sender === cookie['userInfo'].name ? "right" : "left"}}>
+        <ChatName
+          username={message.sender}
+          sender={message.sender}
+          channel={currentChannel}
+          userName={cookie['userInfo'].name}
+        />
+        <p className="content">
+          {blockedUsers.indexOf(message.sender) == -1 ? message.content : '--- BLOCKED MESSAGE ---'}
+        </p>
+      </li>
+  )}
 
 	const OnKeyDown = ((event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter' && currentChannel !== undefined) {
