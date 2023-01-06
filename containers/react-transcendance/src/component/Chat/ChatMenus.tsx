@@ -156,9 +156,7 @@ export function SearchMenu( props: {
 	const directMessage = (event: any) => {
 		newDirectMessage(event.target.value).then(result=> {
 			if (result === 401)
-        alert("request failed")
-			else
-        alert("request made it !")
+        alert("You cannot discuss with this user at the moment")
 		})
 	}
 
@@ -205,7 +203,7 @@ export function SearchMenu( props: {
 											<FaUser /> {username}
 										</button>
 									)
-                } else { return <></> }
+                }
 							})
 						}
             </div>

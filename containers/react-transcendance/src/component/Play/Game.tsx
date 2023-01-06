@@ -36,7 +36,7 @@ function Game() {
   const ballStyle = {
     left: ballPos.x + '%',
     top: ballPos.y + '%',
-    transition: 'linear ' +gameSpeed + 's',
+    transition: 'linear ' + gameSpeed + 's',
   }
 
   return (

@@ -12,11 +12,24 @@ $usercardHeight: 6rem;
 	.userCard {
 		width: 100%;
 		height: $usercardHeight;
-
-		display: flex;
+    display: grid;
+    grid-template-columns: $usercardHeight auto calc($usercardHeight / 2);
 		color: color('backGround2');
 
-		h1 {margin-left: 2rem;}
+    .TwoFactor {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+		h1 {
+      margin-left: 2rem;
+			text-align: center;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: color('textSecondary');
+		}
 
 		.profileHeader {
 			height: $usercardHeight;
@@ -28,21 +41,12 @@ $usercardHeight: 6rem;
 				transform: translateX(-50%);
 				z-index: 0;
 			}
-
-		}
-
-		h1 {
-			text-align: center;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			color: color('textSecondary');
 		}
 	}
 
 	.tabs {
 		button {
-			width: calc(100% / 3);
+			width: 50%;
 			height: 100%;
       cursor: pointer;
 		}
