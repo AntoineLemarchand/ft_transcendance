@@ -158,6 +158,7 @@ export function SearchMenu( props: {
 			if (result === 401)
         alert("You cannot discuss with this user at the moment")
 		})
+    closeSearch();
 	}
 
 	const connectWithPassword = () => {
@@ -188,11 +189,12 @@ export function SearchMenu( props: {
             <div className="ChannelList">
 						{
 							searchedChannels.map((channel: string, idx: number) => {
-								return (
-									<button key={idx} value={channel} onClick={tryConnection}>
-										<FaUsers /> {channel}
-									</button>
-								)
+                if (!channel.includes('_'))
+                  return (
+                    <button key={idx} value={channel} onClick={tryConnection}>
+                      <FaUsers /> {channel}
+                    </button>
+                  )
 							})
 						}
 						{
