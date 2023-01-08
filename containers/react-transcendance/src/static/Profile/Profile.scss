@@ -13,13 +13,27 @@ $usercardHeight: 6rem;
 		width: 100%;
 		height: $usercardHeight;
     display: grid;
-    grid-template-columns: $usercardHeight auto calc($usercardHeight / 2);
+    grid-template-columns: $usercardHeight auto $usercardHeight;
 		color: color('backGround2');
 
-    .TwoFactor {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    .profileBadge {
+      width: 100%;
+      height: 100%;
+      display: grid;
+
+      button {
+        width: 100%;
+        height: 100%;
+
+        svg {
+          font-size: 1.2rem;
+        }
+
+        &:nth-child(3) {
+          grid-column: span 2;
+        }
+      }
+
     }
 
 		h1 {

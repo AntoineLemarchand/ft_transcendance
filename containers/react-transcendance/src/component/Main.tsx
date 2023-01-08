@@ -24,7 +24,8 @@ function Main(props: {component: any}) {
   const [cookie,, removeCookie] = useCookies(['auth', 'userInfo']);
 
 	const ProcessLogout = () => {
-    removeCookie('auth');
+    removeCookie('auth', {path: '/'});
+    removeCookie('userInfo', {path: '/'});
 		navigate('/');
 	}
 

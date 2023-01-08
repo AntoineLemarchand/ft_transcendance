@@ -1,7 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import {FaLockOpen, FaLock } from 'react-icons/fa'
 import {useNavigate} from 'react-router-dom';
 
 import 'static/Profile/Profile.scss'
@@ -11,7 +10,35 @@ import Friends from './Friends'
 
 import { User } from '../../utils/User'
 
+import { FaLockOpen, FaLock } from 'react-icons/fa'
+import { FaUserPlus, FaUserTimes, FaUserSlash } from 'react-icons/fa'
+import { FaTableTennis } from 'react-icons/fa'
 
+function ProfileBadge(props: {mainUser: any, shownUser: any}) {
+  const twoFa = false
+  const isFriend = false
+
+  if (props.mainUser === undefined ||
+    props.mainUser.name === props.shownUser.name) {
+    return (
+      <div className="profileBadge">
+        <button
+        style={{background: twoFa ? '#b8bb26' : '#cc241d'}}
+        >
+        { twoFa ? <FaLock/> : <FaLockOpen />}</button>
+      </div>
+    )
+  }
+  return (
+    <div className="profileBadge">
+      <button
+      style={{background: isFriend ? '#fb4934' : '#b8bb26'}}
+      > {isFriend ? <FaUserTimes /> : <FaUserPlus/>}</button>
+      <button style={{background: '#cc241d'}}><FaUserSlash /></button>
+      <button style={{background: '#fe8019'}}><FaTableTennis /></button>
+    </div>
+  )
+}
 
 function Profile(props: {user: any}) {
 	const params = useParams();
@@ -52,11 +79,10 @@ function Profile(props: {user: any}) {
 						<img src='https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fvoi.2Fvar.2Fvoi.2Fstorage.2Fimages.2Fmedia.2Fimages.2Fles-potins-du-jour.2Fpotins-26-novembre-2009.2Fshrek.2F5584668-1-fre-FR.2Fshrek.2Ejpg/753x565/cr/wqkgIC8gVm9pY2k%3D/crop-from/top/video-shrek-4-decouvrez-le-premier-teaser.jpg' alt="JD" />
 					</div>
           <h1>{user !== undefined && user.name}</h1>
-          <div className="TwoFactor"
-            style={{
-              background:'#b8bb26',
-            }}
-          >{user === undefined || user.name === props.user.name ? <FaLock/> : <p>wa</p>}</div>
+          <ProfileBadge 
+            mainUser={user}
+            shownUser={props.user}
+          />
 				</div>
 				<div className="tabs">
 					<button

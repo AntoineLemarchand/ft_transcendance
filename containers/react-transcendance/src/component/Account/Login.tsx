@@ -35,7 +35,8 @@ function Login() {
 							const token = await response.text().then((body) => {
 									return JSON.parse(body).access_token
 							})
-							setCookie('auth', token)
+							setCookie('auth', token, {path: '/'})
+              setCookie('userInfo', '', {path: '/'})
 							fetch('http://localhost:3000/user/info', {
 									credentials: 'include',
 									method: 'GET',
@@ -45,11 +46,10 @@ function Login() {
 									},
 							}).then((result) => {
 								result.text().then((text)=> {
-									setCookie('userInfo', JSON.parse(text).userInfo);
-                  console.log(cookie['userInfo'])
+									setCookie('userInfo', JSON.parse(text).userInfo, {path: '/'});
 								})
 							})
-							navigate('/home');
+              navigate('/home');
 					} else {
 							alert('Wrong credentials');
 					}
