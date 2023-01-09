@@ -1,6 +1,6 @@
 import ToggleButton from './ToggleButton'
 import { Channel } from "../../utils/Message";
-import { FaPlus, FaSearch } from 'react-icons/fa'
+import { FaPlus, FaSearch, FaPen } from 'react-icons/fa'
 
 function DisplayList(props: {
 		joinedChannels: Channel[],
@@ -9,19 +9,20 @@ function DisplayList(props: {
     userName: string,
 	}) {
 	const ChannelButtonStyle = (channel: Channel) => {
-		return props.currentChannel === undefined
-    || channel.channelName !== props.currentChannel.channelName ? {
-			backgroundColor:  '#458588',
-		} : {
-			backgroundColor:  '#83a598',
-			border: 'inset .2rem #a89984'
+		return {
+			backgroundColor:  props.currentChannel === undefined
+    || channel.channelName !== props.currentChannel.channelName ?
+      '#458588' : '#83a598',
+      gridColumn: channel.admins.includes(props.userName) ? '1' : '1/3',
 		}
 	}
+
 
 	return (
 		<div className="channelList">
 		{
 		props.joinedChannels.map((channel: Channel, idx: number) =>
+    <div className="Channel">
 			<button
 				key={idx}
 				style={ChannelButtonStyle(channel)}
@@ -32,6 +33,11 @@ function DisplayList(props: {
           '☺ ' + (channel.channelName.split('_')[0] === props.userName ?
           channel.channelName.split('_')[1] : channel.channelName.split('_')[0])
         }</button>
+        {
+          channel.admins.includes(props.userName) &&
+          <button><FaPen /></button>
+        }
+    </div>
 		)}
 		</div>
 	)
