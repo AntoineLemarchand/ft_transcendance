@@ -7,8 +7,9 @@ import 'static/Chat/ChatName.scss'
 
 function ChatName(props: {username: string,
   sender: string,
+  userName: string,
   channel: Channel,
-  userName: string
+  updateContent: Function,
   }) {
 
 	const [ menuToggle, setMenuToggle ] = useState(false);
@@ -51,7 +52,8 @@ function ChatName(props: {username: string,
                 username: event.target.value
               }),
             })
-        })
+            setMenuToggle(false);
+            props.updateContent();        })
       })
   }
 

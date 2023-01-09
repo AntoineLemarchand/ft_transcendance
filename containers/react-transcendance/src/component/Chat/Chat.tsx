@@ -17,10 +17,11 @@ function Chat() {
 	const [SearchMenu, SetSearchMenu] = useState(false)
 	const [currentChannel, setCurrentChannel ] =  useState<Channel>()
 	const [currentMessage, setCurrentMessage ] =  useState('')
-  const [cookie] = useCookies(['auth', 'userInfo']);
-	const [socket, setSocket] = useState<Socket>()
 	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([])
 	const [blockedUsers, setBlockedUsers] = useState<string[]>([])
+
+  const [cookie] = useCookies(['auth', 'userInfo']);
+	const [socket, setSocket] = useState<Socket>()
 
 	const send = (sender: string, content: string, channel: string) =>{
 		socket?.emit("messageToServer",
@@ -65,7 +66,6 @@ function Chat() {
         query: {auth: cookie.auth},
       })
     );
-		//eslint-disable-next-line
 	}, [])
 
 	useEffect(() => {
@@ -75,6 +75,8 @@ function Chat() {
       setJoinedChannel(allChannels);
     }
 		socket?.on("messageToClient", messageListener)
+    if (currentChannel === undefined && joinedChannel.length > 0)
+      setCurrentChannel(joinedChannel[0])
 		return () => {socket?.off("messageToClient", messageListener)}
 	}, [socket, joinedChannel])
 
@@ -94,9 +96,11 @@ function Chat() {
           sender={message.sender}
           channel={currentChannel}
           userName={cookie['userInfo'].name}
+          updateContent={()=>{setCurrentChannel(currentChannel)}}
         />
         <p className="content">
-          {blockedUsers.indexOf(message.sender) == -1 ? message.content : '--- BLOCKED MESSAGE ---'}
+          {blockedUsers.indexOf(message.sender) == -1 ?
+            message.content : '--- BLOCKED MESSAGE ---'}
         </p>
       </li>
   )}
