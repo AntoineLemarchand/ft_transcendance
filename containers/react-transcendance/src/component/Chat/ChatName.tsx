@@ -32,14 +32,29 @@ function ChatName(props: {username: string,
 	const DropDownStyle = menuToggle ?
 		{display: "block"} : {display: "none"}
 
+  const BanUser = () => {
+    alert('banning now')
+    fetch('http://localhost:3000/channel/user', {
+      credentials: 'include',
+      method: 'DELETE',
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify({
+          'bannedUserName': props.sender,
+          'channelName': props.channel.channelName,
+      }),
+    })
+  }
+
 	const options = [
-		{name: "Invite To Play", action: ()=>{}},
+		{name: "Invite To Play", onClick: ()=>{}},
 	]
 
   const adminOption = [
-		{name: "Make Admin", action: ()=>{}},
-		{name: "Mute", action: ()=>{}},
-		{name: "Ban", action: ()=>{}},
+		{name: "Make Admin", onClick: ()=>{}},
+		{name: "Mute 30min", onClick: ()=>{}},
+		{name: "Ban", onClick: BanUser},
   ]
 
   if (props.sender === props.userName)
@@ -64,13 +79,17 @@ function ChatName(props: {username: string,
 						<button key={idx}
               style={ButtonStyle}
               value={props.sender}
-              onClick={option.action}
+              onClick={option.onClick}
               >{option.name}</button>)
         }
         {
           props.channel.admins.includes(props.userName) &&
 					adminOption.map( (option, idx) => 
-						<button key={idx} style={ButtonStyle}>{option.name}</button>)
+						<button
+              key={idx}
+              style={ButtonStyle}
+              onClick={option.onClick}
+              >{option.name}</button>)
 				}
 				</div>
 			</div>
