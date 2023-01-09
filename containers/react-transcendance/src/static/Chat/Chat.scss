@@ -83,6 +83,8 @@ $headerHeight: 3rem;
 
           &:last-child {
             background: color('aquaSecondary');
+
+            &:hover {background: color('aquaPrimary')}
           }
 
           &:hover {

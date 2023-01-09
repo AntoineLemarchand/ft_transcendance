@@ -33,7 +33,6 @@ function ChatName(props: {username: string,
 		{display: "block"} : {display: "none"}
 
   const BanUser = () => {
-    alert('banning now')
     fetch('http://localhost:3000/channel/user', {
       credentials: 'include',
       method: 'DELETE',
@@ -44,6 +43,9 @@ function ChatName(props: {username: string,
           'bannedUserName': props.sender,
           'channelName': props.channel.channelName,
       }),
+    }).then((result)=>{
+      alert(props.sender + ' has been banned')
+      ToggleUserMenu();
     })
   }
 
