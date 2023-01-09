@@ -13,6 +13,7 @@ export function NewChannelMenu(props: {
 
   const [channelName, setChannelName] = useState('');
   const [channelPassword, setChannelPassword] = useState('');
+  const [isPrivate, setIsPrivate] = useState(false);
 
   const NewChannel = () => {
     if (channelName === '') {
@@ -28,7 +29,7 @@ export function NewChannelMenu(props: {
       body: JSON.stringify({
           'channelName': channelName,
           'channelPassword': channelPassword,
-          'channelType': 'standard',
+          'channelType': isPrivate ? 'private' : 'standard',
       }),
     }).then(response=>{
       if (response.status !== 201)
@@ -56,6 +57,11 @@ export function NewChannelMenu(props: {
             onChange={(event)=>{setChannelPassword(event.target.value)}}
             value={channelPassword}
             />
+            <div className="CheckBox">
+              <input type="checkbox"
+              onClick={(event)=>setIsPrivate(event.target.checked)}/>
+              <p>Private</p>
+            </div>
           <button onClick={NewChannel}>Create Conversation</button>
 			</div>
 		</div>
