@@ -6,6 +6,7 @@ function DisplayList(props: {
 		joinedChannels: Channel[],
 		currentChannel: Channel | undefined,
 		setCurrentChannel: Function,
+    modifyChannel: Function,
     userName: string,
 	}) {
 	const ChannelButtonStyle = (channel: Channel) => {
@@ -35,7 +36,7 @@ function DisplayList(props: {
         }</button>
         {
           channel.admins.includes(props.userName) &&
-          <button><FaPen /></button>
+          <button onClick={()=>props.modifyChannel(channel)}><FaPen /></button>
         }
     </div>
 		)}
@@ -48,6 +49,7 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 	joinedChannel: Channel[],
 	SetNewConvMenu: Function,
 	SetSearchMenu: Function,
+  modifyChannel: Function,
   userName: string,
 	}) {
 	return (
@@ -66,6 +68,7 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 					joinedChannels={props.joinedChannel}
 					currentChannel={props.currentChannel}
 					setCurrentChannel={props.setCurrentChannel}
+          modifyChannel={props.modifyChannel}
           userName={props.userName}
 				/>
 			</div>

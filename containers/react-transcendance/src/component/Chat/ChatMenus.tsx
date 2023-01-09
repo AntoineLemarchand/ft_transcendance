@@ -4,6 +4,23 @@ import { useCookies } from 'react-cookie';
 
 import 'static/Chat/ChatMenus.scss';
 import { FaUser, FaUsers } from 'react-icons/fa'
+import { Channel } from "../../utils/Message";
+
+export function ChannelModifyMenu(props: {channel: Channel | undefined, callback: Function}) {
+  if (props.channel !== undefined)
+    return (
+      <div
+        className="ChatMenu"
+        onClick={props.callback()}>
+        <div className="choiceBox" onClick={(e)=>e.stopPropagation()}>
+          <p>New Password for {props.channel.channelName}:</p>
+          <input type="text" placeholder="New Password..."/>
+          <button>Submit</button>
+        </div>
+      </div>
+    )
+  return <></>
+}
 
 export function NewChannelMenu(props: {
 	toggle: React.MouseEventHandler<HTMLDivElement>,

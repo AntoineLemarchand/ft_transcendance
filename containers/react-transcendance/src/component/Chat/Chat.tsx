@@ -15,6 +15,9 @@ import { useCookies } from 'react-cookie';
 function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
 	const [SearchMenu, SetSearchMenu] = useState(false)
+
+	const [modifyChannel, setModifyChannel] = useState<Channel | undefined>(undefined)
+
 	const [currentChannel, setCurrentChannel ] =  useState<Channel>()
 	const [currentMessage, setCurrentMessage ] =  useState('')
 	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([])
@@ -115,6 +118,9 @@ function Chat() {
 
 	return (
 		<div className="Chat">
+      <Menus.ChannelModifyMenu
+        channel={modifyChannel}
+        callback={()=>setModifyChannel(undefined)}/>
 			<Menus.NewChannelMenu
 				toggle={()=>{SetNewConvMenu(!NewConvMenu)}}
         callback={updateJoinedChannels}
@@ -129,6 +135,7 @@ function Chat() {
 			<ChannelMenu
 				currentChannel={currentChannel}
 				setCurrentChannel={setCurrentChannel}
+        modifyChannel={setModifyChannel}
 				joinedChannel={joinedChannel}
 				SetNewConvMenu={SetNewConvMenu}
 				SetSearchMenu={SetSearchMenu}
