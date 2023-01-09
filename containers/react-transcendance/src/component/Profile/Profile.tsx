@@ -19,7 +19,7 @@ function ProfileBadge(props: {mainUser: any, shownUser: any}) {
   const isFriend = false
 
   const BlockUser = (event: any) => {
-    console.log(event.target.value);
+    console.log(props.shownUser.name);
       fetch('http://localhost:3000/user/blockedUser', {
         credentials: 'include',
         method: 'GET',
@@ -28,7 +28,7 @@ function ProfileBadge(props: {mainUser: any, shownUser: any}) {
         },
       }).then((response) => {
         response.text().then((content) => {
-          const method = JSON.parse(content).blockedUsers.indexOf(event.target.value) > -1 ? 'DELETE' : 'POST';
+          const method = JSON.parse(content).blockedUsers.indexOf(props.shownUser.name) > -1 ? 'DELETE' : 'POST';
           fetch('http://localhost:3000/user/blockedUser', {
             credentials: 'include',
             method: method,
@@ -36,7 +36,7 @@ function ProfileBadge(props: {mainUser: any, shownUser: any}) {
                 'Content-type': 'application/json; charset=UTF-8',
             },
             body: JSON.stringify({
-              username: event.target.value
+              username: props.shownUser.name
             }),
           })
       })
@@ -54,12 +54,13 @@ function ProfileBadge(props: {mainUser: any, shownUser: any}) {
       </div>
     )
   }
+  console.log(props.shownUser.name)
   return (
     <div className="profileBadge">
       <button
       style={{background: isFriend ? '#fb4934' : '#b8bb26'}}
       > {isFriend ? <FaUserTimes /> : <FaUserPlus/>}</button>
-      <button style={{background: '#cc241d'}} value={props.shownUser.name} onClick={BlockUser}><FaUserSlash /></button>
+      <button style={{background: '#cc241d'}} onClick={BlockUser}><FaUserSlash /></button>
       <button style={{background: '#fe8019'}}><FaTableTennis /></button>
     </div>
   )
