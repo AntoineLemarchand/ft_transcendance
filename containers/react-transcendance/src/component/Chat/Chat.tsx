@@ -47,15 +47,16 @@ function Chat() {
 
   const updateBlockedUsers = () => {
     fetch('http://localhost:3000/user/blockedUser', {
-        credentials: 'include',
-        method: 'GET',
-        headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-        },
-      }).then((response) => {
-        response.text().then((content) => {
-          setBlockedUsers(JSON.parse(content).blockedUsers);
-        })})
+      credentials: 'include',
+      method: 'GET',
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      },
+    }).then((response) => {
+      response.text().then((content) => {
+        setBlockedUsers(JSON.parse(content).blockedUsers);
+      })
+    })
   }
 
 	useEffect( () => {
@@ -85,24 +86,23 @@ function Chat() {
   }, [currentChannel])
 
 	const displayChannelContent = (currentChannel: Channel | undefined) => {
-		if (currentChannel === undefined)
-			return <></>;
-    return currentChannel.messages.map((message: Message, idx: number) =>
-      <li key={idx}
-        className="message" style={
-        {textAlign: message.sender === cookie['userInfo'].name ? "right" : "left"}}>
-        <ChatName
-          username={message.sender}
-          sender={message.sender}
-          channel={currentChannel}
-          userName={cookie['userInfo'].name}
-          updateContent={()=>{setCurrentChannel(currentChannel)}}
-        />
-        <p className="content">
-          {blockedUsers.indexOf(message.sender) == -1 ?
-            message.content : '--- BLOCKED MESSAGE ---'}
-        </p>
-      </li>
+		if (currentChannel !== undefined)
+      return currentChannel.messages.map((message: Message, idx: number) =>
+        <li key={idx}
+          className="message" style={
+          {textAlign: message.sender === cookie['userInfo'].name ? "right" : "left"}}>
+          <ChatName
+            username={message.sender}
+            sender={message.sender}
+            channel={currentChannel}
+            userName={cookie['userInfo'].name}
+            updateContent={setCurrentChannel}
+          />
+          <p className="content">
+            {blockedUsers.indexOf(message.sender) == -1 ?
+              message.content : '--- BLOCKED MESSAGE ---'}
+          </p>
+        </li>
   )}
 
 	const OnKeyDown = ((event: React.KeyboardEvent<HTMLInputElement>) => {
