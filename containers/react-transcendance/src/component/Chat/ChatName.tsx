@@ -83,7 +83,7 @@ function ChatName(props: {username: string,
               >{option.name}</button>)
         }
         {
-          props.channel.admins.includes(props.userName) &&
+          props.channel.admins.includes(props.userName) && props.channel.type !== 2 &&
 					adminOption.map( (option, idx) => 
 						<button
               key={idx}
