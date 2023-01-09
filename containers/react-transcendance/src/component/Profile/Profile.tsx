@@ -83,7 +83,11 @@ function ProfileBadge(props: {
     return (
       <div className="profileBadge">
         <button
-        style={{background: twoFa ? '#b8bb26' : '#cc241d'}}
+        style={{
+          background: twoFa ? '#b8bb26' : '#cc241d',
+          gridRow: '1/3',
+          gridColumn: '1/3',
+          }}
         >
         { twoFa ? <FaLock/> : <FaLockOpen />}</button>
       </div>
