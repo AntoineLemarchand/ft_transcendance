@@ -36,7 +36,9 @@ function DisplayList(props: {
         }</button>
         {
           channel.admins.includes(props.userName) &&
-          <button onClick={()=>props.modifyChannel(channel)}><FaPen /></button>
+          <button
+          onClick={()=>props.modifyChannel(channel.channelName)}>
+          <FaPen /></button>
         }
     </div>
 		)}

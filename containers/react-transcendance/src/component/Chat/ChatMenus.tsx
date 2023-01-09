@@ -4,22 +4,27 @@ import { useCookies } from 'react-cookie';
 
 import 'static/Chat/ChatMenus.scss';
 import { FaUser, FaUsers } from 'react-icons/fa'
-import { Channel } from "../../utils/Message";
 
-export function ChannelModifyMenu(props: {channel: Channel | undefined, callback: Function}) {
-  if (props.channel !== undefined)
-    return (
-      <div
-        className="ChatMenu"
-        onClick={props.callback()}>
-        <div className="choiceBox" onClick={(e)=>e.stopPropagation()}>
-          <p>New Password for {props.channel.channelName}:</p>
-          <input type="text" placeholder="New Password..."/>
-          <button>Submit</button>
-        </div>
+export function ChannelModifyMenu(props: {channel: string, callback: Function}) {
+  const [ newPassword, setNewPassword ] = useState('')
+
+  const ChangePassword = () => {
+    alert('here the new password should be ' + newPassword);
+    props.callback();
+  }
+
+  return (
+    <div
+      className="ChatMenu"
+      onClick={()=>props.callback()}>
+      <div className="choiceBox" onClick={(e)=>e.stopPropagation()}>
+        <p>New Password for {props.channel}:</p>
+        <input type="password" placeholder="New Password..."
+          onChange={(event)=>setNewPassword(event.target.value)}/>
+        <button onClick={ChangePassword}>Submit</button>
       </div>
-    )
-  return <></>
+    </div>
+  )
 }
 
 export function NewChannelMenu(props: {
@@ -104,7 +109,7 @@ export function SearchMenu( props: {
             'Content-Type': 'application/json'
         },
     }).then((result) => {
-      result. text().then((text)=> {
+      result.text().then((text)=> {
         setSearchedChannels(JSON.parse(text).channels);
       });
     })
@@ -212,23 +217,20 @@ export function SearchMenu( props: {
             <div className="ChannelList">
 						{
 							searchedChannels.map((channel: string, idx: number) => {
-                if (!channel.includes('_'))
-                  return (
-                    <button key={idx} value={channel} onClick={tryConnection}>
-                      <FaUsers /> {channel}
-                    </button>
-                  )
+                return ( !channel.includes('_') &&
+                  <button key={idx} value={channel} onClick={tryConnection}>
+                    <FaUsers /> {channel}
+                  </button>
+                )
 							})
 						}
 						{
 							searchedUsers.map((username: string, idx: number) => {
-								if (username !== cookie['userInfo'].name) {
-									return (
-										<button key={idx} value={username} onClick={directMessage}>
-											<FaUser /> {username}
-										</button>
-									)
-                }
+                return ( (username !== cookie['userInfo'].name) &&
+                  <button key={idx} value={username} onClick={directMessage}>
+                    <FaUser /> {username}
+                  </button>
+                )
 							})
 						}
             </div>

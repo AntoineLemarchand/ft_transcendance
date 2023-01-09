@@ -16,7 +16,7 @@ function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
 	const [SearchMenu, SetSearchMenu] = useState(false)
 
-	const [modifyChannel, setModifyChannel] = useState<Channel | undefined>(undefined)
+	const [channelToModify, setChannelToModify] = useState('')
 
 	const [currentChannel, setCurrentChannel ] =  useState<Channel>()
 	const [currentMessage, setCurrentMessage ] =  useState('')
@@ -70,6 +70,7 @@ function Chat() {
         query: {auth: cookie.auth},
       })
     );
+  // eslint-disable-next-line
 	}, [])
 
 	useEffect(() => {
@@ -82,6 +83,7 @@ function Chat() {
     if (currentChannel === undefined && joinedChannel.length > 0)
       setCurrentChannel(joinedChannel[0])
 		return () => {socket?.off("messageToClient", messageListener)}
+  // eslint-disable-next-line
 	}, [socket, joinedChannel])
 
   useEffect(() => {
@@ -102,7 +104,7 @@ function Chat() {
             updateContent={setCurrentChannel}
           />
           <p className="content">
-            {blockedUsers.indexOf(message.sender) == -1 ?
+            {blockedUsers.indexOf(message.sender) === -1 ?
               message.content : '--- BLOCKED MESSAGE ---'}
           </p>
         </li>
@@ -118,9 +120,9 @@ function Chat() {
 
 	return (
 		<div className="Chat">
-      <Menus.ChannelModifyMenu
-        channel={modifyChannel}
-        callback={()=>setModifyChannel(undefined)}/>
+      {channelToModify !== '' && <Menus.ChannelModifyMenu
+        channel={channelToModify}
+        callback={()=>setChannelToModify('')}/>}
 			<Menus.NewChannelMenu
 				toggle={()=>{SetNewConvMenu(!NewConvMenu)}}
         callback={updateJoinedChannels}
@@ -135,7 +137,7 @@ function Chat() {
 			<ChannelMenu
 				currentChannel={currentChannel}
 				setCurrentChannel={setCurrentChannel}
-        modifyChannel={setModifyChannel}
+        modifyChannel={setChannelToModify}
 				joinedChannel={joinedChannel}
 				SetNewConvMenu={SetNewConvMenu}
 				SetSearchMenu={SetSearchMenu}
