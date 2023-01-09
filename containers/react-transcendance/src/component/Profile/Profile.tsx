@@ -10,11 +10,23 @@ import Friends from './Friends'
 
 import { User } from '../../utils/User'
 
-import { FaLockOpen, FaLock } from 'react-icons/fa'
-import { FaUserPlus, FaUserTimes, FaUserSlash } from 'react-icons/fa'
-import { FaTableTennis } from 'react-icons/fa'
+import { Channel } from "../../utils/Message";
 
-function ProfileBadge(props: {mainUser: any, shownUser: any}) {
+import {
+  FaLockOpen,
+  FaLock,
+  FaUserPlus,
+  FaUserTimes,
+  FaUserSlash,
+  FaTableTennis,
+  FaEnvelope,
+} from 'react-icons/fa'
+
+function ProfileBadge(props: {
+  mainUser: any,
+  shownUser: any,
+  inviteButton: any
+  }) {
   const twoFa = false
   const isFriend = false
 
@@ -85,6 +97,71 @@ function ProfileBadge(props: {mainUser: any, shownUser: any}) {
       > {isFriend ? <FaUserTimes /> : <FaUserPlus/>}</button>
       <button style={{background: '#cc241d'}} onClick={BlockUser}><FaUserSlash /></button>
       <button style={{background: '#fe8019'}}><FaTableTennis /></button>
+      <button style={{background: '#458588'}} onClick={props.inviteButton}><FaEnvelope /></button>
+    </div>
+  )
+}
+
+function InviteMenu(props: {callback: any, mainUser: string, shownUser: string}) {
+	const [ joinedChannels, setJoinedChannels ] = useState<Channel[]>([])
+
+  const InviteToChannel = (event: any) => {
+    console.log(event.target.value);
+    fetch('http://localhost:3000/channel/invite', {
+        credentials: 'include',
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: props.shownUser,
+          channelName: event.target.value,
+        })
+    }).then((result) => {
+      if (result.status === 401) {
+        alert('cannot invite this user')
+      } else {alert('invited !')}
+      props.callback();
+    })
+  }
+
+  useEffect(()=> {
+    fetch('http://localhost:3000/user/channels', {
+        credentials: 'include',
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+    }).then((result) => {
+      result.text().then((text)=> {
+        setJoinedChannels(JSON.parse(text).channels);
+        console.log(JSON.parse(text).channels);
+      });
+    })
+  }, [])
+
+  return (
+    <div className="InviteMenu" onClick={props.callback}>
+      <div className="Prompt" onClick={(event)=>{event.stopPropagation()}}>
+        <div className="List">
+        {
+          joinedChannels && joinedChannels.map((channel: Channel, idx: number) => {
+            if (channel.type !== 2 && channel.admins.includes(props.mainUser))
+              return (
+                <button
+                  className="channel"
+                  key={idx}
+                  value={channel.channelName}
+                  onClick={InviteToChannel}>
+                  {channel.channelName}
+                </button>
+              )
+          })
+        }
+        </div>
+      </div>
     </div>
   )
 }
@@ -94,6 +171,7 @@ function Profile(props: {user: any}) {
   const navigate = useNavigate();
 	const [ tabIndex, setTabIndex ] = useState(0);
 	const [ user, setUser ] = useState<User>();
+  const [ inviteMenu, setInviteMenu ] = useState(false)
 
 	const TabStyle = (index: number): React.CSSProperties =>{
 		return index === tabIndex ? {
@@ -117,13 +195,18 @@ function Profile(props: {user: any}) {
       if (result.status === 404) {navigate('/profile')}
 			result.text().then((text)=> {
 				setUser(JSON.parse(text).userInfo);
-        console.log(JSON.parse(text).userInfo)
 			});
 		})
 	}, [params.uid])
 
 	return (
 			<div className="Profile">
+        {inviteMenu && user &&
+        <InviteMenu
+          callback={()=>setInviteMenu(false)}
+          mainUser={props.user.name}
+          shownUser={user && user.name}
+          />}
 				<div className="userCard">
 					<div className="profileHeader">
 						<img src='https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fvoi.2Fvar.2Fvoi.2Fstorage.2Fimages.2Fmedia.2Fimages.2Fles-potins-du-jour.2Fpotins-26-novembre-2009.2Fshrek.2F5584668-1-fre-FR.2Fshrek.2Ejpg/753x565/cr/wqkgIC8gVm9pY2k%3D/crop-from/top/video-shrek-4-decouvrez-le-premier-teaser.jpg' alt="JD" />
@@ -133,6 +216,7 @@ function Profile(props: {user: any}) {
             user !== undefined && <ProfileBadge 
             mainUser={props.user}
             shownUser={user}
+            inviteButton={()=>setInviteMenu(true)}
           />
           }
 				</div>

@@ -9,6 +9,38 @@ $usercardHeight: 6rem;
 	display: grid;
 	grid-template-rows: $usercardHeight 2rem auto;
 
+  .InviteMenu {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    background: rgba(0,0,0,.5);
+
+    .Prompt {
+      max-height: 60%;
+      overflow-y: hidden;
+
+      .List {
+        height: 80%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: scroll;
+
+        button {
+          width: 80%;
+          background: color('bluePrimary');
+
+          &:hover { background: color('blueSecondary'); }
+        }
+      }
+    }
+
+  }
+
 	.userCard {
 		width: 100%;
 		height: $usercardHeight;
@@ -20,6 +52,7 @@ $usercardHeight: 6rem;
       width: 100%;
       height: 100%;
       display: grid;
+      grid-template: '1 2' '3 4';
 
       button {
         width: 100%;
@@ -27,10 +60,6 @@ $usercardHeight: 6rem;
 
         svg {
           font-size: 1.2rem;
-        }
-
-        &:nth-child(3) {
-          grid-column: span 2;
         }
       }
 
