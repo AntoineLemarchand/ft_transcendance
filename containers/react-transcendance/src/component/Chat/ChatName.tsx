@@ -32,46 +32,20 @@ function ChatName(props: {username: string,
 	const DropDownStyle = menuToggle ?
 		{display: "block"} : {display: "none"}
 
-  const BlockUser = (event: any) => {
-      fetch('http://localhost:3000/user/blockedUser', {
-        credentials: 'include',
-        method: 'GET',
-        headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-        },
-      }).then((response) => {
-        response.text().then((content) => {
-          const method = JSON.parse(content).blockedUsers.indexOf(event.target.value) > -1 ? 'DELETE' : 'POST';
-            fetch('http://localhost:3000/user/blockedUser', {
-              credentials: 'include',
-              method: method,
-              headers: {
-                  'Content-type': 'application/json; charset=UTF-8',
-              },
-              body: JSON.stringify({
-                username: event.target.value
-              }),
-            })
-            setMenuToggle(false);
-            props.updateContent();        })
-      })
-  }
-
 	const options = [
-		{name: "Invite", action: ()=>{}},
-		{name: "Block/Unblock", action: BlockUser},
+		{name: "Invite To Play", action: ()=>{}},
 	]
 
   const adminOption = [
-		{name: "Make Admin", action: BlockUser},
-		{name: "Mute", action: BlockUser},
-		{name: "Ban", action: BlockUser},
+		{name: "Make Admin", action: ()=>{}},
+		{name: "Mute", action: ()=>{}},
+		{name: "Ban", action: ()=>{}},
   ]
 
   if (props.sender === props.userName)
     return (
       <div className="ChatName">
-        <Link to='/profile'>{props.sender}</Link>
+        <Link to={'/profile'}>{props.sender}</Link>
       </div>
     )
 	return (
