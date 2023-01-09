@@ -1,4 +1,6 @@
 import 'static/Profile/Friends.scss'
+import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
 function Friends(props: {isSelected: boolean, friends: string[]}) {
   const statusColor = (status: string) => {
@@ -10,6 +12,10 @@ function Friends(props: {isSelected: boolean, friends: string[]}) {
       return {background: '#cc241d',}
   }
 
+  useEffect(()=> {
+    console.log(props.friends)
+  }, [])
+
 	return (
     <div
       className="Friends"
@@ -19,14 +25,14 @@ function Friends(props: {isSelected: boolean, friends: string[]}) {
       {
         props.friends.map((friend: any, idx: number) => {
           return (
-            <div className="friend" key={idx}>
-              <img src={friend.avatar} alt="friend avatar"/>
-              <p>{friend.name}</p>
+            <Link to={'/profile/' + friend} className="friend" key={idx}>
+              <img alt="friend avatar"/>
+              <p>{friend}</p>
               <div className="status">
-                <p>{friend.status}</p>
-                <span style={statusColor(friend.status)}/>
+                <p>{}</p>
+                <span style={statusColor('online')}/>
               </div>
-            </div>
+            </Link>
           )
         })
       }

@@ -18,8 +18,32 @@ function ProfileBadge(props: {mainUser: any, shownUser: any}) {
   const twoFa = false
   const isFriend = false
 
+  const AddFriend = () => {
+      fetch('http://localhost:3000/user/friend', {
+        credentials: 'include',
+        method: 'GET',
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+      }).then((response) => {
+        response.text().then((content) => {
+          const method = JSON.parse(content).friends.indexOf(props.shownUser.name) > -1 ? 'DELETE' : 'POST';
+          fetch('http://localhost:3000/user/friend', {
+            credentials: 'include',
+            method: method,
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+            body: JSON.stringify({
+              username: props.shownUser.name
+            }),
+          })
+        })
+      })
+  }
+ 
+
   const BlockUser = (event: any) => {
-    console.log(props.shownUser.name);
       fetch('http://localhost:3000/user/blockedUser', {
         credentials: 'include',
         method: 'GET',
@@ -42,7 +66,6 @@ function ProfileBadge(props: {mainUser: any, shownUser: any}) {
       })
     })
   }
-
   if (props.mainUser === undefined ||
     props.mainUser.name === props.shownUser.name) {
     return (
@@ -54,10 +77,10 @@ function ProfileBadge(props: {mainUser: any, shownUser: any}) {
       </div>
     )
   }
-  console.log(props.shownUser.name)
   return (
     <div className="profileBadge">
       <button
+      onClick={AddFriend}
       style={{background: isFriend ? '#fb4934' : '#b8bb26'}}
       > {isFriend ? <FaUserTimes /> : <FaUserPlus/>}</button>
       <button style={{background: '#cc241d'}} onClick={BlockUser}><FaUserSlash /></button>
@@ -94,6 +117,7 @@ function Profile(props: {user: any}) {
       if (result.status === 404) {navigate('/profile')}
 			result.text().then((text)=> {
 				setUser(JSON.parse(text).userInfo);
+        console.log(JSON.parse(text).userInfo)
 			});
 		})
 	}, [params.uid])
@@ -124,7 +148,7 @@ function Profile(props: {user: any}) {
 				</div>
 				<div className="content">
 					<Friends isSelected={tabIndex === 0}
-          friends={user !== undefined ? user.friends : []}/>
+          friends={user === undefined ? [] : user.friends}/>
 					<Historic isSelected={tabIndex === 1}/>
 				</div>
 		</div>

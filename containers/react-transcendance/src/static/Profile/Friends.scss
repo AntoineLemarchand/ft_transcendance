@@ -20,7 +20,9 @@ $friendLineHeight: 4.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: color(backGround2);
+      background: color('backGround2');
+      color: color('textPrimary');
+      text-decoration: none;
 
       img {
         height: $friendLineHeight;
