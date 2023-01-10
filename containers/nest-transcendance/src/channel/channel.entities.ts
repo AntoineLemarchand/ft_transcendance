@@ -98,4 +98,8 @@ export class Channel {
   addAdmin(adminCandidateUsername: string) {
     this.admins.push(adminCandidateUsername);
   }
+
+  setPassword(newPassword: string) {
+    this.password = newPassword;
+  }
 }

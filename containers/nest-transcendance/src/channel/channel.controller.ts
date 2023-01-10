@@ -97,6 +97,16 @@ export class ChannelController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('password')
+  async setPassword(@Request() req: any) {
+    await this.channelService.setPassword(
+      req.user.name,
+      req.body.newPassword,
+      req.body.channelName,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('admin')
   async makeAdmin(@Request() req: any) {
     const matchingChannels = await this.channelService.makeAdmin(
