@@ -1,4 +1,3 @@
-import ToggleButton from './ToggleButton'
 import { Channel } from "../../utils/Message";
 import { FaPlus, FaSearch, FaPen } from 'react-icons/fa'
 
@@ -57,14 +56,10 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 	return (
 			<div className="channelMenu">
 				<header>
-					<ToggleButton
-						toggle={()=>props.SetSearchMenu(true)}
-						icon={<FaSearch />}
-          />
-					<ToggleButton
-						toggle={()=>props.SetNewConvMenu(true)}
-						icon={<FaPlus />}
-          />
+					<button onClick={()=>props.SetSearchMenu(true)}>
+						<FaSearch /></button>
+					<button onClick={()=>props.SetNewConvMenu(true)}>
+						<FaPlus /></button>
 				</header>
 				<DisplayList
 					joinedChannels={props.joinedChannel}
