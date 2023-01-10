@@ -58,6 +58,10 @@ function App() {
     },
   ]
 
+  React.useEffect(()=> {
+    document.title='Transcendance'
+  }, [])
+
 	return (
 	<div className="App">
 		<BrowserRouter>
