@@ -44,7 +44,7 @@ function Main(props: {component: any}) {
 	}
 
   useEffect(() => {
-    if (cookie['auth'] === undefined)
+    if (cookie['auth'] === undefined || cookie['userInfo'] === undefined)
       navigate('/')
   }, [cookie, navigate])
 

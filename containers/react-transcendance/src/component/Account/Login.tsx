@@ -10,10 +10,8 @@ import {ReactComponent as SchoolLogo} from 'static/logo.svg'
 function Login() {
     const navigate = useNavigate();
     const [cookie, setCookie] = useCookies(['auth', 'userInfo']);
-    const [state, setState] = useState({
-        username: '',
-        password: '',
-    });
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     useEffect(() => {
 			if (cookie['auth'] !== undefined)
@@ -27,8 +25,8 @@ function Login() {
 						'Content-type': 'application/json; charset=UTF-8',
 				},
 				body: JSON.stringify({
-						'username': state.username,
-						'password': state.password,
+						'username': username,
+						'password': password,
 				}),
 			}).then(async response => {
 					if (response.status === 201) {
@@ -56,26 +54,12 @@ function Login() {
 			})
 		}
 
-    const ProcessSignIn = () => {
-        navigate('/signin');
-    }
-
-    const ProcessOauth = () => {
-        navigate('/home');
-    }
-
     const UpdatePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setState({
-            username: state.username,
-            password: event.target.value,
-        });
+      setPassword(event.target.value)
     }
 
     const UpdateLogin = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setState({
-            username: event.target.value,
-            password: state.password,
-        });
+      setUsername(event.target.value)
     }
 
     return (
@@ -87,10 +71,9 @@ function Login() {
                         onClick={ProcessLogin}>Login
                 </button>
                 <button className="signin"
-                        onClick={ProcessSignIn}>Sign in
+                        onClick={()=>navigate('/signin')}>Sign in
                 </button>
-                <button className="Oauth"
-                        onClick={ProcessOauth}><SchoolLogo/></button>
+                <button className="Oauth"><SchoolLogo/></button>
             </div>
         </div>
     )

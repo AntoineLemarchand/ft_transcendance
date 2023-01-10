@@ -15,7 +15,6 @@ import { useCookies } from 'react-cookie';
 function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
 	const [SearchMenu, SetSearchMenu] = useState(false)
-
 	const [channelToModify, setChannelToModify] = useState('')
 
 	const [currentChannel, setCurrentChannel ] =  useState<Channel>()
@@ -42,7 +41,7 @@ function Chat() {
     }).then((result) => {
       result.text().then((text)=> {
         setJoinedChannel(JSON.parse(text).channels);
-        if (currentChannel === undefined)
+        if (currentChannel === undefined && joinedChannel.length > 0)
           setCurrentChannel(joinedChannel[0]);
       });
     })
@@ -141,7 +140,7 @@ function Chat() {
 				joinedChannel={joinedChannel}
 				SetNewConvMenu={SetNewConvMenu}
 				SetSearchMenu={SetSearchMenu}
-        userName={cookie['userInfo'].name}
+        userName={cookie['userInfo'] && cookie['userInfo'].name}
 			/>
 			<ul className="channelContent">
 				<div className="chatArea">
