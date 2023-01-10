@@ -22,17 +22,40 @@ function App() {
   const [cookie] = useCookies(['userInfo']);
 
   const routes = [
-    {path: '/', component: <Login />},
-		{path: '/signin', component: <SignIn />},
-    {path: '/home', component: <Main component={<Home />}/>},
-    {path:'/spectate', component: <Main component={<Spectate />}/>},
-    {path:'/chat', component: <Main component={<Chat />}/>},
-    {path:'/waitingroom', component: <Main component={<WaitingRoom />}/>},
-    {path:'/game', component: <Main component={<Play />}/>},
-    {path:'/game/:gid', component: <Main component={<Play />}/>},
-    {path:'/profile', component: <Main component={<Profile user={cookie['userInfo']}/>}/>},
-    {path:'/profile/:uid', component: <Main component={<Profile user={cookie['userInfo']}/>}/>},
-    {path:'/*', component: <NotFound />},
+    {
+      path: '/',
+      component: <Login />
+    }, {
+      path: '/signin',
+      component: <SignIn />
+    }, {
+      path: '/home',
+      component: <Main component={<Home />}/>
+    }, {
+      path:'/spectate',
+      component: <Main component={<Spectate />}/>
+    }, {
+      path:'/chat',
+      component: <Main component={<Chat />}/>
+    }, {
+      path:'/waitingroom',
+      component: <Main component={<WaitingRoom />}/>
+    }, {
+      path:'/game',
+      component: <Main component={<Play />}/>
+    }, {
+      path:'/game/:gid',
+      component: <Main component={<Play />}/>
+    }, {
+      path:'/profile',
+      component: <Main component={<Profile user={cookie['userInfo']}/>}/>
+    }, {
+      path:'/profile/:uid',
+      component: <Main component={<Profile user={cookie['userInfo']}/>}/>
+    }, {
+      path:'/*',
+      component: <NotFound />
+    },
   ]
 
 	return (
