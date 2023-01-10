@@ -1,22 +1,46 @@
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as testUtils from '../test.utils';
+import { INestApplication, Module } from '@nestjs/common';
+import * as testUtils from '../test.request.utils';
 import { AppModule } from '../app.module';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
-import * as request from 'supertest';
+import { DataSource } from 'typeorm';
+import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
+import { User } from '../typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { createTestModule } from '../test.module.utils';
+import { UserService } from '../user/user.service';
+
+jest.mock('../broadcasting/broadcasting.gateway');
+
+jest.mock('@nestjs/typeorm', () => {
+  const original = jest.requireActual('@nestjs/typeorm');
+  original.TypeOrmModule.forRoot = jest
+    .fn()
+    .mockImplementation(({}) => fakeForRoot);
+  @Module({})
+  class fakeForRoot {}
+  return {
+    ...original,
+  };
+});
 
 describe('AuthController', () => {
   let app: INestApplication;
+  let userService: UserService;
+  let dataSource: DataSource;
+  let testDataBase: TestDatabase;
+
+  beforeAll(async () => {
+    testDataBase = await setupDataSource();
+    dataSource = testDataBase.dataSource;
+  });
 
   beforeEach(async () => {
-    const module = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(BroadcastingGateway)
-      .useValue(jest.fn())
-      .compile();
-    app = module.createNestApplication();
+    testDataBase.reset();
+    app = await createTestModule(dataSource);
     await app.init();
+    userService = app.get<UserService>(UserService);
+    await userService.createUser(new User('Thomas', 'test'));
   });
 
   // LOGIN
@@ -60,7 +84,7 @@ describe('AuthController', () => {
   });
 
   it('should return a token on login of a newly created user', async () => {
-    testUtils.signinUser(app, 'JayDee', 'yeah');
+    await testUtils.signinUser(app, 'JayDee', 'yeah');
     return testUtils.loginUser(app, 'JayDee', 'yeah').then((response) => {
       expect(response.status).toBe(201);
       expect(response.body.access_token).toBeDefined();

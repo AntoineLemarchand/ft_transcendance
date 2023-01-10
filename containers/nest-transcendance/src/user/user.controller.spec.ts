@@ -1,33 +1,60 @@
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as testUtils from '../test.utils';
+import { INestApplication, Module } from '@nestjs/common';
+import * as testUtils from '../test.request.utils';
 import { AppModule } from '../app.module';
 import * as request from 'supertest';
+import { DataSource } from 'typeorm';
+import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
+import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { User } from '../typeorm';
+import { UserService } from './user.service';
+import { ChannelService } from '../channel/channel.service';
+import { createTestModule } from '../test.module.utils';
 
 jest.mock('../broadcasting/broadcasting.gateway');
+jest.mock('@nestjs/typeorm', () => {
+  const original = jest.requireActual('@nestjs/typeorm');
+  original.TypeOrmModule.forRoot = jest
+    .fn()
+    .mockImplementation(({}) => fakeForRoot);
+  @Module({})
+  class fakeForRoot {}
+  return {
+    ...original,
+  };
+});
 
 let app: INestApplication;
+let userService: UserService;
+let jwt: string;
+
+let dataSource: DataSource;
+let testDataBase: TestDatabase;
+
+beforeAll(async () => {
+  testDataBase = await setupDataSource();
+  dataSource = testDataBase.dataSource;
+});
 
 beforeEach(async () => {
-  const module = await Test.createTestingModule({
-    imports: [AppModule],
-  }).compile();
-  app = module.createNestApplication();
+  testDataBase.reset();
+  app = await createTestModule(dataSource);
   await app.init();
+  userService = app.get<UserService>(UserService);
+  await userService.createUser(new User('Thomas', 'test'));
+  jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 });
 
 describe('Making friends', () => {
   it('should return 404 on adding unexisting friend', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-
     const result = await testUtils.addFriend(app, jwt, 'non existing user');
 
     expect(result.status).toBe(404);
   });
 
   it('should return 401 on adding friend twice', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    testUtils.signinUser(app, 'JayDee', 'yeah');
+    await testUtils.signinUser(app, 'JayDee', 'yeah');
     await testUtils.addFriend(app, jwt, 'JayDee');
 
     const result = await testUtils.addFriend(app, jwt, 'JayDee');
@@ -38,8 +65,7 @@ describe('Making friends', () => {
   });
 
   it('should return 201 and add friend', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    testUtils.signinUser(app, 'JayDee', 'yeah');
+    await testUtils.signinUser(app, 'JayDee', 'yeah');
 
     const result = await testUtils.addFriend(app, jwt, 'JayDee');
 
@@ -47,9 +73,8 @@ describe('Making friends', () => {
   });
 
   it('should return 201 and a list of friends', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    testUtils.signinUser(app, 'JayDee', 'yeah');
-    testUtils.addFriend(app, jwt, 'JayDee');
+    await testUtils.signinUser(app, 'JayDee', 'yeah');
+    await testUtils.addFriend(app, jwt, 'JayDee');
 
     const result = await testUtils.getFriends(app, jwt);
 
@@ -59,8 +84,7 @@ describe('Making friends', () => {
   });
 
   it('should return 404 when removing nonexistant friend', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    testUtils.signinUser(app, 'JayDee', 'yeah');
+    await testUtils.signinUser(app, 'JayDee', 'yeah');
     testUtils.addFriend(app, jwt, 'JayDee');
 
     const result = await testUtils.removeFriend(app, jwt, 'not my friend');
@@ -69,9 +93,8 @@ describe('Making friends', () => {
   });
 
   it('should return 200 and remove friend', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    testUtils.signinUser(app, 'JayDee', 'yeah');
-    testUtils.addFriend(app, jwt, 'JayDee');
+    await testUtils.signinUser(app, 'JayDee', 'yeah');
+    await testUtils.addFriend(app, jwt, 'JayDee');
 
     const result = await testUtils.removeFriend(app, jwt, 'JayDee');
     const friendsList = (await testUtils.getFriends(app, jwt)).body.friends;
@@ -83,7 +106,6 @@ describe('Making friends', () => {
 
 describe('Getting user info', () => {
   it('should return 404 on non existing user info', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
     const result = await testUtils.getUserData(app, jwt, 'non existing user');
 
@@ -91,7 +113,6 @@ describe('Getting user info', () => {
   });
 
   it('should return 200 and user info on successful query', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
     const result = await testUtils.getUserData(app, jwt, 'Thomas');
 
@@ -101,7 +122,6 @@ describe('Getting user info', () => {
   });
 
   it('should take username from token if empty query', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
     const result = await testUtils.getUserData(app, jwt, '');
 
@@ -111,7 +131,6 @@ describe('Getting user info', () => {
   });
 
   it('should return 201 and all user channels', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
     await testUtils.joinChannel(app, jwt, 'newChannelName', 'password');
 
     const result = await request(app.getHttpServer())
@@ -125,7 +144,6 @@ describe('Getting user info', () => {
   });
 
   it('should return 200 and matching usernames', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
     await testUtils.signinUser(app, 'Tom', 'password');
     await testUtils.signinUser(app, 'Camembert', 'password');
 
@@ -140,7 +158,6 @@ describe('Getting user info', () => {
   });
 
   it('should return 200 and all usernames', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
     await testUtils.signinUser(app, 'Tom', 'password');
     await testUtils.signinUser(app, 'Camembert', 'password');
 
@@ -158,7 +175,6 @@ describe('Getting user info', () => {
 
 describe('Login', () => {
   it('should be subscribed to the welcome channel on creation', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
     const result = await testUtils.getUserData(app, jwt, 'Thomas');
 
@@ -169,30 +185,30 @@ describe('Login', () => {
 
 describe('Blocking users', () => {
   //beforeEach(async () => {
-  
+
   //}
+
   it('should add user to the blockedUsers list', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    testUtils.signinUser(app, 'Martin', 'yeye');
-    
+    await testUtils.signinUser(app, 'Martin', 'yeye');
+
     const result = await testUtils.blockUser(app, jwt, 'Martin');
-    const blockedUsersList = (await testUtils.getBlockedUsers(app, jwt)).body.blockedUsers;
+    const blockedUsersList = (await testUtils.getBlockedUsers(app, jwt)).body
+      .blockedUsers;
 
     expect(result.status).toBe(201);
     expect(blockedUsersList.length).toBe(1);
   });
 
   it('should remove user from the blockedUsers list', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    testUtils.signinUser(app, 'Martin', 'yeye');
-    
+    await testUtils.signinUser(app, 'Martin', 'yeye');
+
     await testUtils.blockUser(app, jwt, 'Martin');
 
     const result = await testUtils.unblockUser(app, jwt, 'Martin');
-    const blockedUsersList = (await testUtils.getBlockedUsers(app, jwt)).body.blockedUsers;
+    const blockedUsersList = (await testUtils.getBlockedUsers(app, jwt)).body
+      .blockedUsers;
 
     expect(result.status).toBe(200);
     expect(blockedUsersList.length).toBe(0);
   });
 });
-
