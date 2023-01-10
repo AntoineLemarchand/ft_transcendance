@@ -97,6 +97,25 @@ export class ChannelController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('admin')
+  async makeAdmin(@Request() req: any) {
+    const matchingChannels = await this.channelService.makeAdmin(
+      req.user.name,
+      req.body.adminCandidateName,
+      req.body.channelName,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('admin')
+  async getAdmins(@Request() req: any) {
+    const adminList = (
+      await this.channelService.getChannelByName(req.body.channelName)
+    ).admins;
+    return { adminNames: adminList };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Delete('user')
   async banUser(@Request() req: any) {
     const matchingChannel = await this.channelService.getChannelByName(

@@ -285,6 +285,49 @@ describe('administrating a channel', () => {
     expect(response.status).toBe(401);
   });
 
+  it('should return 401 if not authorized to make someone else admin', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const response = await request(app.getHttpServer())
+      .post('/channel/admin')
+      .set('Authorization', 'Bearer ' + jwt)
+      .send({
+        channelName: 'welcome',
+        adminCandidateName: 'adminCandidateName',
+      });
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 201 when making someone else admin', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+
+    const response = await request(app.getHttpServer())
+      .post('/channel/admin')
+      .set('Authorization', 'Bearer ' + jwt)
+      .send({
+        channelName: 'welcome',
+        adminCandidateName: 'adminCandidateName',
+      });
+
+    expect(response.status).toBe(201);
+  });
+
+  it('should return 201 and the admins', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+
+    const response = await request(app.getHttpServer())
+      .get('/channel/admin')
+      .set('Authorization', 'Bearer ' + jwt)
+      .send({
+        channelName: 'welcome',
+      });
+
+    const adminNames = response.body.adminNames;
+    expect(response.status).toBe(200);
+    expect(adminNames).toStrictEqual(['admin']);
+  });
+
   it('should return 200 on success and remove member from channel', async () => {
     const jwt = await testUtils.createUserAndJoinToChannel(
       app,
