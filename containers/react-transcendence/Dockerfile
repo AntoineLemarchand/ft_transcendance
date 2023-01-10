@@ -9,5 +9,6 @@ COPY package-lock.json ./
 RUN npm install
 
 COPY . ./
+RUN echo $SERVER_IP
 
 CMD ["npm", "start"]

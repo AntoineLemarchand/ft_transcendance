@@ -19,7 +19,7 @@ function Login() {
     })
 
     const ProcessLogin = () => {
-			fetch('http://localhost:3000/auth/login', {
+			fetch('http://' + process.env.REACT_APP_SERVER_IP +':3000/auth/login', {
 				method: 'POST',
 				headers: {
 						'Content-type': 'application/json; charset=UTF-8',
