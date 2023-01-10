@@ -273,8 +273,9 @@ describe('searching channels by name', () => {
 
 describe('administrating a channel', () => {
   it('should return 401 if not authorized to execute administrator tasks', async () => {
-    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    const spy = jest.spyOn(channelService, 'banUserFromChannel');
     const response = await testUtils.banFromChannel(
       app,
       jwt,
@@ -283,6 +284,74 @@ describe('administrating a channel', () => {
     );
 
     expect(response.status).toBe(401);
+    expect(spy).toHaveBeenCalledWith('Thomas', 'bannedUserName', 'welcome');
+  });
+
+  it('should return 401 if not authorized to make someone else admin', async () => {
+    const spy = jest.spyOn(channelService, 'makeAdmin');
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const response = await testUtils.addChannelAdmin(
+      app,
+      jwt,
+      'adminCandidateName',
+      'welcome',
+    );
+
+    expect(response.status).toBe(401);
+    expect(spy).toHaveBeenCalledWith('Thomas', 'adminCandidateName', 'welcome');
+  });
+
+  it('should return 401 if not authorized to change the channel password', async () => {
+    const spy = jest.spyOn(channelService, 'setPassword');
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const response = await testUtils.changeChannelPassword(
+      app,
+      jwt,
+      'newPassword',
+      'welcome',
+    );
+
+    expect(response.status).toBe(401);
+    expect(spy).toHaveBeenCalledWith('Thomas', 'newPassword', 'welcome');
+  });
+
+  it('should return 201 when changing the channel password', async () => {
+    const spy = jest.spyOn(channelService, 'setPassword');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+
+    const response = await testUtils.changeChannelPassword(
+      app,
+      jwt,
+      'newPassword',
+      'welcome',
+    );
+
+    expect(response.status).toBe(201);
+    expect(spy).toHaveBeenCalledWith('admin', 'newPassword', 'welcome');
+  });
+
+  it('should return 201 when making someone else admin', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const response = await testUtils.addChannelAdmin(
+      app,
+      jwt,
+      'adminCandidate',
+      'welcome',
+    );
+
+    expect(response.status).toBe(201);
+  });
+
+  it('should return 201 and the admins', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+
+    const response = await testUtils.getChannelAdmins(app, jwt, 'welcome');
+
+    const adminNames = response.body.adminNames;
+    expect(response.status).toBe(200);
+    expect(adminNames).toStrictEqual(['admin']);
   });
 
   it('should return 200 on success and remove member from channel', async () => {

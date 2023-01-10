@@ -19,7 +19,7 @@ export class ChannelController {
 
   private getChannelType(name = 'normal') {
     if (name === 'directMessage') return ChannelType.DirectMesage;
-    if (name === 'private') return ChannelType.Private;
+    if (name === 'privateChannel') return ChannelType.Private;
     return ChannelType.Normal;
   }
 
@@ -94,6 +94,35 @@ export class ChannelController {
   async findAllChannelNames(@Request() req: any) {
     const matchingChannels = await this.channelService.findMatchingNames('');
     return { channels: matchingChannels };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('password')
+  async setPassword(@Request() req: any) {
+    await this.channelService.setPassword(
+      req.user.name,
+      req.body.newPassword,
+      req.body.channelName,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('admin')
+  async makeAdmin(@Request() req: any) {
+    const matchingChannels = await this.channelService.makeAdmin(
+      req.user.name,
+      req.body.adminCandidateName,
+      req.body.channelName,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('admin')
+  async getAdmins(@Request() req: any) {
+    const adminList = (
+      await this.channelService.getChannelByName(req.body.channelName)
+    ).admins;
+    return { adminNames: adminList };
   }
 
   @UseGuards(JwtAuthGuard)

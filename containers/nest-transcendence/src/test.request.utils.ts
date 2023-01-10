@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
-import { Response } from 'supertest';
 import * as request from 'supertest';
+import { Response } from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Channel, ChannelType } from './channel/channel.entities';
 
@@ -92,14 +92,15 @@ export const joinChannel = async (
   jwt: string,
   channelName: string,
   channelPassword = 'default',
-  type: ChannelType = ChannelType.Normal) => {
+  type: ChannelType = ChannelType.Normal,
+) => {
   return request(callerModule.getHttpServer())
     .post('/channel/join')
     .set('Authorization', 'Bearer ' + jwt)
     .send({
       channelName: channelName,
       channelPassword: channelPassword,
-      channelType: 'private',
+      channelType: 'privateChannel',
     });
 };
 
@@ -131,7 +132,8 @@ export async function createUserAndJoinToChannel(
   callerModule: INestApplication,
   username: string,
   channelName: string,
-  channelPassword?: string) {
+  channelPassword?: string,
+) {
   const jwt = (await signinUser(callerModule, username, 'password')).body
     .access_token;
   await joinChannel(callerModule, jwt, channelName, channelPassword);
@@ -213,3 +215,49 @@ export const unblockUser = async (
       username: username,
     });
 };
+
+export async function getChannelAdmins(
+  callerModule: INestApplication,
+  jwt: any,
+  channelName: string,
+) {
+  const response = await request(callerModule.getHttpServer())
+    .get('/channel/admin')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      channelName: channelName,
+    });
+  return response;
+}
+
+export async function addChannelAdmin(
+  app: INestApplication,
+  jwt: string,
+  targetUsername: string,
+  channelName: string,
+) {
+  const response = await request(app.getHttpServer())
+    .post('/channel/admin')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      channelName: channelName,
+      adminCandidateName: targetUsername,
+    });
+  return response;
+}
+
+export async function changeChannelPassword(
+  app: INestApplication,
+  jwt: string,
+  newPassword: string,
+  channelName: string,
+) {
+  const response = await request(app.getHttpServer())
+    .post('/channel/password')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      channelName: channelName,
+      newPassword: newPassword,
+    });
+  return response;
+}

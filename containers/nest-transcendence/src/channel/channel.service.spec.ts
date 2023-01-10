@@ -37,8 +37,8 @@ beforeEach(async () => {
   channelService = module.get<ChannelService>(ChannelService);
   broadcasting = module.get<BroadcastingGateway>(BroadcastingGateway);
   userService = module.get<UserService>(UserService);
-  await userService.createUser(new User('Thomas', 'test'));
   await userService.createUser(new User('admin', 'admin'));
+  await userService.createUser(new User('Thomas', 'test'));
   await channelService.joinChannel('admin', 'welcom', '');
   await channelService.joinChannel('admin', 'wlcm', '');
   await channelService.joinChannel('admin', 'ab', '');
@@ -265,6 +265,21 @@ describe('Administrating a channel', () => {
         'privateChannel',
       ),
     ).rejects.toThrow();
+  });
+
+  it('should throw if trying to change the password without being an admin', async () => {
+    await expect(
+      async () =>
+        await channelService.setPassword('Thomas', 'newPassword', 'welcom'),
+    ).rejects.toThrow();
+  });
+
+  it('should change the password', async () => {
+    await channelService.setPassword('admin', 'newPassword', 'welcome');
+
+    expect(
+      (await channelService.getChannelByName('welcome')).getPassword(),
+    ).toBe('newPassword');
   });
 
   it('should throw on invite on non existing channel', async () => {
