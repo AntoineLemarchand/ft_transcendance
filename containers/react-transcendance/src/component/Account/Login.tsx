@@ -8,13 +8,10 @@ import 'static/Account/Prompt.scss'
 import {ReactComponent as SchoolLogo} from 'static/logo.svg'
 
 function Login() {
-
     const navigate = useNavigate();
     const [cookie, setCookie] = useCookies(['auth', 'userInfo']);
-    const [state, setState] = useState({
-        username: '',
-        password: '',
-    });
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     useEffect(() => {
 			if (cookie['auth'] !== undefined)
@@ -28,16 +25,16 @@ function Login() {
 						'Content-type': 'application/json; charset=UTF-8',
 				},
 				body: JSON.stringify({
-						'username': state.username,
-						'password': state.password,
+						'username': username,
+						'password': password,
 				}),
 			}).then(async response => {
 					if (response.status === 201) {
 							const token = await response.text().then((body) => {
 									return JSON.parse(body).access_token
 							})
-							setCookie('auth', token)
-							setCookie('userInfo', state.username)
+							setCookie('auth', token, {path: '/'})
+              setCookie('userInfo', '', {path: '/'})
 							fetch('http://localhost:3000/user/info', {
 									credentials: 'include',
 									method: 'GET',
@@ -47,36 +44,22 @@ function Login() {
 									},
 							}).then((result) => {
 								result.text().then((text)=> {
-									setCookie('userInfo', JSON.parse(text).userInfo);
+									setCookie('userInfo', JSON.parse(text).userInfo, {path: '/'});
 								})
 							})
-							navigate('/home');
+              navigate('/home');
 					} else {
 							alert('Wrong credentials');
 					}
 			})
 		}
 
-    const ProcessSignIn = () => {
-        navigate('/signin');
-    }
-
-    const ProcessOauth = () => {
-        navigate('/home');
-    }
-
     const UpdatePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setState({
-            username: state.username,
-            password: event.target.value,
-        });
+      setPassword(event.target.value)
     }
 
     const UpdateLogin = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setState({
-            username: event.target.value,
-            password: state.password,
-        });
+      setUsername(event.target.value)
     }
 
     return (
@@ -88,10 +71,9 @@ function Login() {
                         onClick={ProcessLogin}>Login
                 </button>
                 <button className="signin"
-                        onClick={ProcessSignIn}>Sign in
+                        onClick={()=>navigate('/signin')}>Sign in
                 </button>
-                <button className="Oauth"
-                        onClick={ProcessOauth}><SchoolLogo/></button>
+                <button className="Oauth"><SchoolLogo/></button>
             </div>
         </div>
     )

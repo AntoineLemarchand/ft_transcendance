@@ -15,11 +15,15 @@ import { useCookies } from 'react-cookie';
 function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
 	const [SearchMenu, SetSearchMenu] = useState(false)
+	const [channelToModify, setChannelToModify] = useState('')
+
 	const [currentChannel, setCurrentChannel ] =  useState<Channel>()
 	const [currentMessage, setCurrentMessage ] =  useState('')
+	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([])
+	const [blockedUsers, setBlockedUsers] = useState<string[]>([])
+
   const [cookie] = useCookies(['auth', 'userInfo']);
 	const [socket, setSocket] = useState<Socket>()
-	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([])
 
 	const send = (sender: string, content: string, channel: string) =>{
 		socket?.emit("messageToServer",
@@ -37,9 +41,23 @@ function Chat() {
     }).then((result) => {
       result.text().then((text)=> {
         setJoinedChannel(JSON.parse(text).channels);
-        if (currentChannel === undefined)
+        if (currentChannel === undefined && joinedChannel.length > 0)
           setCurrentChannel(joinedChannel[0]);
       });
+    })
+  }
+
+  const updateBlockedUsers = () => {
+    fetch('http://localhost:3000/user/blockedUser', {
+      credentials: 'include',
+      method: 'GET',
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      },
+    }).then((response) => {
+      response.text().then((content) => {
+        setBlockedUsers(JSON.parse(content).blockedUsers);
+      })
     })
   }
 
@@ -51,7 +69,7 @@ function Chat() {
         query: {auth: cookie.auth},
       })
     );
-		//eslint-disable-next-line
+  // eslint-disable-next-line
 	}, [])
 
 	useEffect(() => {
@@ -61,28 +79,35 @@ function Chat() {
       setJoinedChannel(allChannels);
     }
 		socket?.on("messageToClient", messageListener)
+    if (currentChannel === undefined && joinedChannel.length > 0)
+      setCurrentChannel(joinedChannel[0])
 		return () => {socket?.off("messageToClient", messageListener)}
+  // eslint-disable-next-line
 	}, [socket, joinedChannel])
 
+  useEffect(() => {
+    updateBlockedUsers();
+  }, [currentChannel])
 
 	const displayChannelContent = (currentChannel: Channel | undefined) => {
-		if (currentChannel === undefined)
-			return <></>;
-		return currentChannel.messages.map((message: Message, idx: number) =>
-		<li key={idx}
-			className="message" style={
-			{textAlign: message.sender === cookie['userInfo'].name ? "right" : "left"}}>
-			<ChatName
-        username={message.sender}
-        sender={message.sender}
-        channel={currentChannel}
-        userName={cookie['userInfo'].name}
-      />
-			<p className="content">
-				{message.content}
-			</p>
-		</li>
-	)}
+		if (currentChannel !== undefined)
+      return currentChannel.messages.map((message: Message, idx: number) =>
+        <li key={idx}
+          className="message" style={
+          {textAlign: message.sender === cookie['userInfo'].name ? "right" : "left"}}>
+          <ChatName
+            username={message.sender}
+            sender={message.sender}
+            channel={currentChannel}
+            userName={cookie['userInfo'].name}
+            updateContent={setCurrentChannel}
+          />
+          <p className="content">
+            {blockedUsers.indexOf(message.sender) === -1 ?
+              message.content : '--- BLOCKED MESSAGE ---'}
+          </p>
+        </li>
+  )}
 
 	const OnKeyDown = ((event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter' && currentChannel !== undefined) {
@@ -94,6 +119,9 @@ function Chat() {
 
 	return (
 		<div className="Chat">
+      {channelToModify !== '' && <Menus.ChannelModifyMenu
+        channel={channelToModify}
+        callback={()=>setChannelToModify('')}/>}
 			<Menus.NewChannelMenu
 				toggle={()=>{SetNewConvMenu(!NewConvMenu)}}
         callback={updateJoinedChannels}
@@ -108,9 +136,11 @@ function Chat() {
 			<ChannelMenu
 				currentChannel={currentChannel}
 				setCurrentChannel={setCurrentChannel}
+        modifyChannel={setChannelToModify}
 				joinedChannel={joinedChannel}
 				SetNewConvMenu={SetNewConvMenu}
 				SetSearchMenu={SetSearchMenu}
+        userName={cookie['userInfo'] && cookie['userInfo'].name}
 			/>
 			<ul className="channelContent">
 				<div className="chatArea">

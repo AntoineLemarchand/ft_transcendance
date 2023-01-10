@@ -5,6 +5,28 @@ import { useCookies } from 'react-cookie';
 import 'static/Chat/ChatMenus.scss';
 import { FaUser, FaUsers } from 'react-icons/fa'
 
+export function ChannelModifyMenu(props: {channel: string, callback: Function}) {
+  const [ newPassword, setNewPassword ] = useState('')
+
+  const ChangePassword = () => {
+    alert('here the new password should be ' + newPassword);
+    props.callback();
+  }
+
+  return (
+    <div
+      className="ChatMenu"
+      onClick={()=>props.callback()}>
+      <div className="choiceBox" onClick={(e)=>e.stopPropagation()}>
+        <p>New Password for {props.channel}:</p>
+        <input type="password" placeholder="New Password..."
+          onChange={(event)=>setNewPassword(event.target.value)}/>
+        <button onClick={ChangePassword}>Submit</button>
+      </div>
+    </div>
+  )
+}
+
 export function NewChannelMenu(props: {
 	toggle: React.MouseEventHandler<HTMLDivElement>,
   callback: Function,
@@ -13,6 +35,7 @@ export function NewChannelMenu(props: {
 
   const [channelName, setChannelName] = useState('');
   const [channelPassword, setChannelPassword] = useState('');
+  const [isPrivate, setIsPrivate] = useState(false);
 
   const NewChannel = () => {
     if (channelName === '') {
@@ -28,6 +51,7 @@ export function NewChannelMenu(props: {
       body: JSON.stringify({
           'channelName': channelName,
           'channelPassword': channelPassword,
+          'channelType': isPrivate ? 'private' : 'standard',
       }),
     }).then(response=>{
       if (response.status !== 201)
@@ -55,6 +79,11 @@ export function NewChannelMenu(props: {
             onChange={(event)=>{setChannelPassword(event.target.value)}}
             value={channelPassword}
             />
+            <div className="CheckBox">
+              <input type="checkbox"
+              onClick={(event)=>setIsPrivate(event.target.checked)}/>
+              <p>Private</p>
+            </div>
           <button onClick={NewChannel}>Create Conversation</button>
 			</div>
 		</div>
@@ -80,7 +109,7 @@ export function SearchMenu( props: {
             'Content-Type': 'application/json'
         },
     }).then((result) => {
-      result. text().then((text)=> {
+      result.text().then((text)=> {
         setSearchedChannels(JSON.parse(text).channels);
       });
     })
@@ -115,6 +144,7 @@ export function SearchMenu( props: {
       body: JSON.stringify({
           'channelName': channelName,
           'channelPassword': channelPassword,
+          'channelType': 'standard',
       }),
     }).then(response=>{
 			return response.status;
@@ -154,10 +184,9 @@ export function SearchMenu( props: {
 	const directMessage = (event: any) => {
 		newDirectMessage(event.target.value).then(result=> {
 			if (result === 401)
-        alert("request failed")
-			else
-        alert("request made it !")
+        alert("You cannot discuss with this user at the moment")
 		})
+    closeSearch();
 	}
 
 	const connectWithPassword = () => {
@@ -188,22 +217,20 @@ export function SearchMenu( props: {
             <div className="ChannelList">
 						{
 							searchedChannels.map((channel: string, idx: number) => {
-								return (
-									<button key={idx} value={channel} onClick={tryConnection}>
-										<FaUsers /> {channel}
-									</button>
-								)
+                return ( !channel.includes('_') &&
+                  <button key={idx} value={channel} onClick={tryConnection}>
+                    <FaUsers /> {channel}
+                  </button>
+                )
 							})
 						}
 						{
 							searchedUsers.map((username: string, idx: number) => {
-								if (username !== cookie['userInfo'].name) {
-									return (
-										<button key={idx} value={username} onClick={directMessage}>
-											<FaUser /> {username}
-										</button>
-									)
-                } else { return <></> }
+                return ( (username !== cookie['userInfo'].name) &&
+                  <button key={idx} value={username} onClick={directMessage}>
+                    <FaUser /> {username}
+                  </button>
+                )
 							})
 						}
             </div>

@@ -9,14 +9,70 @@ $usercardHeight: 6rem;
 	display: grid;
 	grid-template-rows: $usercardHeight 2rem auto;
 
-	.userCard {
+  .InviteMenu {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    background: rgba(0,0,0,.5);
+
+    .Prompt {
+      max-height: 60%;
+      overflow-y: hidden;
+
+      .List {
+        height: 80%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: scroll;
+
+        button {
+          width: 80%;
+          background: color('bluePrimary');
+
+          &:hover { background: color('blueSecondary'); }
+        }
+      }
+    }
+
+  }
+
+  header {
 		width: 100%;
 		height: $usercardHeight;
-
-		display: flex;
+    display: grid;
+    grid-template-columns: $usercardHeight auto $usercardHeight;
 		color: color('backGround2');
 
-		h1 {margin-left: 2rem;}
+    .profileBadge {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template: '1 2' '3 4';
+
+      button {
+        width: 100%;
+        height: 100%;
+
+        svg {
+          font-size: 1.2rem;
+        }
+      }
+
+    }
+
+		h1 {
+      margin-left: 2rem;
+			text-align: center;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: color('textSecondary');
+		}
 
 		.profileHeader {
 			height: $usercardHeight;
@@ -28,21 +84,12 @@ $usercardHeight: 6rem;
 				transform: translateX(-50%);
 				z-index: 0;
 			}
-
-		}
-
-		h1 {
-			text-align: center;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			color: color('textSecondary');
 		}
 	}
 
 	.tabs {
 		button {
-			width: calc(100% / 3);
+			width: 50%;
 			height: 100%;
       cursor: pointer;
 		}

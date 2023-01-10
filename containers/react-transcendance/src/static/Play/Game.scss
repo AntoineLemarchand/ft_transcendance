@@ -1,28 +1,39 @@
-@import 'static/gruvbox';
+@import "static/gruvbox";
 
-$boardHeight: 25%;
-$boardWidth: 3%;
+$paddleHeight: 25%;
+$paddleWidth: 3%;
 
+.container {
+  height: 100%;
+  width: 100%;
+}
+
+.statusbar {
+  height: 200%;
+  width: 100%;
+  bottom: 0;
+}
 
 .Game {
   width: 100%;
-  height: 100%;
+  height: 85%;
+  top: 0;
   position: relative;
 
-  &>.player {
-    height: $boardHeight;
-    width: $boardWidth;
+  & > .player {
+    height: $paddleHeight;
+    width: $paddleWidth;
     display: block;
     position: absolute;
-    transition: .2s linear;
+    transition: 0.2s linear;
 
     &.left {
-      background: color('textPrimary');
+      background: color("textPrimary");
       left: 3%;
     }
 
     &.right {
-      background: color('greyPrimary');
+      background: color("greyPrimary");
       right: 3%;
     }
   }
@@ -35,15 +46,17 @@ $boardWidth: 3%;
     display: block;
     left: 0;
     right: 0;
-    border: dashed .1rem color('textSecondary');
+    border: dashed 0.1rem color("textSecondary");
   }
 
   .ball {
     display: block;
     position: absolute;
     box-sizing: border-box;
-    width: $boardWidth;
-    padding: calc($boardWidth / 2);
-    background: color('textPrimary');
+    width: $paddleWidth + 2%;
+    height: $paddleWidth + 2%;
+    padding: calc(($paddleWidth + 2%) / 2);
+    background: color("greyPrimary");
+    border-radius: 50%;
   }
 }

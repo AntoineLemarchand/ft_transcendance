@@ -1,12 +1,14 @@
 @import 'static/gruvbox';
 
 $tabHeight: 2rem;
-$inviteHeight: 4rem;
+$inviteHeight: 5rem;
 
 .Lobby {
   height: 100%;
+  width: 100%;
   display: grid;
-  grid-template-rows: $tabHeight auto;
+  grid-template-rows: $tabHeight 1fr;
+
   .tabs {
     width: 100%;
     button {
@@ -17,49 +19,47 @@ $inviteHeight: 4rem;
   }
 
   .MatchMaking {
-    overflow-y: scroll;
+    height: 100%;
+    overflow-y: hidden;
     display: grid;
-    color: color('textPrimary');
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: $inviteHeight auto;
+    .JoinQueue {
+      width: 100%;
+      height: $inviteHeight;
+      font-size: 1.5rem;
+      cursor: pointer;
+      background: color('greenSecondary');
 
-    .Invites {
-      text-align: center;
-      overflow-y: scroll;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      .content {
-        display: flex;
-        flex-direction: column;
-        overflow-y: scroll;
-        width: 70%;
-        height: calc(5 * $inviteHeight);
-        
-        .Invite {
-          width: 100%;
-          display: grid;
-          grid-template-columns: $inviteHeight auto;
-          img {height: $inviteHeight;}
-          background: color('blueSecondary');
-          cursor: pointer;
-
-          &:hover {background: color('bluePrimary');}
-
-          p {
-            font-size: 1rem;
-            margin: auto;
-          }
-        }
-      }
+      &:hover {background: color('greenPrimary')}
     }
 
-    .JoinQueue {
-      width: 15rem;
-      height: 3rem;
-      font-size: 1.5rem;
-      margin: auto;
-      background: color('greenPrimary');
-      cursor: pointer;
+    .Invites {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: scroll;
+
+      .Invite {
+        height: $inviteHeight;
+        padding: 0;
+        display: grid;
+        grid-template-columns: calc($inviteHeight - .4rem) auto;
+        cursor: pointer;
+        background: color('bluePrimary');
+
+        &:hover {background: color('blueSecondary');}
+
+        img {
+          margin: 0;
+          height: calc($inviteHeight - .4rem);
+          width: calc($inviteHeight - .4rem);
+        }
+
+        p {
+          margin: auto;
+          font-size: 1.5rem;
+        }
+      }
     }
   }
 }

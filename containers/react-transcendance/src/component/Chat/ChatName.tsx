@@ -7,8 +7,9 @@ import 'static/Chat/ChatName.scss'
 
 function ChatName(props: {username: string,
   sender: string,
+  userName: string,
   channel: Channel,
-  userName: string
+  updateContent: Function,
   }) {
 
 	const [ menuToggle, setMenuToggle ] = useState(false);
@@ -31,21 +32,37 @@ function ChatName(props: {username: string,
 	const DropDownStyle = menuToggle ?
 		{display: "block"} : {display: "none"}
 
+  const BanUser = () => {
+    fetch('http://localhost:3000/channel/user', {
+      credentials: 'include',
+      method: 'DELETE',
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify({
+          'bannedUserName': props.sender,
+          'channelName': props.channel.channelName,
+      }),
+    }).then((result)=>{
+      alert(props.sender + ' has been banned')
+      ToggleUserMenu();
+    })
+  }
+
 	const options = [
-		"Block",
-		"Invite to play",
+		{name: "Invite To Play", onClick: ()=>{}},
 	]
 
   const adminOption = [
-		"Make Admin",
-		"Mute",
-		"Ban"
+		{name: "Make Admin", onClick: ()=>{}},
+		{name: "Mute 30min", onClick: ()=>{}},
+		{name: "Ban", onClick: BanUser},
   ]
 
-  if (props.sender == props.userName)
+  if (props.sender === props.userName)
     return (
       <div className="ChatName">
-        <Link to='/profile'>{props.sender}</Link>
+        <Link to={'/profile'}>{props.sender}</Link>
       </div>
     )
 	return (
@@ -61,12 +78,20 @@ function ChatName(props: {username: string,
 				<Link to={"/profile/" + props.sender}><button>Profile</button></Link>
 				{
 					options.map( (option, idx) => 
-						<button key={idx} style={ButtonStyle}>{option}</button>)
+						<button key={idx}
+              style={ButtonStyle}
+              value={props.sender}
+              onClick={option.onClick}
+              >{option.name}</button>)
         }
         {
-          props.channel.admins.includes(props.userName) &&
+          props.channel.admins.includes(props.userName) && props.channel.type !== 2 &&
 					adminOption.map( (option, idx) => 
-						<button key={idx} style={ButtonStyle}>{option}</button>)
+						<button
+              key={idx}
+              style={ButtonStyle}
+              onClick={option.onClick}
+              >{option.name}</button>)
 				}
 				</div>
 			</div>

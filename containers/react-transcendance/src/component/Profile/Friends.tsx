@@ -1,34 +1,8 @@
 import 'static/Profile/Friends.scss'
+import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
-function Friends(props: {isSelected: boolean}) {
-  const friends = [
-    {
-      name: 'aasli',
-      avatar: 'https://cdn.intra.42.fr/users/3d6930f126ba05fd5869fa81082f47f5/aasli.jpg',
-      status: 'online',
-    },
-    {
-      name: 'aasli',
-      avatar: 'https://cdn.intra.42.fr/users/3d6930f126ba05fd5869fa81082f47f5/aasli.jpg',
-      status: 'offline',
-    },
-    {
-      name: 'aasli',
-      avatar: 'https://cdn.intra.42.fr/users/3d6930f126ba05fd5869fa81082f47f5/aasli.jpg',
-      status: 'in game',
-    },
-    {
-      name: 'aasli',
-      avatar: 'https://cdn.intra.42.fr/users/3d6930f126ba05fd5869fa81082f47f5/aasli.jpg',
-      status: 'offline',
-    },
-    {
-      name: 'aasli',
-      avatar: 'https://cdn.intra.42.fr/users/3d6930f126ba05fd5869fa81082f47f5/aasli.jpg',
-      status: 'online',
-    },
-  ]
-
+function Friends(props: {isSelected: boolean, friends: string[]}) {
   const statusColor = (status: string) => {
     if (status === 'in game')
       return {background: '#b16286',}
@@ -38,6 +12,10 @@ function Friends(props: {isSelected: boolean}) {
       return {background: '#cc241d',}
   }
 
+  useEffect(()=> {
+    console.log(props.friends)
+  }, [])
+
 	return (
     <div
       className="Friends"
@@ -45,16 +23,16 @@ function Friends(props: {isSelected: boolean}) {
       <h1>Friends</h1>
       <div className="friendList">
       {
-        friends.map((friend: any, idx: number) => {
+        props.friends.map((friend: any, idx: number) => {
           return (
-            <div className="friend" key={idx}>
-              <img src={friend.avatar} alt="friend avatar"/>
-              <p>{friend.name}</p>
+            <Link to={'/profile/' + friend} className="friend" key={idx}>
+              <img alt="friend avatar"/>
+              <p>{friend}</p>
               <div className="status">
-                <p>{friend.status}</p>
-                <span style={statusColor(friend.status)}/>
+                <p>{}</p>
+                <span style={statusColor('online')}/>
               </div>
-            </div>
+            </Link>
           )
         })
       }
