@@ -152,8 +152,8 @@ function InviteMenu(props: {callback: any, mainUser: string, shownUser: string})
         <div className="List">
         {
           joinedChannels && joinedChannels.map((channel: Channel, idx: number) => {
-            if (channel.type !== 2 && channel.admins.includes(props.mainUser))
-              return (
+            return channel.type !== 2 &&
+            channel.admins.includes(props.mainUser) && (
                 <button
                   className="channel"
                   key={idx}
@@ -201,7 +201,7 @@ function Profile(props: {user: any}) {
 				setUser(JSON.parse(text).userInfo);
 			});
 		})
-	}, [params.uid])
+	}, [navigate, params.uid])
 
 	return (
 			<div className="Profile">
