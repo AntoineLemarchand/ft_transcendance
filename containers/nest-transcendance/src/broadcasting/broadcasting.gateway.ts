@@ -52,21 +52,22 @@ export class BroadcastingGateway
   async handleConnection(client: Socket, ...args: any[]) {
     if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);
     const username = this.getUsernameFromToken(client);
-    const channelNames: string[] = (await this.userService
-      .getUser(username)
-      ?.getChannelNames()) as string[];
+    const channelNames: string[] = (await (
+      await this.userService.getUser(username)
+    )?.getChannelNames()) as string[];
     this.roomHandler.addUserInstance(username, client.id, channelNames);
   }
 
   async handleDisconnect(client: Socket) {
     const username = this.getUsernameFromToken(client);
-    const channelNames: string[] = (await this.userService
-      .getUser(username)
-      ?.getChannelNames()) as string[];
+    const channelNames: string[] = (await (
+      await this.userService.getUser(username)
+    )?.getChannelNames()) as string[];
     this.roomHandler.removeUserInstance(username, client.id, channelNames);
   }
 
   async putUserInRoom(username: string, channelName: string) {
+    if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);
     await this.roomHandler.join(username, channelName);
   }
 

@@ -1,4 +1,5 @@
 import { Server, Socket } from 'socket.io';
+import { raw } from 'express';
 
 export class RoomHandler {
   constructor(public server: Server) {}
@@ -22,11 +23,7 @@ export class RoomHandler {
     return this.getDeviceIdsFor(username);
   }
 
-  removeUserInstance(
-    username: string,
-    deviceId: string,
-    roomNames?: string[],
-  ) {
+  removeUserInstance(username: string, deviceId: string, roomNames?: string[]) {
     let deviceIds: string[] = this.getDeviceIdsFor(username);
     deviceIds = deviceIds.filter((element) => element != deviceId);
     if (deviceIds.length == 0) this.instanceMap.delete(username);
@@ -44,17 +41,20 @@ export class RoomHandler {
     return deviceIds;
   }
 
-  async join(username: string, roomName: string) {
+  join(username: string, roomName: string) {
     const deviceIds = this.instanceMap.get(username) as string[];
-    if (deviceIds === undefined)
-      return;
+    if (deviceIds === undefined) return;
     for (const deviceId of deviceIds)
-      (this.server.sockets.sockets.get(deviceId) as Socket).join(roomName);
+      (this.server.sockets.sockets.get(deviceId) as Socket).join(
+        roomName,
+      );
   }
 
   leave(username: string, roomName: string) {
     const deviceIds = this.getDeviceIdsFor(username);
-    for (const deviceId of deviceIds)
-      (this.server.sockets.sockets.get(deviceId) as Socket).leave(roomName);
+    for (const deviceId of deviceIds) {
+      const instance = this.server.sockets.sockets.get(deviceId);
+      if (instance !== undefined) instance.leave(roomName);
+    }
   }
 }

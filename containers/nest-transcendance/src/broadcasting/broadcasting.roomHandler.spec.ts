@@ -1,5 +1,6 @@
 import { RoomHandler } from './broadcasting.roomHandler';
 import { Server, Socket } from 'socket.io';
+import { appendSuffixesIfMatch } from 'ts-loader/dist/utils';
 
 jest.mock('socket.io', () => {
   return {
@@ -74,7 +75,7 @@ describe('Connecting a new device', () => {
 });
 
 describe('Joining a room', () => {
-  it('should call the server to let the deviceIds join the room', () => {
+  it('should call the server to let the deviceIds join the room', async () => {
     const handler = new RoomHandler(new Server());
     handler.addUserInstance('username', 'deviceId0');
     handler.addUserInstance('username', 'deviceId1');
@@ -91,7 +92,7 @@ describe('Joining a room', () => {
 });
 
 describe('Removing deviceId', () => {
-  it('should remove the specified deviceId from all rooms', () => {
+  it('should remove the specified deviceId from all rooms', async () => {
     const handler = new RoomHandler(new Server({}));
     const spy = jest.spyOn(handler, 'leave');
     handler.addUserInstance('username', 'deviceId0');
@@ -113,7 +114,7 @@ describe('Removing deviceId', () => {
 });
 
 describe('Removing from room', () => {
-  it('should call leave on removing deviceId', () => {
+  it('should call leave on removing deviceId', async () => {
     const handler = new RoomHandler(new Server());
     handler.addUserInstance('username', 'deviceId0');
     handler.addUserInstance('username', 'deviceId1');
@@ -123,5 +124,10 @@ describe('Removing from room', () => {
     expect(
       (handler.server.sockets.sockets.get('deviceId1') as Socket).leave,
     ).toHaveBeenCalledWith('roomName');
+  });
+  it('should do nothing if calling leave on an offline device', async () => {
+    const handler = new RoomHandler(new Server());
+
+    handler.leave('non existing user name', 'non existing room');
   });
 });
