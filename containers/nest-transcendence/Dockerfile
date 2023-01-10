@@ -4,10 +4,10 @@ WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
 
-ADD containers/nest-transcendance/package.json /app/package.json
+ADD containers/nest-transcendence/package.json /app/package.json
 RUN npm install
 
-COPY containers/nest-transcendance/ /app/
+COPY containers/nest-transcendence/ /app/
 COPY .env /app/local.env
 
 CMD ["npm", "start"]

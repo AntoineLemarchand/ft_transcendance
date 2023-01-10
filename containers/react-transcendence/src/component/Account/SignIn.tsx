@@ -27,7 +27,7 @@ function SignIn() {
     alert('Passwords do not match');
     return;
   }
-  fetch('http://localhost:3000/auth/signin', {
+  fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/signin', {
     method: 'POST',
     headers: {
       'Content-type': 'application/json; charset=UTF-8',

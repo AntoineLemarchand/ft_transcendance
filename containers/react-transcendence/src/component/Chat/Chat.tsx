@@ -31,7 +31,7 @@ function Chat() {
 	}
 
   const updateJoinedChannels = () => {
-    fetch('http://localhost:3000/user/channels', {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/user/channels', {
         credentials: 'include',
         method: 'GET',
         headers: {
@@ -48,7 +48,7 @@ function Chat() {
   }
 
   const updateBlockedUsers = () => {
-    fetch('http://localhost:3000/user/blockedUser', {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/user/blockedUser', {
       credentials: 'include',
       method: 'GET',
       headers: {

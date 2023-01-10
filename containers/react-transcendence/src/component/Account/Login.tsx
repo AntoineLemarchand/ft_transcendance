@@ -19,7 +19,7 @@ function Login() {
     })
 
     const ProcessLogin = () => {
-			fetch('http://' + process.env.REACT_APP_SERVER_IP +':3000/auth/login', {
+			fetch('http://' + process.env.REACT_APP_SERVER_IP +'/api/auth/login', {
 				method: 'POST',
 				headers: {
 						'Content-type': 'application/json; charset=UTF-8',
@@ -35,7 +35,8 @@ function Login() {
 							})
 							setCookie('auth', token, {path: '/'})
               setCookie('userInfo', '', {path: '/'})
-							fetch('http://localhost:3000/user/info', {
+              fetch('http://' + process.env.REACT_APP_SERVER_IP
+                +'/api/user/info', {
 									credentials: 'include',
 									method: 'GET',
 									headers: {

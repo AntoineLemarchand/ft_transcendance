@@ -8,7 +8,7 @@ export interface Environment {
   DB_USERNAME: string;
   DB_PASSWORD: string;
   DB_NAME: string;
-  SERVER_IP: string;
+  SERVER_URL: string;
 }
 
 export const environment: Environment = parse(readFileSync('local.env')) as any;
