@@ -19,7 +19,7 @@ export class ChannelController {
 
   private getChannelType(name = 'normal') {
     if (name === 'directMessage') return ChannelType.DirectMesage;
-    if (name === 'private') return ChannelType.Private;
+    if (name === 'privateChannel') return ChannelType.Private;
     return ChannelType.Normal;
   }
 

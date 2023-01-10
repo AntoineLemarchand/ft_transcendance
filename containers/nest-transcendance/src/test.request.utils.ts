@@ -100,7 +100,7 @@ export const joinChannel = async (
     .send({
       channelName: channelName,
       channelPassword: channelPassword,
-      channelType: 'private',
+      channelType: 'privateChannel',
     });
 };
 
