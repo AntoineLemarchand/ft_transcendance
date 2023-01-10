@@ -10,6 +10,7 @@ import SignIn from './Account/SignIn'
 
 import Home from './Home/Home'
 import Play from './Play/Play'
+import WaitingRoom from './Play/WaitingRoom'
 import Spectate from './Play/Spectate'
 import Chat from './Chat/Chat'
 import Profile from './Profile/Profile'
@@ -27,6 +28,7 @@ function App() {
 			<Route path="/" element={ <Login /> }/>
 			<Route path="/signin" element={ <SignIn /> }/>
 			<Route path="/home" element={ <Main component={<Home />}/>}/>
+			<Route path="/waitingroom" element={ <Main component={<WaitingRoom />}/>}/>
 			<Route path="/game" element={ <Main component={<Play />}/>}/>
 			<Route path="/game/:gid" element={ <Main component={<Play />}/>}/>
 			<Route path="/spectate" element={ <Main component={<Spectate />}/>}/>

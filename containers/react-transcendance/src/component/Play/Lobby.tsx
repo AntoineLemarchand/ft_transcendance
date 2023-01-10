@@ -1,5 +1,5 @@
-import * as React from 'react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import Spectate from './Spectate'
 import 'static/Play/Lobby.scss'
@@ -95,15 +95,24 @@ function Lobby() {
   ]
 
   function Lobby() {
+    const navigate = useNavigate();
+
     return (
       <div className="MatchMaking">
-          <button className="JoinQueue">Join Matchmaking</button>
+          <button
+            className="JoinQueue"
+            onClick={()=>navigate('/waitingroom')}
+          >Join Matchmaking</button>
           <div className="Invites">
           {
             invites.map((invite, idx) => {
               if (invite.status === 'online') {
                 return (
-                  <button key={idx} className="Invite">
+                  <button
+                    key={idx}
+                    className="Invite"
+                    onClick={()=>navigate('/game/' + invite.name)}
+                    >
                     <img src={invite.avatar} alt="avatar" />
                     <p>{invite.name.slice(0,10) + (invite.name.length > 10 ? '...' : '')}</p>
                   </button>
