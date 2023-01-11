@@ -31,7 +31,7 @@ function Chat() {
 	}
 
   const updateJoinedChannels = () => {
-    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/user/channels', {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/user/channels', {
         credentials: 'include',
         method: 'GET',
         headers: {
@@ -48,7 +48,7 @@ function Chat() {
   }
 
   const updateBlockedUsers = () => {
-    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/user/blockedUser', {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/user/blockedUser', {
       credentials: 'include',
       method: 'GET',
       headers: {
@@ -64,7 +64,7 @@ function Chat() {
 	useEffect( () => {
 		updateJoinedChannels();
     setSocket(
-      io("http://localhost:8001", {
+      io('http://' + process.env.REACT_APP_SERVER_IP + '/ws/', {
         withCredentials: true,
         query: {auth: cookie.auth},
       })

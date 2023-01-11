@@ -20,7 +20,7 @@ function ProfileBadge(props: {
   const navigate = useNavigate();
 
   const AddFriend = () => {
-      fetch('http://' + process.env.REACT_APP_SERVER_IP + '/user/friend', {
+      fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/user/friend', {
         credentials: 'include',
         method: 'GET',
         headers: {
@@ -29,7 +29,7 @@ function ProfileBadge(props: {
       }).then((response) => {
         response.text().then((content) => {
           const method = JSON.parse(content).friends.indexOf(props.shownUser.name) > -1 ? 'DELETE' : 'POST';
-          fetch('http://' + process.env.REACT_APP_SERVER_IP + '/user/friend', {
+          fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/user/friend', {
             credentials: 'include',
             method: method,
             headers: {
@@ -45,7 +45,7 @@ function ProfileBadge(props: {
  
 
   const BlockUser = () => {
-      fetch('http://' + process.env.REACT_APP_SERVER_IP + '/user/blockedUser', {
+      fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/user/blockedUser', {
         credentials: 'include',
         method: 'GET',
         headers: {
@@ -54,7 +54,7 @@ function ProfileBadge(props: {
       }).then((response) => {
         response.text().then((content) => {
           const method = JSON.parse(content).blockedUsers.indexOf(props.shownUser.name) > -1 ? 'DELETE' : 'POST';
-          fetch('http://' + process.env.REACT_APP_SERVER_IP + '/user/blockedUser', {
+          fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/user/blockedUser', {
             credentials: 'include',
             method: method,
             headers: {

@@ -6,9 +6,10 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json ./
 COPY package-lock.json ./
-RUN npm install
+RUN npm install && npm install -g serve
 
 COPY . ./
-RUN echo $SERVER_IP
 
-CMD ["npm", "start"]
+RUN npm run build
+
+CMD ["serve", "-s", "build"]

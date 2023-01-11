@@ -15,7 +15,7 @@ services:
 
   proxy:
     container_name: "nginx-transcendence"
-    image: nginx
+    image: nginx:1.23
     restart: unless-stopped
     ports:
       - '80:80'
@@ -23,6 +23,10 @@ services:
       - ./containers/nginx-transcendence/nginx.conf:/etc/nginx/nginx.conf
     networks:
       - frontend
+    environment:
+      SERVER_HOST: ${SERVER_URL}
+    depends_on:
+      - front
 
   front:
     container_name: "react-transcendence"
@@ -35,6 +39,8 @@ services:
       - frontend
     build:
       context: containers/react-transcendence/
+    depends_on:
+      - api
 
   api:
     container_name: "nest-transcendence"
@@ -51,10 +57,12 @@ services:
     build:
       context: .
       dockerfile: containers/nest-transcendence/Dockerfile
+    depends_on:
+      - db
 
   db:
     container_name: "postgres-transcendence"
-    image: postgres
+    image: postgres:15
     restart: unless-stopped
     init: true
     env_file:

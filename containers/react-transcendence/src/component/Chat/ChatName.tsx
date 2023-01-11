@@ -33,7 +33,7 @@ function ChatName(props: {username: string,
 		{display: "block"} : {display: "none"}
 
   const BanUser = () => {
-    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/channel/user', {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/channel/user', {
       credentials: 'include',
       method: 'DELETE',
       headers: {

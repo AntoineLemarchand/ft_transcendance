@@ -101,7 +101,7 @@ export function SearchMenu( props: {
 	const [channelPassword, setChannelPassword] = useState<string>('')
 
 	const updateSearchedChannels = (query: string) => {
-    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/channel/getMatchingNames/' + query , {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/channel/getMatchingNames/' + query , {
         credentials: 'include',
         method: 'GET',
         headers: {
@@ -113,7 +113,7 @@ export function SearchMenu( props: {
         setSearchedChannels(JSON.parse(text).channels);
       });
     })
-    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/user/getMatchingNames/' + query , {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/user/getMatchingNames/' + query , {
         credentials: 'include',
         method: 'GET',
         headers: {
@@ -135,7 +135,7 @@ export function SearchMenu( props: {
 
 	const connectToChannel = async (channelName: string, channelPassword: string)
 		:Promise<number> => {
-    return await fetch('http://' + process.env.REACT_APP_SERVER_IP + '/channel/join', {
+    return await fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/channel/join', {
       credentials: 'include',
       method: 'POST',
       headers: {
@@ -164,7 +164,7 @@ export function SearchMenu( props: {
 
 	const newDirectMessage = async (targetUsername: string)
 		:Promise<number> => {
-    return await fetch('http://' + process.env.REACT_APP_SERVER_IP + '/channel/join', {
+    return await fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/channel/join', {
       credentials: 'include',
       method: 'POST',
       headers: {

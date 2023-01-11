@@ -17,7 +17,7 @@ import { environment } from '../utils/environmentParser';
 //todo: is cors * a security concern in our case?
 @WebSocketGateway(8001, {
   cors: {
-    origin: 'http://' + environment.SERVER_URL + '/websocket',
+    origin: ['http://' + environment.SERVER_URL, 'http://localhost'],
     credentials: true,
   },
 })

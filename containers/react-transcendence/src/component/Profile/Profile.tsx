@@ -16,7 +16,7 @@ function InviteMenu(props: {callback: any, mainUser: string, shownUser: string})
 
   const InviteToChannel = (event: any) => {
     console.log(event.target.value);
-    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/channel/invite', {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/channel/invite', {
         credentials: 'include',
         method: 'POST',
         headers: {
@@ -36,7 +36,7 @@ function InviteMenu(props: {callback: any, mainUser: string, shownUser: string})
   }
 
   useEffect(()=> {
-    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/user/channels', {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/user/channels', {
         credentials: 'include',
         method: 'GET',
         headers: {
@@ -92,7 +92,7 @@ function Profile(props: {user: any}) {
 	}
 
 	useEffect(() => {
-		fetch('http://' + process.env.REACT_APP_SERVER_IP + '/user/info/' +
+		fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/user/info/' +
 		(params.uid === undefined ? '' : params.uid), {
 				credentials: 'include',
 				method: 'GET',
