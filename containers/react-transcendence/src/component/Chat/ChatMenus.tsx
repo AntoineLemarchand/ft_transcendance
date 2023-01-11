@@ -47,7 +47,7 @@ export function ChannelModifyMenu(props: {channel: string, callback: Function}) 
 }
 
 export function NewChannelMenu(props: {
-	toggle: React.MouseEventHandler<HTMLDivElement>,
+	toggle: Function,
   callback: Function,
 	visible: boolean,
 	}) {
@@ -70,7 +70,7 @@ export function NewChannelMenu(props: {
       body: JSON.stringify({
           'channelName': channelName,
           'channelPassword': channelPassword,
-          'channelType': isPrivate ? 'private' : 'standard',
+          'channelType': isPrivate ? 'privateChannel' : 'standard',
       }),
     }).then(response=>{
       if (response.status !== 201)
