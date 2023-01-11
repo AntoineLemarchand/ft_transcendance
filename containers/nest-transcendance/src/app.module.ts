@@ -11,7 +11,7 @@ import { BroadcastingModule } from './broadcasting/broadcasting.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { environment } from './utils/environmentParser';
 import entities from './typeorm';
-
+import DataSource from './typeorm/typeOrm.config'
 @Module({
   imports: [
     forwardRef(() => UserModule),
@@ -19,16 +19,7 @@ import entities from './typeorm';
     forwardRef(() => AuthModule),
     forwardRef(() => ChannelModule),
     forwardRef(() => BroadcastingModule),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: environment.DB_HOST,
-      port: environment.DB_PORT as number,
-      username: environment.DB_USERNAME,
-      password: environment.DB_PASSWORD,
-      database: environment.DB_NAME,
-      entities: entities,
-      synchronize: true,
-    }),
+    TypeOrmModule.forRoot(DataSource.options),
     RouterModule.register([
       {
         path: 'user',
