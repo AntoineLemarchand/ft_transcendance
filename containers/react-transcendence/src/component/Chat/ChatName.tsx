@@ -44,7 +44,32 @@ function ChatName(props: {username: string,
           'channelName': props.channel.channelName,
       }),
     }).then((result)=>{
-      alert(props.sender + ' has been banned')
+      if (result.status === 401) {
+        alert('cannot ban ' + props.sender);
+      } else {
+        alert(props.sender + ' has been banned')
+      }
+      ToggleUserMenu();
+    })
+  }
+
+  const MakeAdmin = () => {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/channel/admin', {
+      credentials: 'include',
+      method: 'POST',
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify({
+          'adminCandidateName': props.sender,
+          'channelName': props.channel.channelName,
+      }),
+    }).then((result)=>{
+      if (result.status === 401) {
+        alert(props.sender + ' is already administrator or cannot be upgraded');
+      } else {
+        alert(props.sender + ' has been upgraded as administrator')
+      }
       ToggleUserMenu();
     })
   }
@@ -54,7 +79,7 @@ function ChatName(props: {username: string,
 	]
 
   const adminOption = [
-		{name: "Make Admin", onClick: ()=>{}},
+		{name: "Make Admin", onClick: MakeAdmin},
 		{name: "Mute 30min", onClick: ()=>{}},
 		{name: "Ban", onClick: BanUser},
   ]
