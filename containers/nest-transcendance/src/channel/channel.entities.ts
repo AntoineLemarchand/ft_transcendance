@@ -12,12 +12,6 @@ export class Message {
   }
 }
 
-export enum ChannelType {
-  Normal,
-  Private,
-  DirectMesage,
-}
-
 @Entity()
 export class Channel {
   @Column('jsonb')
@@ -37,13 +31,13 @@ export class Channel {
   @Column({
     type: 'jsonb',
   })
-  public type = ChannelType.Normal;
+  public type: string;
 
   constructor(
     channelName: string,
     creatorUserName: string,
     password = '',
-    type = ChannelType.Normal,
+    type = 'standardChannel',
   ) {
     this.type = type;
     this.password = password;

@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Response } from 'supertest';
 import { INestApplication } from '@nestjs/common';
-import { Channel, ChannelType } from './channel/channel.entities';
+import { Channel } from './channel/channel.entities';
 
 export async function extractBearerToken(loginResponse: Promise<Test>) {
   const jwt: string = await loginResponse.then((response: Response) => {
@@ -92,7 +92,7 @@ export const joinChannel = async (
   jwt: string,
   channelName: string,
   channelPassword = 'default',
-  type: ChannelType = ChannelType.Normal,
+  channelType = 'standardChannel',
 ) => {
   return request(callerModule.getHttpServer())
     .post('/channel/join')
@@ -100,7 +100,7 @@ export const joinChannel = async (
     .send({
       channelName: channelName,
       channelPassword: channelPassword,
-      channelType: 'privateChannel',
+      channelType: channelType,
     });
 };
 
@@ -260,4 +260,33 @@ export async function changeChannelPassword(
       newPassword: newPassword,
     });
   return response;
+}
+
+export async function createDirectMessage(
+  callerModule: INestApplication,
+  jwt: string,
+  targetUsername: string
+) {
+  return request(callerModule.getHttpServer())
+    .post('/channel/join')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      targetUsername: targetUsername,
+      channelType: 'directMessage'
+    });
+}
+
+export async function inviteToChannel(
+  callerModule: INestApplication,
+  jwt: string,
+  channelName: string,
+  username: string
+) {
+  return await request(callerModule.getHttpServer())
+    .post('/channel/invite')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      channelName: channelName,
+      username: username
+    });
 }

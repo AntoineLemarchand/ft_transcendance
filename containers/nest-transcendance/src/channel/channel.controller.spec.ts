@@ -1,7 +1,8 @@
 import { INestApplication, Module } from '@nestjs/common';
 import * as testUtils from '../test.request.utils';
+import { createDirectMessage, inviteToChannel } from '../test.request.utils';
 import * as request from 'supertest';
-import { Channel, ChannelType } from './channel.entities';
+import { Channel } from './channel.entities';
 import { UserService } from '../user/user.service';
 import { ChannelService } from './channel.service';
 import { DataSource } from 'typeorm';
@@ -48,7 +49,6 @@ describe('joining a channel', () => {
       app,
       'invalid token',
       'newChannelName',
-      'default',
     );
 
     expect(result.status).toBe(401);
@@ -57,12 +57,7 @@ describe('joining a channel', () => {
   it('should return 201 and create a new channel if correct input is provided', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
-    const result = await testUtils.joinChannel(
-      app,
-      jwt,
-      'newChannelName',
-      'default',
-    );
+    const result = await testUtils.joinChannel(app, jwt, 'newChannelName');
 
     expect(result.status).toBe(201);
     expect(
@@ -79,7 +74,7 @@ describe('joining a channel', () => {
       'channelPassword',
     );
 
-    const result = await testUtils.joinChannel(app, jwt, 'newChannelName', '');
+    const result = await testUtils.joinChannel(app, jwt, 'newChannelName');
 
     expect(result.status).toBe(401);
   });
@@ -91,7 +86,7 @@ describe('joining a channel', () => {
       jwtCreator,
       'privateChannel',
       '',
-      ChannelType.Private,
+      'privateChannel',
     );
     const jwtJoiner = (await testUtils.signinUser(app, 'outsider', 'password'))
       .body.access_token;
@@ -100,7 +95,6 @@ describe('joining a channel', () => {
       app,
       jwtJoiner,
       'privateChannel',
-      '',
     );
 
     expect(result.status).toBe(401);
@@ -113,17 +107,17 @@ describe('joining a channel', () => {
       jwt,
       'privateChannel',
       '',
-      ChannelType.Private,
+      'privateChannel',
     );
     await testUtils.signinUser(app, 'outsider', 'password');
 
-    const result = await request(app.getHttpServer())
-      .post('/channel/invite')
-      .set('Authorization', 'Bearer ' + jwt)
-      .send({
-        channelName: 'privateChannel',
-        username: 'outsider',
-      });
+    // extract that
+    const result = await inviteToChannel(
+      app,
+      jwt,
+      'privateChannel',
+      'outsider',
+    );
 
     expect(result.status).toBe(201);
     expect(
@@ -140,7 +134,7 @@ describe('joining a channel', () => {
       jwtCreator,
       'privateChannel',
       '',
-      ChannelType.Private,
+      'privateChannel',
     );
     const jwtJoiner = (await testUtils.signinUser(app, 'outsider', 'password'))
       .body.access_token;
@@ -158,12 +152,7 @@ describe('joining a channel', () => {
   it('should return the new channel on join', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
-    const result = await testUtils.joinChannel(
-      app,
-      jwt,
-      'newChannelName',
-      'default',
-    );
+    const result = await testUtils.joinChannel(app, jwt, 'newChannelName');
 
     expect(result.status).toBe(201);
     expect(result.body.channel).toBeDefined();
@@ -173,30 +162,11 @@ describe('joining a channel', () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
 
     await testUtils.joinChannel(app, jwt, 'newChannelName', 'default');
-    const result = await testUtils.joinChannel(
-      app,
-      jwt,
-      'newChannelName',
-      'default',
-    );
+    const result = await testUtils.joinChannel(app, jwt, 'newChannelName');
 
     expect(result.status).toBe(409);
   });
 });
-
-async function createDirectMessage(
-  callerModule: INestApplication,
-  jwt: string,
-  targetUsername: string,
-) {
-  return request(callerModule.getHttpServer())
-    .post('/channel/join')
-    .set('Authorization', 'Bearer ' + jwt)
-    .send({
-      targetUsername: targetUsername,
-      channelType: 'directMessage',
-    });
-}
 
 describe('creating a direct message channel', () => {
   it('should call the creation function', async () => {
@@ -273,7 +243,6 @@ describe('searching channels by name', () => {
 
 describe('administrating a channel', () => {
   it('should return 401 if not authorized to execute administrator tasks', async () => {
-
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
     const spy = jest.spyOn(channelService, 'banUserFromChannel');
     const response = await testUtils.banFromChannel(

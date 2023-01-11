@@ -5,7 +5,7 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { Channel, ChannelType, Message } from './channel.entities';
+import { Channel, Message } from './channel.entities';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { UserService } from '../user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -33,7 +33,7 @@ export class ChannelService {
     channelName: string,
     executorName: string,
     password: string,
-    channelType: ChannelType,
+    channelType: string,
   ): Promise<Channel> {
     const result = new Channel(
       channelName,
@@ -68,7 +68,7 @@ export class ChannelService {
     targetUserName: string,
     channelName: string,
     channelPassword: string,
-    channelType = ChannelType.Normal,
+    channelType = 'standardChannel',
   ): Promise<Channel> {
     checkName();
     const channel = (await this.getChannelByName(channelName).catch(
@@ -85,7 +85,7 @@ export class ChannelService {
     return await this.addUserToChannel(targetUserName, channelName, channel);
 
     function checkName() {
-      if (channelName.includes('_') && channelType != ChannelType.DirectMesage)
+      if (channelName.includes('_') && channelType != 'directMessage')
         throw new HttpException(
           'channelnames cannot contain underscores',
           HttpStatus.FORBIDDEN,
@@ -93,7 +93,7 @@ export class ChannelService {
     }
     async function isJoiningAllowed() {
       if (
-        channel.getType() == ChannelType.Private &&
+        channel.getType() == 'privateChannel' &&
         targetUserName != channel.getAdmins()[0]
       )
         throw new HttpException(
@@ -158,12 +158,7 @@ export class ChannelService {
     invitedUsername: string,
   ) {
     const channelName = executorName + '_' + invitedUsername;
-    await this.joinChannel(
-      executorName,
-      channelName,
-      '',
-      ChannelType.DirectMesage,
-    );
+    await this.joinChannel(executorName, channelName, '', 'directMessage');
     await this.inviteToChannel(executorName, invitedUsername, channelName);
     await this.makeAdmin(executorName, invitedUsername, channelName);
   }

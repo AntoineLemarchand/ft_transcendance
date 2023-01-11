@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { Channel, ChannelType, Message } from './channel.entities';
+import { Channel, Message } from './channel.entities';
 import { ChannelService } from './channel.service';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { UserService } from '../user/user.service';
@@ -103,7 +103,7 @@ describe('Joining a channel', () => {
       'Thomas',
       'privateChannel',
       '',
-      ChannelType.Private,
+      'privateChannel',
     );
 
     await expect(() =>
@@ -129,7 +129,7 @@ describe('direct messaging', () => {
         'Thomas',
         '_directMessageName',
         'channelPassword',
-        ChannelType.DirectMesage,
+        'directMessage',
       ),
     ).not.toThrow();
   });
@@ -228,7 +228,7 @@ describe('Administrating a channel', () => {
       'Thomas',
       'privateChannel',
       'channelPassword',
-      ChannelType.Private,
+      'privateChannel',
     );
 
     await channelService.inviteToChannel(
@@ -250,7 +250,7 @@ describe('Administrating a channel', () => {
       'Thomas',
       'privateChannel',
       'channelPassword',
-      ChannelType.Private,
+      'privateChannel',
     );
     await channelService.inviteToChannel(
       'Thomas',
