@@ -38,7 +38,8 @@ services:
     networks:
       - frontend
     build:
-      context: containers/react-transcendence/
+      context: .
+      dockerfile: containers/react-transcendence/Dockerfile
     depends_on:
       - api
 
