@@ -20,6 +20,6 @@ export class Channel{
 
 export function putMessageInChannels(message: Message, channels: Channel[]): Channel[] {
     let allChannels = [...channels];
-    allChannels.find(obj=>obj.channelName === message.channel).messages.push(message)
-    return allChannels
+    allChannels.find(obj=>obj.channelName === message.channel).messages.push(message);
+    return allChannels;
 }

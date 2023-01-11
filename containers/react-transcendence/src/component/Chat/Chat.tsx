@@ -64,7 +64,7 @@ function Chat() {
 	useEffect( () => {
 		updateJoinedChannels();
     setSocket(
-      io('http://' + process.env.REACT_APP_SERVER_IP + '/ws/', {
+      io('http://' + process.env.REACT_APP_SERVER_IP, {
         withCredentials: true,
         query: {auth: cookie.auth},
       })
