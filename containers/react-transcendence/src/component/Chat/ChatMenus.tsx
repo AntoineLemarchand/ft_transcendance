@@ -9,7 +9,26 @@ export function ChannelModifyMenu(props: {channel: string, callback: Function}) 
   const [ newPassword, setNewPassword ] = useState('')
 
   const ChangePassword = () => {
-    alert('here the new password should be ' + newPassword);
+    fetch('http://' + process.env.REACT_APP_SERVER_IP +  '/api/channel/password', {
+      credentials: 'include',
+      method: 'POST',
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify({
+          'channelName': props.channel,
+          'newPassword': newPassword,
+      }),
+    }).then(response=>{
+        if (response.status === 401) {
+          alert("Cannot change channel password");
+        } else if (newPassword === '') {
+          alert("this channel is not password protected anymore");
+        } else {
+          alert("Channel password changed");
+        }
+        props.callback();
+    })
     props.callback();
   }
 
@@ -28,7 +47,7 @@ export function ChannelModifyMenu(props: {channel: string, callback: Function}) 
 }
 
 export function NewChannelMenu(props: {
-	toggle: React.MouseEventHandler<HTMLDivElement>,
+	toggle: Function,
   callback: Function,
 	visible: boolean,
 	}) {
@@ -51,7 +70,7 @@ export function NewChannelMenu(props: {
       body: JSON.stringify({
           'channelName': channelName,
           'channelPassword': channelPassword,
-          'channelType': isPrivate ? 'private' : 'standard',
+          'channelType': isPrivate ? 'privateChannel' : 'standard',
       }),
     }).then(response=>{
       if (response.status !== 201)
