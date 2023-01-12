@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { Observable } from 'rxjs';
-import { JwtStrategy } from './auth.jwt.strategy';
 import { WsException } from '@nestjs/websockets';
 import { JwtService } from '@nestjs/jwt';
 

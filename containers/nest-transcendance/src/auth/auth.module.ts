@@ -7,8 +7,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { environment } from '../utils/environmentParser';
 import { JwtStrategy } from './auth.jwt.strategy';
 import { AuthController } from './auth.controller';
-import { User } from '../user/user.entities';
-import { WsGuard } from './websocket.auth.guard';
 import { ChannelModule } from '../channel/channel.module';
 
 @Module({

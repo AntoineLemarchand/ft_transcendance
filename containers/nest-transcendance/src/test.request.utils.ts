@@ -117,14 +117,14 @@ export const banFromChannel = async (
   callerModule: INestApplication,
   jwt: string,
   channelName: string,
-  bannedUserName: string,
+  bannedUsername: string,
 ) => {
   return request(callerModule.getHttpServer())
     .delete('/channel/user')
     .set('Authorization', 'Bearer ' + jwt)
     .send({
       channelName: channelName,
-      bannedUserName: bannedUserName,
+      bannedUsername: bannedUsername,
     });
 };
 
@@ -265,14 +265,14 @@ export async function changeChannelPassword(
 export async function createDirectMessage(
   callerModule: INestApplication,
   jwt: string,
-  targetUsername: string
+  targetUsername: string,
 ) {
   return request(callerModule.getHttpServer())
     .post('/channel/join')
     .set('Authorization', 'Bearer ' + jwt)
     .send({
       targetUsername: targetUsername,
-      channelType: 'directMessage'
+      channelType: 'directMessage',
     });
 }
 
@@ -280,13 +280,30 @@ export async function inviteToChannel(
   callerModule: INestApplication,
   jwt: string,
   channelName: string,
-  username: string
+  username: string,
 ) {
-  return await request(callerModule.getHttpServer())
+  return request(callerModule.getHttpServer())
     .post('/channel/invite')
     .set('Authorization', 'Bearer ' + jwt)
     .send({
       channelName: channelName,
-      username: username
+      username: username,
+    });
+}
+
+export async function muteUser(
+  callerModule: INestApplication,
+  jwt: any,
+  mutedUsername: string,
+  channelName: string,
+  muteForMinutes: number,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/channel/mute')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      channelName: channelName,
+      mutedUsername: mutedUsername,
+      muteForMinutes: muteForMinutes,
     });
 }

@@ -71,7 +71,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('getMatchingNames')
-  async findAllUserNames(@Param() params: any) {
+  async findAllUsernames(@Param() params: any) {
     const matchingUsernames = await this.userService.findMatching('');
     return { usernames: matchingUsernames };
   }

@@ -22,11 +22,38 @@ export class ChannelService {
   ) {}
 
   async sendMessage(message: Message): Promise<void> {
-    const channel = await await this.getChannelByName(message.channel);
+    const channel = await this.getChannelByName(message.channel);
+    if (channel.isUserMuted(message.sender)) {
+      throw new HttpException(
+        'This user is currently muted',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     await channel.addMessage(message);
     await this.channelRepository.save(channel);
     //todo: find syntax to differentiate between messages and game states etc
     await this.broadcastingGateway.emitMessage(message.channel, message);
+  }
+
+  async muteMemberForMinutes(
+    executorName: string,
+    mutedUsername: string,
+    minutesToMute: number,
+    channelName: string,
+  ) {
+    const channel = await this.getChannelByName(channelName);
+    this.prohibitNonAdminAccess(
+      channel,
+      executorName,
+      'only admins can mute other members',
+    );
+    const muteCandidate = await this.userService.getUser(mutedUsername);
+    if (muteCandidate === undefined)
+      throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
+    if (muteCandidate.channelNames.includes(channelName) === false)
+      throw new HttpException('User is not a member', HttpStatus.NOT_FOUND);
+    channel.muteUser(mutedUsername, minutesToMute);
+    await this.channelRepository.save(channel);
   }
 
   async addChannel(
@@ -65,7 +92,7 @@ export class ChannelService {
   }
 
   async joinChannel(
-    targetUserName: string,
+    targetUsername: string,
     channelName: string,
     channelPassword: string,
     channelType = 'standardChannel',
@@ -75,14 +102,14 @@ export class ChannelService {
       async () => {
         return await this.addChannel(
           channelName,
-          targetUserName,
+          targetUsername,
           channelPassword,
           channelType,
         );
       },
     )) as Channel;
     await isJoiningAllowed();
-    return await this.addUserToChannel(targetUserName, channelName, channel);
+    return await this.addUserToChannel(targetUsername, channelName, channel);
 
     function checkName() {
       if (channelName.includes('_') && channelType != 'directMessage')
@@ -94,13 +121,13 @@ export class ChannelService {
     async function isJoiningAllowed() {
       if (
         channel.getType() == 'privateChannel' &&
-        targetUserName != channel.getAdmins()[0]
+        targetUsername != channel.getAdmins()[0]
       )
         throw new HttpException(
           'joining a private channel is not allowed',
           HttpStatus.UNAUTHORIZED,
         );
-      if (await channel.isUserBanned(targetUserName))
+      if (await channel.isUserBanned(targetUsername))
         throw new HttpException('the user is banned', HttpStatus.UNAUTHORIZED);
       if (
         (await channel.getPassword()) &&
@@ -111,18 +138,18 @@ export class ChannelService {
   }
 
   private async addUserToChannel(
-    targetUserName: string,
+    targetUsername: string,
     channelName: string,
     channel: Channel,
   ) {
-    await this.userService.addChannelName(targetUserName, channelName);
-    await this.broadcastingGateway.putUserInRoom(targetUserName, channelName);
+    await this.userService.addChannelName(targetUsername, channelName);
+    await this.broadcastingGateway.putUserInRoom(targetUsername, channelName);
     return channel as Channel;
   }
 
   async banUserFromChannel(
     executorName: string,
-    bannedUserName: string,
+    bannedUsername: string,
     channelName: string,
   ): Promise<void> {
     const channel: Channel = await this.getChannelByName(channelName);
@@ -131,10 +158,9 @@ export class ChannelService {
       executorName,
       'This user is not an admin',
     );
-    channel.banUser(bannedUserName);
-    await this.userService.removeChannelName(bannedUserName, channelName);
+    channel.banUser(bannedUsername);
+    await this.userService.removeChannelName(bannedUsername, channelName);
   }
-
   async inviteToChannel(
     executorName: string,
     invitedName: string,
@@ -153,6 +179,7 @@ export class ChannelService {
     await this.addUserToChannel(invitedName, channelName, channel);
     await channel.unbanUser(invitedName);
   }
+
   async createDirectMessageChannelFor(
     executorName: string,
     invitedUsername: string,

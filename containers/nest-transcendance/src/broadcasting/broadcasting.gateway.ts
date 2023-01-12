@@ -34,8 +34,6 @@ export class BroadcastingGateway
     private userService: UserService,
   ) {}
 
-  //todo: call database layer and store messages
-  //todo: invoke guard to check valid token
   @UseGuards(WsGuard)
   @SubscribeMessage('messageToServer')
   handleMessage(client: Socket, data: string): void {
@@ -49,7 +47,7 @@ export class BroadcastingGateway
     this.server.in(eventName).emit('messageToClient', JSON.stringify(message));
   }
 
-  async handleConnection(client: Socket, ...args: any[]) {
+  async handleConnection(client: Socket) {
     if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);
     const username = this.getUsernameFromToken(client);
     const channelNames: string[] = (await (

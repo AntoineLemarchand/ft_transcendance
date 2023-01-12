@@ -42,6 +42,17 @@ export class ChannelController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('mute')
+  async muteUserOnChannel(@Request() req: any) {
+    await this.channelService.muteMemberForMinutes(
+      req.user.name,
+      req.body.mutedUsername,
+      req.body.muteForMinutes,
+      req.body.channelName,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('invite')
   async inviteToChannel(@Request() req: any) {
     await this.channelService.inviteToChannel(
@@ -125,7 +136,7 @@ export class ChannelController {
     try {
       await this.channelService.banUserFromChannel(
         req.user.name,
-        req.body.bannedUserName,
+        req.body.bannedUsername,
         req.body.channelName,
       );
     } catch (e) {

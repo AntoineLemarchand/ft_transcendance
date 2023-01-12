@@ -1,6 +1,5 @@
 import { RoomHandler } from './broadcasting.roomHandler';
 import { Server, Socket } from 'socket.io';
-import { appendSuffixesIfMatch } from 'ts-loader/dist/utils';
 
 jest.mock('socket.io', () => {
   return {

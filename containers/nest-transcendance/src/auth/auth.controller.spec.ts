@@ -1,12 +1,8 @@
-import { Test } from '@nestjs/testing';
 import { INestApplication, Module } from '@nestjs/common';
 import * as testUtils from '../test.request.utils';
-import { AppModule } from '../app.module';
-import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { DataSource } from 'typeorm';
 import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
 import { User } from '../typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { createTestModule } from '../test.module.utils';
 import { UserService } from '../user/user.service';
 
@@ -50,7 +46,7 @@ describe('AuthController', () => {
       .then((response) => expect(response.status).toBe(401));
   });
 
-  it('should return 401 on non existing userName', async () => {
+  it('should return 401 on non existing username', async () => {
     return testUtils
       .loginUser(app, 'non existing user', 'test')
       .then((response) => expect(response.status).toBe(401));

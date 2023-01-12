@@ -69,7 +69,7 @@ describe('joining a channel', () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
     await testUtils.createUserAndJoinToChannel(
       app,
-      'lambdaUserName',
+      'lambdaUsername',
       'newChannelName',
       'channelPassword',
     );
@@ -249,11 +249,11 @@ describe('administrating a channel', () => {
       app,
       jwt,
       'welcome',
-      'bannedUserName',
+      'bannedUsername',
     );
 
     expect(response.status).toBe(401);
-    expect(spy).toHaveBeenCalledWith('Thomas', 'bannedUserName', 'welcome');
+    expect(spy).toHaveBeenCalledWith('Thomas', 'bannedUsername', 'welcome');
   });
 
   it('should return 401 if not authorized to make someone else admin', async () => {
@@ -323,6 +323,54 @@ describe('administrating a channel', () => {
     expect(adminNames).toStrictEqual(['admin']);
   });
 
+  it('should return 401 if not authorized to mute a member', async () => {
+    const spy = jest.spyOn(channelService, 'muteMemberForMinutes');
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+
+    const response = await testUtils.muteUser(
+      app,
+      jwt,
+      'mutedUsername',
+      'welcome',
+      15,
+    );
+
+    expect(response.status).toBe(401);
+    expect(spy).toHaveBeenCalledWith('Thomas', 'mutedUsername', 15, 'welcome');
+  });
+
+  it('should return 404 if muted user is not a member', async () => {
+    const spy = jest.spyOn(channelService, 'muteMemberForMinutes');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+
+    const response = await testUtils.muteUser(
+      app,
+      jwt,
+      'mutedUsername',
+      'welcome',
+      15,
+    );
+
+    expect(response.status).toBe(404);
+    expect(spy).toHaveBeenCalledWith('admin', 'mutedUsername', 15, 'welcome');
+  });
+
+  it('should return 200 if muted a member', async () => {
+    const spy = jest.spyOn(channelService, 'muteMemberForMinutes');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+
+    const response = await testUtils.muteUser(
+      app,
+      jwt,
+      'Thomas',
+      'welcome',
+      15,
+    );
+
+    expect(response.status).toBe(201);
+    expect(spy).toHaveBeenCalledWith('admin', 'Thomas', 15, 'welcome');
+  });
+
   it('should return 200 on success and remove member from channel', async () => {
     const jwt = await testUtils.createUserAndJoinToChannel(
       app,
@@ -332,7 +380,7 @@ describe('administrating a channel', () => {
     );
     await testUtils.createUserAndJoinToChannel(
       app,
-      'bannedUserName',
+      'bannedUsername',
       'KarstensChannel',
       'channelPassword',
     );
@@ -341,12 +389,12 @@ describe('administrating a channel', () => {
       app,
       jwt,
       'KarstensChannel',
-      'bannedUserName',
+      'bannedUsername',
     );
 
     expect(response.status).toBe(200);
     expect(
-      (await userService.getUser('bannedUserName'))?.getChannelNames(),
+      (await userService.getUser('bannedUsername'))?.getChannelNames(),
     ).toEqual(['welcome']);
   });
 });

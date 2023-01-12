@@ -12,6 +12,27 @@ export class Message {
   }
 }
 
+// weird behavior in typeorm makes it impossible to store a map
+export class MapReplacement {
+  static get(arr: (string | number)[][], username: string) {
+    for (const element of arr) {
+      if (element[0] === username) return element[1];
+    }
+    return undefined;
+  }
+
+  static set(arr: (string | number)[][], username: string, value: number) {
+    for (const element of arr) {
+      if (element[0] === username) {
+        element[1] = value;
+        return arr;
+      }
+    }
+    arr.push([username, value]);
+    return arr;
+  }
+}
+
 @Entity()
 export class Channel {
   @Column('jsonb')
@@ -29,13 +50,19 @@ export class Channel {
   })
   public password = '';
   @Column({
-    type: 'jsonb',
+    type: 'varchar',
   })
   public type: string;
+  @Column({
+    type: 'jsonb',
+    array: false,
+    nullable: false,
+  })
+  mutedUsers: (string | number)[][];
 
   constructor(
     channelName: string,
-    creatorUserName: string,
+    creatorUsername: string,
     password = '',
     type = 'standardChannel',
   ) {
@@ -43,8 +70,9 @@ export class Channel {
     this.password = password;
     this.channelName = channelName;
     this.messages = [];
-    this.admins = [creatorUserName];
+    this.admins = [creatorUsername];
     this.bannedUsers = [];
+    this.mutedUsers = [];
   }
 
   getPassword(): string {
@@ -67,12 +95,12 @@ export class Channel {
     return this.channelName;
   }
 
-  banUser(bannedUserName: string) {
-    this.bannedUsers.push(bannedUserName);
+  banUser(bannedUsername: string) {
+    this.bannedUsers.push(bannedUsername);
   }
 
-  isUserBanned(userName: string) {
-    return this.bannedUsers.includes(userName);
+  isUserBanned(username: string) {
+    return this.bannedUsers.includes(username);
   }
 
   isAdmin(usernameOfExecutor: string) {
@@ -95,5 +123,19 @@ export class Channel {
 
   setPassword(newPassword: string) {
     this.password = newPassword;
+  }
+
+  muteUser(username: string, forMinutes: number) {
+    this.mutedUsers = MapReplacement.set(
+      this.mutedUsers,
+      username,
+      Date.now() + forMinutes * 1000 * 60,
+    );
+  }
+
+  isUserMuted(username: string) {
+    return (
+      (MapReplacement.get(this.mutedUsers, username) as number) > Date.now()
+    );
   }
 }
