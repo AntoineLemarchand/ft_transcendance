@@ -10,6 +10,7 @@ export default new DataSource({
   username: environment.DB_USERNAME,
   password: environment.DB_PASSWORD,
   database: environment.DB_NAME,
+  synchronize: true,
   entities: [User, Channel],
   migrations: [initDataBase1673427329295],
 });
