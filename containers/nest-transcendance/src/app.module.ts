@@ -8,9 +8,11 @@ import User from './user/user.entities';
 import { RouterModule } from '@nestjs/core';
 import { ChannelModule } from './channel/channel.module';
 import { BroadcastingModule } from './broadcasting/broadcasting.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ envFilePath: 'local.env' }),
     forwardRef(() => UserModule),
     GameModule,
     forwardRef(() => AuthModule),
