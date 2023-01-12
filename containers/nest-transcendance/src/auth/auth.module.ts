@@ -10,9 +10,10 @@ import { AuthController } from './auth.controller';
 import User from '../user/user.entities';
 import { WsGuard } from './websocket.auth.guard';
 import { ChannelModule } from '../channel/channel.module';
+import { Oauth2Strategy } from './auth.oauth2.strategy';
 
 @Module({
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, Oauth2Strategy],
   imports: [
     forwardRef(() => UserModule),
     PassportModule,
