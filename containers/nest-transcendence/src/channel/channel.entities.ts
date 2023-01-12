@@ -56,7 +56,6 @@ export class Channel {
   @Column({
     type: 'jsonb',
     array: false,
-    nullable: false,
   })
   mutedUsers: (string | number)[][];
 
