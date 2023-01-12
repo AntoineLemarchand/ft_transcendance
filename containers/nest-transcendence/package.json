@@ -6,6 +6,11 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "typeorm": "ts-node ./node_modules/typeorm/cli",
+    "typeorm:run-migrations": "npm run typeorm migration:run -- -d ./src/typeorm/typeOrm.config.ts",
+    "typeorm:generate-migration": "npm run typeorm -- -d ./src/typeorm/typeOrm.config.ts migration:generate ./src/typeorm/migrations/initDataBase",
+    "typeorm:create-migration": "npm run typeorm -- migration:create ./src/typeorm/migrations/initDataBase",
+    "typeorm:revert-migration": "npm run typeorm -- -d ./src/typeorm/typeOrm.config.ts migration:revert",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -84,6 +89,11 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "globals": {
+      "ts-jest": {
+        "isolatedModules": true
+      }
+    }
   }
 }

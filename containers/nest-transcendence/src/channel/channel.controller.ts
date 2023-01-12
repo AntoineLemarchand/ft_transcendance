@@ -11,17 +11,9 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { ChannelService } from './channel.service';
-import { ChannelType } from './channel.entities';
-
 @Controller()
 export class ChannelController {
   constructor(private channelService: ChannelService) {}
-
-  private getChannelType(name = 'normal') {
-    if (name === 'directMessage') return ChannelType.DirectMesage;
-    if (name === 'privateChannel') return ChannelType.Private;
-    return ChannelType.Normal;
-  }
 
   @UseGuards(JwtAuthGuard)
   @Post('join')
@@ -31,7 +23,6 @@ export class ChannelController {
         'no channel type specified',
         HttpStatus.BAD_REQUEST,
       );
-    const channelType = this.getChannelType(req.body.channelType);
     if (req.body.channelType == 'directMessage') {
       return {
         channel: await this.channelService.createDirectMessageChannelFor(
@@ -45,9 +36,20 @@ export class ChannelController {
         req.user.name,
         req.body.channelName,
         req.body.channelPassword,
-        channelType,
+        req.body.channelType,
       ),
     };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('mute')
+  async muteUserOnChannel(@Request() req: any) {
+    await this.channelService.muteMemberForMinutes(
+      req.user.name,
+      req.body.mutedUsername,
+      req.body.muteForMinutes,
+      req.body.channelName,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -134,7 +136,7 @@ export class ChannelController {
     try {
       await this.channelService.banUserFromChannel(
         req.user.name,
-        req.body.bannedUserName,
+        req.body.bannedUsername,
         req.body.channelName,
       );
     } catch (e) {

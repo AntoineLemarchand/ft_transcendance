@@ -5,7 +5,7 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { Channel, ChannelType, Message } from './channel.entities';
+import { Channel, Message } from './channel.entities';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { UserService } from '../user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,18 +22,45 @@ export class ChannelService {
   ) {}
 
   async sendMessage(message: Message): Promise<void> {
-    const channel = await await this.getChannelByName(message.channel);
+    const channel = await this.getChannelByName(message.channel);
+    if (channel.isUserMuted(message.sender)) {
+      throw new HttpException(
+        'This user is currently muted',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     await channel.addMessage(message);
     await this.channelRepository.save(channel);
     //todo: find syntax to differentiate between messages and game states etc
     await this.broadcastingGateway.emitMessage(message.channel, message);
   }
 
+  async muteMemberForMinutes(
+    executorName: string,
+    mutedUsername: string,
+    minutesToMute: number,
+    channelName: string,
+  ) {
+    const channel = await this.getChannelByName(channelName);
+    this.prohibitNonAdminAccess(
+      channel,
+      executorName,
+      'only admins can mute other members',
+    );
+    const muteCandidate = await this.userService.getUser(mutedUsername);
+    if (muteCandidate === undefined)
+      throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
+    if (muteCandidate.channelNames.includes(channelName) === false)
+      throw new HttpException('User is not a member', HttpStatus.NOT_FOUND);
+    channel.muteUser(mutedUsername, minutesToMute);
+    await this.channelRepository.save(channel);
+  }
+
   async addChannel(
     channelName: string,
     executorName: string,
     password: string,
-    channelType: ChannelType,
+    channelType: string,
   ): Promise<Channel> {
     const result = new Channel(
       channelName,
@@ -65,27 +92,27 @@ export class ChannelService {
   }
 
   async joinChannel(
-    targetUserName: string,
+    targetUsername: string,
     channelName: string,
     channelPassword: string,
-    channelType = ChannelType.Normal,
+    channelType = 'standardChannel',
   ): Promise<Channel> {
     checkName();
     const channel = (await this.getChannelByName(channelName).catch(
       async () => {
         return await this.addChannel(
           channelName,
-          targetUserName,
+          targetUsername,
           channelPassword,
           channelType,
         );
       },
     )) as Channel;
     await isJoiningAllowed();
-    return await this.addUserToChannel(targetUserName, channelName, channel);
+    return await this.addUserToChannel(targetUsername, channelName, channel);
 
     function checkName() {
-      if (channelName.includes('_') && channelType != ChannelType.DirectMesage)
+      if (channelName.includes('_') && channelType != 'directMessage')
         throw new HttpException(
           'channelnames cannot contain underscores',
           HttpStatus.FORBIDDEN,
@@ -93,14 +120,14 @@ export class ChannelService {
     }
     async function isJoiningAllowed() {
       if (
-        channel.getType() == ChannelType.Private &&
-        targetUserName != channel.getAdmins()[0]
+        channel.getType() == 'privateChannel' &&
+        targetUsername != channel.getAdmins()[0]
       )
         throw new HttpException(
           'joining a private channel is not allowed',
           HttpStatus.UNAUTHORIZED,
         );
-      if (await channel.isUserBanned(targetUserName))
+      if (await channel.isUserBanned(targetUsername))
         throw new HttpException('the user is banned', HttpStatus.UNAUTHORIZED);
       if (
         (await channel.getPassword()) &&
@@ -111,18 +138,18 @@ export class ChannelService {
   }
 
   private async addUserToChannel(
-    targetUserName: string,
+    targetUsername: string,
     channelName: string,
     channel: Channel,
   ) {
-    await this.userService.addChannelName(targetUserName, channelName);
-    await this.broadcastingGateway.putUserInRoom(targetUserName, channelName);
+    await this.userService.addChannelName(targetUsername, channelName);
+    await this.broadcastingGateway.putUserInRoom(targetUsername, channelName);
     return channel as Channel;
   }
 
   async banUserFromChannel(
     executorName: string,
-    bannedUserName: string,
+    bannedUsername: string,
     channelName: string,
   ): Promise<void> {
     const channel: Channel = await this.getChannelByName(channelName);
@@ -131,10 +158,9 @@ export class ChannelService {
       executorName,
       'This user is not an admin',
     );
-    channel.banUser(bannedUserName);
-    await this.userService.removeChannelName(bannedUserName, channelName);
+    channel.banUser(bannedUsername);
+    await this.userService.removeChannelName(bannedUsername, channelName);
   }
-
   async inviteToChannel(
     executorName: string,
     invitedName: string,
@@ -153,17 +179,13 @@ export class ChannelService {
     await this.addUserToChannel(invitedName, channelName, channel);
     await channel.unbanUser(invitedName);
   }
+
   async createDirectMessageChannelFor(
     executorName: string,
     invitedUsername: string,
   ) {
     const channelName = executorName + '_' + invitedUsername;
-    await this.joinChannel(
-      executorName,
-      channelName,
-      '',
-      ChannelType.DirectMesage,
-    );
+    await this.joinChannel(executorName, channelName, '', 'directMessage');
     await this.inviteToChannel(executorName, invitedUsername, channelName);
     await this.makeAdmin(executorName, invitedUsername, channelName);
   }

@@ -45,7 +45,7 @@ describe('creating a user', () => {
   it('should increment the user count', async () => {
     const countBefore = (await userService.getAllUsernames()).length;
 
-    await userService.createUser(new User('newUserName', 'newUserPassword'));
+    await userService.createUser(new User('newUsername', 'newUserPassword'));
 
     const countAfter = (await userService.getAllUsernames()).length;
     expect(countAfter).toEqual(countBefore + 1);
@@ -54,13 +54,13 @@ describe('creating a user', () => {
 
 describe('deleting a user', () => {
   beforeEach(async () => {
-    await userService.createUser(new User('newUserName', 'newUserPassword'));
+    await userService.createUser(new User('newUsername', 'newUserPassword'));
   });
 
   it('should decrement the user count', async () => {
     const countBefore = (await userService.getAllUsernames()).length;
 
-    await userService.deleteUser('newUserName');
+    await userService.deleteUser('newUsername');
 
     const countAfter = (await userService.getAllUsernames()).length;
     expect(countAfter).toEqual(countBefore - 1);

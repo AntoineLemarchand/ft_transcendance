@@ -9,7 +9,6 @@ import {
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService, Identity } from './auth.service';
 import { CreateUserDTO } from '../app.controller';
-import { AuthModule } from './auth.module';
 import { Response as ExpressResponse } from 'express';
 
 @Controller()

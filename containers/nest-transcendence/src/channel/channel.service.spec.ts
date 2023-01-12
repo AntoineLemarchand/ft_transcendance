@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { Channel, ChannelType, Message } from './channel.entities';
+import { Channel, Message } from './channel.entities';
 import { ChannelService } from './channel.service';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { UserService } from '../user/user.service';
@@ -103,7 +103,7 @@ describe('Joining a channel', () => {
       'Thomas',
       'privateChannel',
       '',
-      ChannelType.Private,
+      'privateChannel',
     );
 
     await expect(() =>
@@ -129,7 +129,7 @@ describe('direct messaging', () => {
         'Thomas',
         '_directMessageName',
         'channelPassword',
-        ChannelType.DirectMesage,
+        'directMessage',
       ),
     ).not.toThrow();
   });
@@ -187,33 +187,33 @@ describe('Administrating a channel', () => {
   });
 
   it('should prohibit a user to join a channel if he is on the ban list', async () => {
-    await userService.createUser(new User('bannedUserName', ''));
+    await userService.createUser(new User('bannedUsername', ''));
     await channelService.banUserFromChannel(
       'Thomas',
-      'bannedUserName',
+      'bannedUsername',
       'channelName',
     );
 
     await expect(() =>
-      channelService.joinChannel('bannedUserName', 'channelName', ''),
+      channelService.joinChannel('bannedUsername', 'channelName', ''),
     ).rejects.toThrow();
   });
 
   it('should remove the channel from the user when banned', async () => {
-    await userService.createUser(new User('bannedUserName', ''));
+    await userService.createUser(new User('bannedUsername', ''));
     await channelService.joinChannel(
-      'bannedUserName',
+      'bannedUsername',
       'channelName',
       'channelPassword',
     );
     await channelService.banUserFromChannel(
       'Thomas',
-      'bannedUserName',
+      'bannedUsername',
       'channelName',
     );
 
     expect(
-      (await userService.getUser('bannedUserName'))?.getChannelNames(),
+      (await userService.getUser('bannedUsername'))?.getChannelNames(),
     ).toEqual(['welcome']);
   });
 
@@ -228,7 +228,7 @@ describe('Administrating a channel', () => {
       'Thomas',
       'privateChannel',
       'channelPassword',
-      ChannelType.Private,
+      'privateChannel',
     );
 
     await channelService.inviteToChannel(
@@ -250,7 +250,7 @@ describe('Administrating a channel', () => {
       'Thomas',
       'privateChannel',
       'channelPassword',
-      ChannelType.Private,
+      'privateChannel',
     );
     await channelService.inviteToChannel(
       'Thomas',
@@ -280,6 +280,86 @@ describe('Administrating a channel', () => {
     expect(
       (await channelService.getChannelByName('welcome')).getPassword(),
     ).toBe('newPassword');
+  });
+
+  it('should throw if trying mute to a member without being an admin', async () => {
+    await expect(
+      async () =>
+        await channelService.muteMemberForMinutes(
+          'Thomas',
+          'mutedUsername',
+          15,
+          'welcom',
+        ),
+    ).rejects.toThrow();
+  });
+
+  it('should throw if trying to mute a non member user', async () => {
+    await expect(
+      async () =>
+        await channelService.muteMemberForMinutes(
+          'admin',
+          'nonExistingUsername',
+          15,
+          'welcom',
+        ),
+    ).rejects.toThrow();
+  });
+
+  it('should throw if trying to mute a non member user', async () => {
+    await userService.createUser(new User('mutedUsername', ''));
+
+    await expect(
+      async () =>
+        await channelService.muteMemberForMinutes(
+          'admin',
+          'mutedUsername',
+          15,
+          'welcom',
+        ),
+    ).rejects.toThrow();
+  });
+
+  it('should return true when a user has been muted', async () => {
+    const channel = new Channel('channelName', 'admin');
+
+    channel.muteUser('username', 15);
+
+    expect(channel.isUserMuted('username')).toBeTruthy();
+  });
+
+  it('should return false after timeout', async () => {
+    const channel = new Channel('channelName', 'admin');
+
+    channel.muteUser('username', 0);
+
+    expect(channel.isUserMuted('username')).toBeFalsy();
+  });
+
+  it('should return false if user never has been muted', async () => {
+    const channel = new Channel('channelName', 'admin');
+
+    expect(channel.isUserMuted('username')).toBeFalsy();
+  });
+
+  it('should disable a member to send messages', async () => {
+    await userService.createUser(new User('mutedUsername', ''));
+    await channelService.joinChannel('mutedUsername', 'welcom', '');
+    await channelService.muteMemberForMinutes(
+      'admin',
+      'mutedUsername',
+      15,
+      'welcom',
+    );
+
+    await expect(
+      async () =>
+        await channelService.sendMessage({
+          channel: 'welcom',
+          sender: 'mutedUsername',
+          content: '',
+        }),
+    ).rejects.toThrow();
   });
 
   it('should throw on invite on non existing channel', async () => {
