@@ -16,5 +16,16 @@
       margin-left: auto;
       background: color('redSecondary')
     }
+
+    div {
+      width: 80%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+    }
+
+    .Gamemode button{width: 100%;}
+
+    .PlayerStatus button{width: 80%;}
   }
 }
