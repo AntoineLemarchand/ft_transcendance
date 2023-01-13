@@ -10,6 +10,7 @@ import { GameModule } from './game.module';
 import { GameObject, GameState } from './game.entities';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { executionCtx } from 'pg-mem/types/utils';
+import {BroadcastingGateway} from "../broadcasting/broadcasting.gateway";
 
 let gameService: GameService;
 let userService: UserService;
@@ -69,6 +70,15 @@ describe('setting up a game', () => {
     const result: GameObject[] = gameService.getOpenGames();
 
     expect(result.length).toBe(1);
+  });
+
+  it('should put both players in a socket room', async function () {
+    const spy = jest.spyOn(BroadcastingGateway.prototype, 'putUserInRoom');
+
+    const game = await gameService.initGame('player1', 'player42');
+
+    expect(spy).toHaveBeenCalledWith('player1', game.getId().toString());
+    expect(spy).toHaveBeenCalledWith('player42', game.getId().toString());
   });
 });
 

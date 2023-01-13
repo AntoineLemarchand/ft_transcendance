@@ -65,9 +65,9 @@ export class BroadcastingGateway
     this.roomHandler.removeUserInstance(username, client.id, channelNames);
   }
 
-  async putUserInRoom(username: string, channelName: string) {
+  async putUserInRoom(username: string, roomName: string) {
     if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);
-    await this.roomHandler.join(username, channelName);
+    await this.roomHandler.join(username, roomName);
   }
 
   private getUsernameFromToken(client: Socket) {
