@@ -40,13 +40,12 @@ export class AuthController {
     return token;
   }
 
-  @Post('loginOauth')
-  @UseGuards(Oauth2Guard)
-  async signinFortyTwo(
-    @Body() userCandidate: CreateUserDTO,
-    @Res({ passthrough: true }) res: ExpressResponse,
-  ): Promise<{ access_token: string }> {
+  @Get('oauth/callback')
+  // @UseGuards(Oauth2Guard)
+  async signinFortyTwo(): Promise<{ access_token: string }> {
+    console.log('TRY TO connect');
     const token = { access_token: 'future token' };
     return token;
   }
+
 }
