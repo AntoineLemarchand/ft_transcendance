@@ -97,6 +97,17 @@ describe('Joining a channel', () => {
     ).rejects.toThrow();
   });
 
+  it('should not be possible to use numbers in names of multi user channels', async () => {
+    await expect(() =>
+      channelService.joinChannel(
+        'Thomas',
+        'illegalChannelName69 ',
+        'channelPassword',
+      ),
+    ).rejects.toThrow();
+  });
+
+
   it('should throw if attempting to join an existing private channel', async () => {
     await userService.createUser(new User('outsider', 'password'));
     await channelService.joinChannel(

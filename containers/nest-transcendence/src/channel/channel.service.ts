@@ -111,10 +111,13 @@ export class ChannelService {
     await isJoiningAllowed();
     return await this.addUserToChannel(targetUsername, channelName, channel);
 
+    function containsNumbers(str) {
+      return /[0-9]/.test(str);
+    }
     function checkName() {
-      if (channelName.includes('_') && channelType != 'directMessage')
+      if (channelName.includes('_') && channelType != 'directMessage' || channelName.match(/\d/))
         throw new HttpException(
-          'channelnames cannot contain underscores',
+          'channelnames cannot contain underscores or numbers',
           HttpStatus.FORBIDDEN,
         );
     }

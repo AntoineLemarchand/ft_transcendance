@@ -208,9 +208,9 @@ describe('retrieving a channel', () => {
 describe('searching channels by name', () => {
   it('should return a list of channel names', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
-    await testUtils.joinChannel(app, jwt, 'newChannelName1', 'default');
-    await testUtils.joinChannel(app, jwt, 'newChannelName2', 'default');
-    await testUtils.joinChannel(app, jwt, 'otherChannelName1', 'default');
+    await testUtils.joinChannel(app, jwt, 'newChannelNameA', 'default');
+    await testUtils.joinChannel(app, jwt, 'newChannelNameB', 'default');
+    await testUtils.joinChannel(app, jwt, 'otherChannelNameC', 'default');
 
     const matchingChannels = await testUtils.getMatchingChannelNames(
       app,
@@ -219,8 +219,8 @@ describe('searching channels by name', () => {
     );
 
     expect(matchingChannels.length).toBe(2);
-    expect(matchingChannels[0]).toBe('newChannelName1');
-    expect(matchingChannels[1]).toBe('newChannelName2');
+    expect(matchingChannels[0]).toBe('newChannelNameA');
+    expect(matchingChannels[1]).toBe('newChannelNameB');
   });
 
   it('should return the names of all joined channels', async () => {
