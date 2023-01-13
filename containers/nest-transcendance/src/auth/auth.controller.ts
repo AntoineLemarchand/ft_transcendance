@@ -47,5 +47,4 @@ export class AuthController {
     const token = { access_token: 'future token' };
     return token;
   }
-
 }

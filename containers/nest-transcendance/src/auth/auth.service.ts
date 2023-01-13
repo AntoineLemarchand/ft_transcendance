@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import User from '../user/user.entities';
 import { CreateUserDTO } from '../app.controller';
 import { UserIt } from '../utils/user.interface';
-import * as https from 'https'
+import * as https from 'https';
 
 export class Identity {
   constructor(public name: string, public id: number) {}
@@ -33,7 +33,6 @@ export class AuthService {
     }
     throw new HttpException('Could not find user', HttpStatus.UNAUTHORIZED);
   }
-
 
   async login(user: Identity) {
     const payload = { user };
