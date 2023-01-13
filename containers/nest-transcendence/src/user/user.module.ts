@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import { User } from './user.entities';
 import { ChannelModule } from '../channel/channel.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import {GameModule} from "../game/game.module";
 
 @Module({
   controllers: [UserController],
