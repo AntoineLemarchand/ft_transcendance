@@ -307,3 +307,16 @@ export async function muteUser(
       muteForMinutes: muteForMinutes,
     });
 }
+
+export async function initGame(
+  callerModule: INestApplication,
+  jwt: any,
+  player2: string,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/game/init')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      player2: player2,
+    });
+}

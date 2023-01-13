@@ -19,6 +19,7 @@ import DataSource from './typeorm/typeOrm.config'
     forwardRef(() => AuthModule),
     forwardRef(() => ChannelModule),
     forwardRef(() => BroadcastingModule),
+    forwardRef(() => GameModule),
     TypeOrmModule.forRoot(DataSource.options),
     RouterModule.register([
       {
@@ -32,6 +33,10 @@ import DataSource from './typeorm/typeOrm.config'
       {
         path: 'channel',
         module: ChannelModule,
+      },
+      {
+        path: 'game',
+        module: GameModule,
       },
     ]),
   ],

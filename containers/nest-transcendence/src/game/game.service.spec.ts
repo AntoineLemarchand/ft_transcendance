@@ -7,11 +7,14 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../user/user.entities';
 import { Channel } from '../channel/channel.entities';
 import { GameModule } from './game.module';
-import {GameObject, GameState} from './game.entities';
+import { GameObject, GameState } from './game.entities';
+import { GameObjectRepository } from './game.currentGames.repository';
+import { executionCtx } from 'pg-mem/types/utils';
 
 let gameService: GameService;
 let userService: UserService;
 let dataSource: DataSource;
+let currentGames: GameObjectRepository;
 let testDataBase: TestDatabase;
 
 beforeAll(async () => {
@@ -31,11 +34,13 @@ beforeEach(async () => {
     .compile();
   gameService = module.get<GameService>(GameService);
   userService = module.get<UserService>(UserService);
+  currentGames = module.get<GameObjectRepository>(GameObjectRepository);
   await userService.createUser(new User('player1', 'admin'));
   await userService.createUser(new User('player42', 'test'));
+  await userService.createUser(new User('outsider', 'password'));
 });
 
-describe('creating a game', () => {
+describe('setting up a game', () => {
   it('should fail to initiate when given a player twice', async () => {
     await expect(
       async () => await gameService.initGame('player1', 'player1'),
@@ -65,4 +70,45 @@ describe('creating a game', () => {
 
     expect(result.length).toBe(1);
   });
+});
+
+describe('starting a game', () => {
+  it('should fail if the executing user is not one of the players', async () => {
+    const gameObject = await gameService.initGame('player1', 'player42');
+
+    await expect(
+      async () => await gameService.setReady('outsider', gameObject.getId()),
+    ).rejects.toThrow();
+  });
+
+  it('should not change the GameObject state unless both players are ready', async () => {
+    const gameObject = await gameService.initGame('player1', 'player42');
+
+    await gameService.setReady('player1', gameObject.getId());
+
+    const result = await currentGames.findOne(gameObject.getId());
+    expect(result.getStatus()).toBe(GameState.INITIALIZED);
+  });
+
+  it('should start the game when both players are ready', async () => {
+    const gameObject = await gameService.initGame('player1', 'player42');
+
+    await gameService.setReady('player1', gameObject.getId());
+    await gameService.setReady('player42', gameObject.getId());
+
+    const result = await currentGames.findOne(gameObject.getId());
+    expect(result.getStatus()).toBe(GameState.RUNNING);
+  });
+
+  it('should not have an effect to run ready twice as same user', async () => {
+    const gameObject = await gameService.initGame('player1', 'player42');
+
+    await gameService.setReady('player1', gameObject.getId());
+    await gameService.setReady('player1', gameObject.getId());
+
+    const result = await currentGames.findOne(gameObject.getId());
+    expect(result.getStatus()).toBe(GameState.INITIALIZED);
+  });
+
+  // not set the game as finished when running setReady too often
 });
