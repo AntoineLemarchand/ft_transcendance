@@ -61,21 +61,6 @@ function Login() {
     navigate('/signin');
   }
 
-  const ProcessOauth = () => {
-    const res = fetch('http://localhost:3000/auth/loginOauth', {
-      mode: 'cors',
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json; charset=UTF-8',
-        'Access-Control-Allow-Origin': 'http://localhost:3000/',
-        'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE',
-      },
-    }).then((result) => {
-      console.log(result);
-    })
-  }
-
   const UpdatePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
       username: state.username,
@@ -101,8 +86,14 @@ function Login() {
         <button className="signin"
           onClick={ProcessSignIn}>Sign in
         </button>
-          <button className="Oauth"
-            onClick={ProcessOauth}><SchoolLogo/></button>
+          <a href={
+              'https://api.intra.42.fr/oauth/authorize?' +
+              'client_id=' + process.env.REACT_APP_FORTYTWO_CLIENT_ID +
+              '&redirect_uri=http://localhost:3000/auth/oauth/callback' +
+              '&response_type=code'
+          }>
+          <button className="Oauth"><SchoolLogo/></button>
+        </a>
       </div>
     </div>
   )

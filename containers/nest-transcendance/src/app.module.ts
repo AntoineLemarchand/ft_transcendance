@@ -12,7 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: 'local.env' }),
+    ConfigModule.forRoot(),
     forwardRef(() => UserModule),
     GameModule,
     forwardRef(() => AuthModule),

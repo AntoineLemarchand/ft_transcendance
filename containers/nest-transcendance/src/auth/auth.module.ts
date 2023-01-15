@@ -14,7 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   providers: [AuthService, LocalStrategy, JwtStrategy, Oauth2Strategy],
   imports: [
-    ConfigModule.forRoot({ envFilePath: 'local.env' }),
+    ConfigModule.forRoot(),
     forwardRef(() => UserModule),
     PassportModule,
     forwardRef(() => ChannelModule),
