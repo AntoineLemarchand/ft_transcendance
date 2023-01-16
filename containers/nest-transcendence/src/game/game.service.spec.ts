@@ -9,8 +9,11 @@ import { Channel } from '../channel/channel.entities';
 import { GameModule } from './game.module';
 import { GameObject, GameProgress } from './game.entities';
 import { GameObjectRepository } from './game.currentGames.repository';
-import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
-import {Collision} from "./game.logic";
+import {
+  BroadcastingGateway,
+  GameUpdate,
+} from '../broadcasting/broadcasting.gateway';
+import { Collision } from './game.logic';
 
 let gameService: GameService;
 let userService: UserService;
@@ -147,9 +150,38 @@ describe('starting a game', () => {
 
 describe('running a game', () => {
   it('should emit an event in case of goal', async () => {
+    const spy = jest
+      .spyOn(BroadcastingGateway.prototype, 'emitGameUpdate')
+      .mockImplementation(jest.fn());
     const gameObject = new GameObject(0, 'p1', 'p2');
     gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+    gameObject.setReady('p1');
+    gameObject.setReady('p2');
+    gameObject.players[0].score = 8;
 
     await gameService.runGame(gameObject);
+
+    expect(spy).toHaveBeenCalledWith(
+      gameObject.getId().toString(),
+      new GameUpdate([9, 0], GameProgress.RUNNING),
+    );
   });
+
+  it('should emit an event once the game is over', async () => {
+    const spy = jest
+      .spyOn(BroadcastingGateway.prototype, 'emitGameUpdate')
+      .mockImplementation(jest.fn());
+    const gameObject = new GameObject(0, 'p1', 'p2');
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+    gameObject.players[0].score = 9;
+
+    await gameService.runGame(gameObject);
+
+    expect(spy).toHaveBeenCalledWith(
+      gameObject.getId().toString(),
+      new GameUpdate([10, 0], GameProgress.FINISHED),
+    );
+  });
+
+  //todo: test persistant save (JUSTINE?)
 });

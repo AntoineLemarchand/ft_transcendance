@@ -68,7 +68,6 @@ export class GameObject {
     if (scorer) {
       if (scorer.score === 10) {
         this.progress = GameProgress.FINISHED;
-        return;
       }
       this.collision.reset();
     } else this.collision.update();

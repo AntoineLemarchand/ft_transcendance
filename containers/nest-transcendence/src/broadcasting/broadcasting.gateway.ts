@@ -13,6 +13,11 @@ import { ChannelService } from '../channel/channel.service';
 import { RoomHandler } from './broadcasting.roomHandler';
 import { UserService } from '../user/user.service';
 import { environment } from '../utils/environmentParser';
+import { GameProgress } from '../game/game.entities';
+
+export class GameUpdate {
+  constructor(public score: number[], public gameProgress: GameProgress) {}
+}
 
 //todo: is cors * a security concern in our case?
 @WebSocketGateway(8001, {
@@ -44,9 +49,11 @@ export class BroadcastingGateway
   }
 
   //todo: find syntax to differentiate between messages and game states etc
-  emitMessage(eventName: string, message: Message) {
-    this.server.in(eventName).emit('messageToClient', JSON.stringify(message));
+  emitMessage(roomName: string, message: Message) {
+    this.server.in(roomName).emit('messageToClient', JSON.stringify(message));
   }
+
+  emitGameUpdate(roomName: string, update: GameUpdate) {}
 
   async handleConnection(client: Socket) {
     if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);

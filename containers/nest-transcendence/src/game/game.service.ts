@@ -1,7 +1,7 @@
 import {forwardRef, Inject, Injectable} from '@nestjs/common';
 import {UserService} from '../user/user.service';
 import {GameObjectRepository} from './game.currentGames.repository';
-import {BroadcastingGateway} from '../broadcasting/broadcasting.gateway';
+import {BroadcastingGateway, GameUpdate,} from '../broadcasting/broadcasting.gateway';
 import {GameObject, GameProgress} from './game.entities';
 
 @Injectable()
@@ -36,7 +36,10 @@ export class GameService {
     while (game.getProgress() !== GameProgress.FINISHED) {
       game.executeStep();
       if (game.collision.isReset()) {
-        console.log('goal!');
+        this.broadcastingGateway.emitGameUpdate(
+          game.getId().toString(),
+          new GameUpdate([game.players[0].score, game.players[1].score], game.getProgress()),
+        );
       }
       await new Promise((resolve) =>
         setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
