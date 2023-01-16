@@ -9,6 +9,7 @@ function SignIn() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmation, setConfirmation] = useState('')
+  const [selectedImage, setSelectedImage] = useState<File>()
 
   const UpdateUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value)
@@ -22,26 +23,37 @@ function SignIn() {
     setConfirmation(event.target.value)
   }
 
+  const UpdateImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedImage(event.target.files[0]);
+    }
+  }
+
 	const ProcessSignIn = () => {
   if (password !== confirmation) {
     alert('Passwords do not match');
     return;
+  } else if (selectedImage !== undefined && !selectedImage.type.includes('image')) {
+    alert('Please upload an image file');
+    return;
   }
+  let body = new FormData();
+  body.append('username', username);
+  body.append('password', password);
+  if (selectedImage)
+    body.append('image', selectedImage);
   fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/signin', {
     method: 'POST',
     headers: {
-      'Content-type': 'application/json; charset=UTF-8',
+      'Content-type': 'multipart/form-data; charset=UTF-8',
     },
-    body: JSON.stringify({
-      'username': username,
-      'password': password,
-    }),
+    body: body,
   })
   .then(response => {
     if (response.status === 201) {
       navigate('/');
     } else {
-      alert('Wrong credentials');
+      alert('Username already taken');
     }
   })
 }
@@ -55,8 +67,10 @@ function SignIn() {
 			<input type="password" placeholder="Confirm Password"
         onChange={UpdateConfirmation}/>
       <div className="avatar">
-        <p>Avatar:</p>
-        <input type="file" accept="image/*"/>
+        <img src={selectedImage !== undefined ? URL.createObjectURL(selectedImage) : ''} alt="Avatar: " />
+        <input type="file" accept="image/*"
+          onChange={UpdateImage}
+        />
       </div>
       <div className="buttonBox">
         <button className="signin" onClick={ProcessSignIn}>Sign in</button>

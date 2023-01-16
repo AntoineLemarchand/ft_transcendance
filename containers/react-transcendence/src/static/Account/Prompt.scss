@@ -28,13 +28,18 @@
 	}
 
   .avatar {
+    width: 60%;
+    height: 2rem;
     display: flex;
     align-items: center;
     padding-left: 1rem;
-    width: 60%;
     border: dashed .2rem color('textSecondary');
     color: color('textSecondary');
     margin: auto;
+
+    img {
+      height: 100%;
+    }
 
     input[type=file] {
       outline: none;
