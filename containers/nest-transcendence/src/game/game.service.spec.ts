@@ -7,7 +7,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../user/user.entities';
 import { Channel } from '../channel/channel.entities';
 import { GameModule } from './game.module';
-import { GameObject, GameState } from './game.entities';
+import { GameObject, GameProgress } from './game.entities';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { executionCtx } from 'pg-mem/types/utils';
 import {BroadcastingGateway} from "../broadcasting/broadcasting.gateway";
@@ -60,7 +60,7 @@ describe('setting up a game', () => {
   it('should a GameObject which has not yet started', async function () {
     const result = await gameService.initGame('player1', 'player42');
 
-    expect(result.getStatus()).toBe(GameState.INITIALIZED);
+    expect(result.getStatus()).toBe(GameProgress.INITIALIZED);
     expect(result.getPlayerNames()).toStrictEqual(['player1', 'player42']);
   });
 
@@ -97,7 +97,7 @@ describe('starting a game', () => {
     await gameService.setReady('player1', gameObject.getId());
 
     const result = await currentGames.findOne(gameObject.getId());
-    expect(result.getStatus()).toBe(GameState.INITIALIZED);
+    expect(result.getStatus()).toBe(GameProgress.INITIALIZED);
   });
 
   it('should start the game when both players are ready', async () => {
@@ -107,7 +107,7 @@ describe('starting a game', () => {
     await gameService.setReady('player42', gameObject.getId());
 
     const result = await currentGames.findOne(gameObject.getId());
-    expect(result.getStatus()).toBe(GameState.RUNNING);
+    expect(result.getStatus()).toBe(GameProgress.RUNNING);
   });
 
   it('should not have an effect to run ready twice as same user', async () => {
@@ -117,8 +117,16 @@ describe('starting a game', () => {
     await gameService.setReady('player1', gameObject.getId());
 
     const result = await currentGames.findOne(gameObject.getId());
-    expect(result.getStatus()).toBe(GameState.INITIALIZED);
+    expect(result.getStatus()).toBe(GameProgress.INITIALIZED);
   });
+});
 
-  // not set the game as finished when running setReady too often
+describe('running a game', () => {
+  // it('should call the game logic', async () => {
+  //   const spy = jest.spyOn(GameObject.prototype, 'init')
+  //   const gameObject = await gameService.initGame('player1', 'player42');
+  //   await gameService.setReady('player1', gameObject.getId());
+  //   await gameService.setReady('player42', gameObject.getId());
+  //
+  // });
 });

@@ -1,30 +1,35 @@
-export enum GameState {
+import {Collision} from "./game.logic";
+
+export enum GameProgress {
   INITIALIZED,
   RUNNING,
   FINISHED,
 }
 export class GameObject {
-  private state: GameState;
+  private progress: GameProgress;
   private readyPlayers: Set<string>;
+  collision: Collision;
   constructor(
     private gameId: number,
     private player1: string,
     private player2: string,
   ) {
-    this.state = GameState.INITIALIZED;
+    this.progress = GameProgress.INITIALIZED;
     this.readyPlayers = new Set<string>();
   }
   setReady(executorName: string) {
     this.readyPlayers.add(executorName);
     if (this.readyPlayers.size === 2)
-      this.state = GameState.RUNNING;
+      this.progress = GameProgress.RUNNING;
+  }
+  init(){
   }
   getId() {
     return this.gameId;
   }
 
   getStatus() {
-    return this.state;
+    return this.progress;
   }
 
   getPlayerNames() {

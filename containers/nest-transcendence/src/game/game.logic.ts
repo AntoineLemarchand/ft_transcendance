@@ -78,6 +78,37 @@ export class MinimalPhysics {
   }
 }
 
+export class PlayerBar {
+  movement: { startTimeStamp: number; direction: number };
+  constructor(
+    private position: { x: number; y: number },
+    private speed: number,
+  ) {
+    this.movement = { startTimeStamp: 0, direction: 0 };
+  }
+
+  startMoving(timeStamp: number, direction: number) {
+    this.movement = { startTimeStamp: timeStamp, direction: direction };
+  }
+
+  getPositionAtT(timeStamp: number) {
+    const result = {
+      x: this.position.x,
+      y:
+        this.position.y +
+        this.movement.direction * (timeStamp - this.movement.startTimeStamp),
+    };
+    if (result.y < 0) result.y = 0;
+    if (result.y > 1) result.y = 1;
+    return result;
+  }
+
+  stopMoving(timeStamp: number) {
+    this.position = { x: this.position.x, y: this.getPositionAtT(timeStamp).y };
+    this.movement.direction = 0;
+  }
+}
+
 export class Collision {
   time = 0;
   constructor(
