@@ -9,8 +9,7 @@ import { Channel } from '../channel/channel.entities';
 import { GameModule } from './game.module';
 import { GameObject, GameProgress } from './game.entities';
 import { GameObjectRepository } from './game.currentGames.repository';
-import { executionCtx } from 'pg-mem/types/utils';
-import {BroadcastingGateway} from "../broadcasting/broadcasting.gateway";
+import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 
 let gameService: GameService;
 let userService: UserService;

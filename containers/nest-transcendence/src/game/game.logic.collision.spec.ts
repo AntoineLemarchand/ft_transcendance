@@ -103,7 +103,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(1);
     expect(result.y).toBeCloseTo(0.5);
   });
@@ -115,7 +115,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0);
     expect(result.y).toBeCloseTo(0.5);
   });
@@ -127,7 +127,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0);
     expect(result.y).toBeCloseTo(0.5);
   });
@@ -139,7 +139,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(1);
     expect(result.y).toBeCloseTo(0.5);
   });
@@ -151,7 +151,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0.7886751);
     expect(result.y).toBeCloseTo(1);
   });
@@ -163,7 +163,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0.5);
     expect(result.y).toBeCloseTo(1);
   });
@@ -175,7 +175,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0.5);
     expect(result.y).toBeCloseTo(0);
   });
@@ -187,7 +187,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0.5);
     expect(result.y).toBeCloseTo(0);
   });
@@ -199,7 +199,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(1);
     expect(result.y).toBeCloseTo(1);
   });
@@ -211,7 +211,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0.5);
     expect(result.y).toBeCloseTo(1);
   });
@@ -223,7 +223,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0.7886751);
     expect(result.y).toBeCloseTo(1);
   });
@@ -235,7 +235,7 @@ describe('calculating the point of collision', () => {
     const collision = new Collision(origin, angle, speed);
     collision.update();
 
-    const result = collision.getCoordinatesOfImpact();
+    const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(1);
     expect(result.y).toBeCloseTo(0.6339746);
   });

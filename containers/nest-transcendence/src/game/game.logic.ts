@@ -1,4 +1,9 @@
-import { numbers } from 'pg-mem/types/datatypes';
+export function isAlmostEqual(v1: number, v2: number, epsilon = 0.0005) {
+  if (epsilon == null) {
+    epsilon = 0.00001;
+  }
+  return Math.abs(v1 - v2) < epsilon;
+}
 
 export enum WallDirection {
   Vertical,
@@ -80,9 +85,11 @@ export class MinimalPhysics {
 
 export class PlayerBar {
   movement: { startTimeStamp: number; direction: number };
+
   constructor(
-    private position: { x: number; y: number },
-    private speed: number,
+    private position = { x: 0, y: 0.5 },
+    private speed = 0.75,
+    private barHeight: number = 0.2,
   ) {
     this.movement = { startTimeStamp: 0, direction: 0 };
   }
@@ -106,6 +113,12 @@ export class PlayerBar {
   stopMoving(timeStamp: number) {
     this.position = { x: this.position.x, y: this.getPositionAtT(timeStamp).y };
     this.movement.direction = 0;
+  }
+
+  isContact(point: { x: number; y: number }) {
+    if (this.position.y - this.barHeight / 2 > point.y) return false;
+    if (this.position.y + this.barHeight / 2 < point.y) return false;
+    return true;
   }
 }
 
@@ -131,7 +144,7 @@ export class Collision {
     );
   }
 
-  getCoordinatesOfImpact() {
+  getCoordinates() {
     return this.coordinates;
   }
 
