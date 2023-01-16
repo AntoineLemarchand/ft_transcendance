@@ -12,6 +12,7 @@ class Player {
 
   constructor(public name: string, public bar: PlayerBar) {
     this.score = 0;
+    this.ready = false;
   }
 }
 
@@ -33,12 +34,11 @@ export class GameObject {
     if (this.players[0].ready && this.players[1].ready)
       this.progress = GameProgress.RUNNING;
   }
-  init() {}
   getId() {
     return this.gameId;
   }
 
-  getStatus() {
+  getProgress() {
     return this.progress;
   }
 
@@ -46,18 +46,31 @@ export class GameObject {
     return [this.players[0].name, this.players[1].name];
   }
 
-  calcScorer() {
+  private calcScorer() {
     if (
       isAlmostEqual(this.collision.getCoordinates().x, 0) &&
       !this.players[0].bar.isContact(this.collision.getCoordinates())
     ) {
-      return this.getPlayerNames()[1];
+      this.players[1].score++;
+      return this.players[1];
     }
     if (
       isAlmostEqual(this.collision.getCoordinates().x, 1) &&
       !this.players[1].bar.isContact(this.collision.getCoordinates())
     ) {
-      return this.getPlayerNames()[0];
+      this.players[0].score++;
+      return this.players[0];
     }
+  }
+
+  executeStep() {
+    const scorer = this.calcScorer();
+    if (scorer) {
+      if (scorer.score === 10) {
+        this.progress = GameProgress.FINISHED;
+        return;
+      }
+      this.collision.reset();
+    } else this.collision.update();
   }
 }

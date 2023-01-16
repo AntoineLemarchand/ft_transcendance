@@ -1,8 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { UserService } from '../user/user.service';
-import { GameObjectRepository } from './game.currentGames.repository';
-import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
-import { GameObject } from './game.entities';
+import {forwardRef, Inject, Injectable} from '@nestjs/common';
+import {UserService} from '../user/user.service';
+import {GameObjectRepository} from './game.currentGames.repository';
+import {BroadcastingGateway} from '../broadcasting/broadcasting.gateway';
+import {GameObject, GameProgress} from './game.entities';
+
 @Injectable()
 export class GameService {
   constructor(
@@ -28,6 +29,19 @@ export class GameService {
     const game = await this.currentGames.findOne(gameId);
     await this.prohibitNonPlayerActions(executorName, game);
     game.setReady(executorName);
+    if (game.getProgress() === GameProgress.RUNNING) this.runGame(game);
+  }
+
+  async runGame(game: GameObject) {
+    while (game.getProgress() !== GameProgress.FINISHED) {
+      game.executeStep();
+      if (game.collision.isReset()) {
+        console.log('goal!');
+      }
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
+      );
+    }
   }
 
   private async prohibitNonPlayerActions(

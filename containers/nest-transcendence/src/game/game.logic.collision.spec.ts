@@ -277,4 +277,29 @@ describe('calculating the time until the next collision', () => {
 
     expect(result).toBeCloseTo(0.707107);
   });
+
+  it('should calc an ETA of nearly zero', function () {
+    const origin = { x: 0.5, y: 0.5 };
+    const angle = deg2rad(45);
+    const speed = 10000000000;
+    const collision = new Collision(origin, angle, speed);
+    collision.update();
+
+    const result = collision.getTimeUntilImpact();
+
+    expect(result).toBeCloseTo(0);
+  });
+});
+
+describe('resetting a collision', () => {
+  it('should put into the middle', function () {
+    const origin = { x: 1, y: 1 };
+    const angle = deg2rad(45);
+    const speed = 1;
+    const collision = new Collision(origin, angle, speed);
+
+    collision.reset();
+
+    expect(collision.getCoordinates()).toEqual({ x: 0.5, y: 0.5 });
+  });
 });

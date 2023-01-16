@@ -20,6 +20,10 @@ export function rad2deg(degrees: number) {
   return degrees * (180 / pi);
 }
 
+function randomIntFromInterval(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 export class MinimalPhysics {
   static calcNewAngle(incomingAngle: number, wallDirection: WallDirection) {
     let result = -incomingAngle + Math.PI;
@@ -150,5 +154,15 @@ export class Collision {
 
   getTimeUntilImpact() {
     return this.time;
+  }
+
+  reset() {
+    this.coordinates = {x: 0.5, y: 0.5};
+    this.angle = deg2rad(randomIntFromInterval(15, 45));
+    if (randomIntFromInterval(0, 1)) this.angle *= -1;
+  }
+
+  isReset() {
+    return this.coordinates.x === 0.5 && this.coordinates.y === 0.5;
   }
 }

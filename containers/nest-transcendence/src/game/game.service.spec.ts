@@ -10,6 +10,7 @@ import { GameModule } from './game.module';
 import { GameObject, GameProgress } from './game.entities';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import {Collision} from "./game.logic";
 
 let gameService: GameService;
 let userService: UserService;
@@ -59,7 +60,7 @@ describe('setting up a game', () => {
   it('should a GameObject which has not yet started', async function () {
     const result = await gameService.initGame('player1', 'player42');
 
-    expect(result.getStatus()).toBe(GameProgress.INITIALIZED);
+    expect(result.getProgress()).toBe(GameProgress.INITIALIZED);
     expect(result.getPlayerNames()).toStrictEqual(['player1', 'player42']);
   });
 
@@ -96,17 +97,20 @@ describe('starting a game', () => {
     await gameService.setReady('player1', gameObject.getId());
 
     const result = await currentGames.findOne(gameObject.getId());
-    expect(result.getStatus()).toBe(GameProgress.INITIALIZED);
+    expect(result.getProgress()).toBe(GameProgress.INITIALIZED);
   });
 
   it('should start the game when both players are ready', async () => {
+    const spy = jest
+      .spyOn(gameService, 'runGame')
+      .mockImplementation(jest.fn());
     const gameObject = await gameService.initGame('player1', 'player42');
 
     await gameService.setReady('player1', gameObject.getId());
     await gameService.setReady('player42', gameObject.getId());
 
     const result = await currentGames.findOne(gameObject.getId());
-    expect(result.getStatus()).toBe(GameProgress.RUNNING);
+    expect(result.getProgress()).toBe(GameProgress.RUNNING);
   });
 
   it('should not have an effect to run ready twice as same user', async () => {
@@ -116,16 +120,36 @@ describe('starting a game', () => {
     await gameService.setReady('player1', gameObject.getId());
 
     const result = await currentGames.findOne(gameObject.getId());
-    expect(result.getStatus()).toBe(GameProgress.INITIALIZED);
+    expect(result.getProgress()).toBe(GameProgress.INITIALIZED);
+  });
+
+  it('should call runGame when both players are set ready', async () => {
+    const spy = jest
+      .spyOn(gameService, 'runGame')
+      .mockImplementation(jest.fn());
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady('player1', gameObject.getId());
+    await gameService.setReady('player42', gameObject.getId());
+
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should not call runGame when a player is not ready', async () => {
+    const spy = jest
+      .spyOn(gameService, 'runGame')
+      .mockImplementation(jest.fn());
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady('player1', gameObject.getId());
+
+    expect(spy).toHaveBeenCalledTimes(0);
   });
 });
 
 describe('running a game', () => {
-  // it('should call the game logic', async () => {
-  //   const spy = jest.spyOn(GameObject.prototype, 'init')
-  //   const gameObject = await gameService.initGame('player1', 'player42');
-  //   await gameService.setReady('player1', gameObject.getId());
-  //   await gameService.setReady('player42', gameObject.getId());
-  //
-  // });
+  it('should emit an event in case of goal', async () => {
+    const gameObject = new GameObject(0, 'p1', 'p2');
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+
+    await gameService.runGame(gameObject);
+  });
 });
