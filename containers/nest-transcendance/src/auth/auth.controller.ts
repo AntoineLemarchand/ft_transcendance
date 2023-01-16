@@ -44,7 +44,6 @@ export class AuthController {
   async signinFortyTwo(
     @Res() res: ExpressResponse,
   ): Promise<{ access_token: string }> {
-    // res.redirect('/');
     console.log('TRY TO connect');
     const token = { access_token: 'future token TEST' };
     return token;

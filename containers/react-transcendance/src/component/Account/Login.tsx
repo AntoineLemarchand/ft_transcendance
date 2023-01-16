@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
 import 'static/Account/Prompt.scss'
 
-import {ReactComponent as SchoolLogo} from 'static/logo.svg'
+import { ReactComponent as SchoolLogo } from 'static/logo.svg'
 
 function Login() {
 
