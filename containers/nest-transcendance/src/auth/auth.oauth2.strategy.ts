@@ -16,9 +16,9 @@ export class Oauth2Strategy extends PassportStrategy(Strategy) {
   }
 
   async validate(accessToken: string, cb: VerifyCallback): Promise<any> {
-    const userData = await this.authService.fetchUser(accessToken);
-    console.log(userData.id);
-    console.log(userData.first_name);
-    console.log(userData.last_name);
+    const userCandidate = await this.authService.fetchUser(accessToken);
+    const user = await this.authService.validateUser('42user_' + userCandidate.login, '');
+    if (!user) throw new UnauthorizedException();
+    return new Identity(user.getName(), 999);
   }
 }

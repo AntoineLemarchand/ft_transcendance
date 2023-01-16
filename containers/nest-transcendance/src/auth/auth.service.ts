@@ -9,8 +9,8 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import User from '../user/user.entities';
 import { CreateUserDTO } from '../app.controller';
-import { UserIt } from '../utils/user.interface';
 import * as https from 'https';
+import axios from 'axios'
 
 export class Identity {
   constructor(public name: string, public id: number) {}
@@ -56,17 +56,13 @@ export class AuthService {
     return this.login(new Identity(userCandidate.username, 1));
   }
 
+  // need to throw e
   async fetchUser(accessToken: string) : Promise<any> {
-    const data = https.get('https://api.intra.42.fr/v2/me', {
-      headers: { Authorization: `Bearer ${ accessToken }` },
-    }, (res) => {
-      let responseData = '';
-      res.on('data', (chunk) => {
-        responseData += chunk;
-      });
-      res.on('end', () => {
-        return JSON.parse(responseData);
-      });
+    const { data: searchResponse } = await axios.get('https://api.intra.42.fr/v2/me', {
+      headers: { 
+        'Authorization': `Bearer ${ accessToken }`,
+       }
     });
+    return searchResponse;
   }
 }

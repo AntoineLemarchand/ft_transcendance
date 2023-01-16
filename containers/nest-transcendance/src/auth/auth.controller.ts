@@ -11,7 +11,6 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { Oauth2Guard } from './Oauth2.guard';
 import { AuthService, Identity } from './auth.service';
 import { CreateUserDTO } from '../app.controller';
-import { AuthModule } from './auth.module';
 import { Response as ExpressResponse } from 'express';
 
 @Controller()
@@ -41,10 +40,13 @@ export class AuthController {
   }
 
   @Get('oauth/callback')
-  // @UseGuards(Oauth2Guard)
-  async signinFortyTwo(): Promise<{ access_token: string }> {
+  @UseGuards(Oauth2Guard)
+  async signinFortyTwo(
+    @Res() res: ExpressResponse,
+  ): Promise<{ access_token: string }> {
+    // res.redirect('/');
     console.log('TRY TO connect');
-    const token = { access_token: 'future token' };
+    const token = { access_token: 'future token TEST' };
     return token;
   }
 }
