@@ -2,12 +2,14 @@
 
 .Prompt {
   width: 30rem;
+  max-height: 80%;
 	margin: auto;
 	padding: 2rem;
 	display: flex;
   flex-direction: column;
 	background: color('backGround2');
 	box-shadow: .1rem .1rem 1rem black;
+  overflow-y: scroll;
 
   & > * {
 		margin: 1rem auto;
