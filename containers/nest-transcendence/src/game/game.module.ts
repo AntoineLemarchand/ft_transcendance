@@ -13,7 +13,6 @@ import { AuthModule } from '../auth/auth.module';
     forwardRef(() => UserModule),
     forwardRef(() => AuthModule),
     forwardRef(() => BroadcastingModule),
-    forwardRef(() => ChannelModule),
   ],
   providers: [GameService, GameObjectRepository],
   controllers: [GameController],

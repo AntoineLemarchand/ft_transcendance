@@ -8,6 +8,8 @@ import { environment } from '../utils/environmentParser';
 import { JwtStrategy } from './auth.jwt.strategy';
 import { AuthController } from './auth.controller';
 import { ChannelModule } from '../channel/channel.module';
+import {BroadcastingModule} from "../broadcasting/broadcasting.module";
+import {GameModule} from "../game/game.module";
 
 @Module({
   providers: [AuthService, LocalStrategy, JwtStrategy],
