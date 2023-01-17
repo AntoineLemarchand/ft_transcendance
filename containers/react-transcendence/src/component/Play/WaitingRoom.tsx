@@ -65,6 +65,26 @@ function WaitingRoom() {
               style={PlayerReadyButton(userReady)}
             >Ready</button>
             <button
+              onClick={()=>{
+                fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/game/init', {
+                  method: 'POST',
+                  headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                  },
+                  body: JSON.stringify({
+                    'player2': 'a',
+                  }),
+                })
+                fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/game/setReady', {
+                  method: 'POST',
+                  headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                  },
+                  body: JSON.stringify({
+                    'player2': 'a',
+                  }),
+                })
+              }}
               style={PlayerReadyButton(opponentReady)}
             >Ready</button>
           </div>

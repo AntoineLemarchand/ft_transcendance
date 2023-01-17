@@ -31,6 +31,7 @@ export class AuthController {
     @Body() userCandidate: CreateUserDTO,
     @Res({ passthrough: true }) res: ExpressResponse,
   ) {
+    console.log(userCandidate);
     const token = await this.authService.createUser(userCandidate);
     res.cookie('token', { access_token: token });
     return token;
