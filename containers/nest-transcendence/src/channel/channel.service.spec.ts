@@ -62,6 +62,7 @@ describe('Sending a message', () => {
   });
 
   it('should emit the message as event on the gateway', async () => {
+    // jest.spyOn(BroadcastingGateway.prototype, 'emitMessage').mockImplementation(() => {throw new Error('test me wrd')});
     const messageToBeSent = await initChannelWithMessage();
 
     await channelService.sendMessage(messageToBeSent);
@@ -96,6 +97,17 @@ describe('Joining a channel', () => {
       ),
     ).rejects.toThrow();
   });
+
+  it('should not be possible to use numbers in names of multi user channels', async () => {
+    await expect(() =>
+      channelService.joinChannel(
+        'Thomas',
+        'illegalChannelName69 ',
+        'channelPassword',
+      ),
+    ).rejects.toThrow();
+  });
+
 
   it('should throw if attempting to join an existing private channel', async () => {
     await userService.createUser(new User('outsider', 'password'));

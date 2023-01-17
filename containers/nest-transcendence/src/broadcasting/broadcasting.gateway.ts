@@ -13,6 +13,8 @@ import { ChannelService } from '../channel/channel.service';
 import { RoomHandler } from './broadcasting.roomHandler';
 import { UserService } from '../user/user.service';
 import { environment } from '../utils/environmentParser';
+import {GameInput, GameOutput} from '../game/game.entities';
+import { GameService } from '../game/game.service';
 
 //todo: is cors * a security concern in our case?
 @WebSocketGateway(8001, {
@@ -33,19 +35,42 @@ export class BroadcastingGateway
     private channelService: ChannelService,
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
+    @Inject(forwardRef(() => GameService))
+    private gameService: GameService,
   ) {}
 
   @UseGuards(WsGuard)
   @SubscribeMessage('messageToServer')
   handleMessage(client: Socket, data: string): void {
-    const message = JSON.parse(data);
-    message.sender = this.getUsernameFromToken(client);
-    this.channelService.sendMessage(message);
+    let message: Message;
+    try {
+      message = JSON.parse(data);
+      message.sender = this.getUsernameFromToken(client);
+      this.channelService.sendMessage(message);
+    } catch (e) {
+      console.log('message to server erroneous');
+    }
   }
 
-  //todo: find syntax to differentiate between messages and game states etc
-  emitMessage(eventName: string, message: Message) {
-    this.server.in(eventName).emit('messageToClient', JSON.stringify(message));
+  @UseGuards(WsGuard)
+  @SubscribeMessage('gameUpdateToServer')
+  handleGameInput(client: Socket, data: string): void {
+    let input: GameInput;
+    try {
+      input = JSON.parse(data);
+      input.username = this.getUsernameFromToken(client);
+      this.gameService.processUserInput(input);
+    } catch (e) {
+      console.log('message to server erroneous');
+    }
+  }
+
+  emitMessage(roomName: string, message: Message) {
+    this.server.in(roomName).emit('messageToClient', JSON.stringify(message));
+  }
+
+  emitGameUpdate(roomName: string, update: GameOutput) {
+    this.server.in(roomName).emit('gameUpdateToClient', JSON.stringify(update));
   }
 
   async handleConnection(client: Socket) {
@@ -65,9 +90,9 @@ export class BroadcastingGateway
     this.roomHandler.removeUserInstance(username, client.id, channelNames);
   }
 
-  async putUserInRoom(username: string, channelName: string) {
+  async putUserInRoom(username: string, roomName: string) {
     if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);
-    await this.roomHandler.join(username, channelName);
+    await this.roomHandler.join(username, roomName);
   }
 
   private getUsernameFromToken(client: Socket) {

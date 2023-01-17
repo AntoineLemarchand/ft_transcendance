@@ -31,7 +31,6 @@ export class ChannelService {
     }
     await channel.addMessage(message);
     await this.channelRepository.save(channel);
-    //todo: find syntax to differentiate between messages and game states etc
     await this.broadcastingGateway.emitMessage(message.channel, message);
   }
 
@@ -50,7 +49,7 @@ export class ChannelService {
     const muteCandidate = await this.userService.getUser(mutedUsername);
     if (muteCandidate === undefined)
       throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
-    if (muteCandidate.channelNames.includes(channelName) === false)
+    if (!muteCandidate.channelNames.includes(channelName))
       throw new HttpException('User is not a member', HttpStatus.NOT_FOUND);
     channel.muteUser(mutedUsername, minutesToMute);
     await this.channelRepository.save(channel);
@@ -112,9 +111,12 @@ export class ChannelService {
     return await this.addUserToChannel(targetUsername, channelName, channel);
 
     function checkName() {
-      if (channelName.includes('_') && channelType != 'directMessage')
+      if (
+        (channelName.includes('_') && channelType != 'directMessage') ||
+        channelName.match(/\d/)
+      )
         throw new HttpException(
-          'channelnames cannot contain underscores',
+          'channelnames cannot contain underscores or numbers',
           HttpStatus.FORBIDDEN,
         );
     }
@@ -225,7 +227,7 @@ export class ChannelService {
     executor: string,
     message: string,
   ) {
-    if (channel.isAdmin(executor) === false)
+    if (!channel.isAdmin(executor))
       throw new HttpException(message, HttpStatus.UNAUTHORIZED);
   }
 }
