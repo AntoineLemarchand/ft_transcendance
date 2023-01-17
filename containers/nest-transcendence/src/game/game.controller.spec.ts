@@ -7,6 +7,7 @@ import { createTestModule } from '../test.module.utils';
 import { User } from '../user/user.entities';
 import { GameService } from './game.service';
 import { GameObjectRepository } from './game.currentGames.repository';
+import { GameObject } from './game.entities';
 
 jest.mock('../broadcasting/broadcasting.gateway');
 jest.mock('./game.service');
@@ -63,6 +64,19 @@ describe('initializing a game', () => {
     await testUtils.initGame(app, jwt, 'Thomas');
 
     expect(spy).toHaveBeenCalledWith('admin', 'Thomas');
+  });
+
+  it('should call the appropriate service ', async () => {
+    const spy = jest
+      .spyOn(GameService.prototype, 'initGame')
+      .mockImplementation(async (p1: string, s: string) => {
+        return new GameObject(666, p1, s);
+      });
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+
+    const result = await testUtils.initGame(app, jwt, 'Thomas');
+
+    expect(result.body.gameObject.gameId).toBe(666);
   });
 });
 
