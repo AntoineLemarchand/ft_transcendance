@@ -6,7 +6,20 @@ export enum GameProgress {
   FINISHED,
 }
 
-class Player {
+export class GameOutput {
+  constructor(public score: number[], public gameProgress: GameProgress) {}
+}
+
+export class GameInput {
+  constructor(
+    public username: string,
+    public action: string,
+    public timeStamp: number,
+    public gameId: number,
+  ) {}
+}
+
+export class Player {
   score: number;
   ready: boolean;
 

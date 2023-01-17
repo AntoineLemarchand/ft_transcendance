@@ -9,6 +9,7 @@ import { BroadcastingModule } from '../broadcasting/broadcasting.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/user.entities';
 import {GameModule} from "../game/game.module";
+import {GameService} from "../game/game.service";
 
 @Module({
   imports: [
@@ -16,9 +17,10 @@ import {GameModule} from "../game/game.module";
     forwardRef(() => AuthModule),
     forwardRef(() => UserModule),
     forwardRef(() => BroadcastingModule),
+    forwardRef(() => GameModule),
     TypeOrmModule.forFeature([Channel]),
   ],
-  providers: [ChannelService, BroadcastingGateway],
+  providers: [ChannelService],
   exports: [ChannelService, Message],
   controllers: [ChannelController],
 })

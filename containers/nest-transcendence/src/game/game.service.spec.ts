@@ -5,15 +5,17 @@ import { DataSource } from 'typeorm';
 import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../user/user.entities';
-import { Channel } from '../channel/channel.entities';
+import { Channel, Message } from '../channel/channel.entities';
 import { GameModule } from './game.module';
-import { GameObject, GameProgress } from './game.entities';
-import { GameObjectRepository } from './game.currentGames.repository';
 import {
-  BroadcastingGateway,
-  GameUpdate,
-} from '../broadcasting/broadcasting.gateway';
-import { Collision } from './game.logic';
+  GameInput,
+  GameObject,
+  GameOutput,
+  GameProgress,
+} from './game.entities';
+import { GameObjectRepository } from './game.currentGames.repository';
+import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import { Collision, PlayerBar } from './game.logic';
 
 let gameService: GameService;
 let userService: UserService;
@@ -163,7 +165,7 @@ describe('running a game', () => {
 
     expect(spy).toHaveBeenCalledWith(
       gameObject.getId().toString(),
-      new GameUpdate([9, 0], GameProgress.RUNNING),
+      new GameOutput([9, 0], GameProgress.RUNNING),
     );
   });
 
@@ -179,9 +181,51 @@ describe('running a game', () => {
 
     expect(spy).toHaveBeenCalledWith(
       gameObject.getId().toString(),
-      new GameUpdate([10, 0], GameProgress.FINISHED),
+      new GameOutput([10, 0], GameProgress.FINISHED),
     );
   });
 
-  //todo: test persistant save (JUSTINE?)
+  //todo: test persistant save
+});
+
+describe('updating gameObjects with user input', () => {
+  it('should call start moving with direction = 1', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const gameInput = new GameInput(
+      'player1',
+      'startUp',
+      0,
+      gameObject.getId(),
+    );
+    const spy = jest.spyOn(gameObject.players[0].bar, 'startMoving');
+
+    await gameService.processUserInput(gameInput);
+
+    expect(spy).toHaveBeenCalledWith(0, 1);
+  });
+
+  it('should call start moving with direction = -1', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const gameInput = new GameInput(
+      'player1',
+      'startDown',
+      0,
+      gameObject.getId(),
+    );
+    const spy = jest.spyOn(gameObject.players[0].bar, 'startMoving');
+
+    await gameService.processUserInput(gameInput);
+
+    expect(spy).toHaveBeenCalledWith(0, -1);
+  });
+
+  it('should call end moving', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const gameInput = new GameInput('player1', 'endUp', 0, gameObject.getId());
+    const spy = jest.spyOn(gameObject.players[0].bar, 'stopMoving');
+
+    await gameService.processUserInput(gameInput);
+
+    expect(spy).toHaveBeenCalledWith(0);
+  });
 });

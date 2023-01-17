@@ -320,3 +320,16 @@ export async function initGame(
       player2: player2,
     });
 }
+
+export async function setReadyForGame(
+  callerModule: INestApplication,
+  jwt: any,
+  gameId: number,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/game/setReady')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      gameId: gameId,
+    });
+}

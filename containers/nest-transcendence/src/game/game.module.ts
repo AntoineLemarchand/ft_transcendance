@@ -6,7 +6,7 @@ import { GameController } from './game.controller';
 import { BroadcastingModule } from '../broadcasting/broadcasting.module';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { ChannelModule } from '../channel/channel.module';
-import {AuthModule} from "../auth/auth.module";
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -15,7 +15,8 @@ import {AuthModule} from "../auth/auth.module";
     forwardRef(() => BroadcastingModule),
     forwardRef(() => ChannelModule),
   ],
-  providers: [GameService, GameObjectRepository, BroadcastingGateway],
+  providers: [GameService, GameObjectRepository],
   controllers: [GameController],
+  exports: [GameObjectRepository, GameService],
 })
 export class GameModule {}

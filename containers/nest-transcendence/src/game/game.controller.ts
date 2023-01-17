@@ -9,7 +9,13 @@ export class GameController {
 
   @UseGuards(JwtAuthGuard)
   @Post('init')
-  async makeAdmin(@Request() req: any) {
-    this.gameService.initGame(req.user.name, req.body.player2);
+  async createGame(@Request() req: any) {
+    await this.gameService.initGame(req.user.name, req.body.player2);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('setReady')
+  async setReady(@Request() req: any) {
+    await this.gameService.setReady(req.user.name, req.body.gameId);
   }
 }

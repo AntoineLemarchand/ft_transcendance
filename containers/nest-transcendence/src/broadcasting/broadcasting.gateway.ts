@@ -13,11 +13,8 @@ import { ChannelService } from '../channel/channel.service';
 import { RoomHandler } from './broadcasting.roomHandler';
 import { UserService } from '../user/user.service';
 import { environment } from '../utils/environmentParser';
-import { GameProgress } from '../game/game.entities';
-
-export class GameUpdate {
-  constructor(public score: number[], public gameProgress: GameProgress) {}
-}
+import {GameInput, GameOutput} from '../game/game.entities';
+import { GameService } from '../game/game.service';
 
 //todo: is cors * a security concern in our case?
 @WebSocketGateway(8001, {
@@ -38,22 +35,43 @@ export class BroadcastingGateway
     private channelService: ChannelService,
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
+    @Inject(forwardRef(() => GameService))
+    private gameService: GameService,
   ) {}
 
   @UseGuards(WsGuard)
   @SubscribeMessage('messageToServer')
   handleMessage(client: Socket, data: string): void {
-    const message = JSON.parse(data);
-    message.sender = this.getUsernameFromToken(client);
-    this.channelService.sendMessage(message);
+    let message: Message;
+    try {
+      message = JSON.parse(data);
+      message.sender = this.getUsernameFromToken(client);
+      this.channelService.sendMessage(message);
+    } catch (e) {
+      console.log('message to server erroneous');
+    }
   }
 
-  //todo: find syntax to differentiate between messages and game states etc
+  @UseGuards(WsGuard)
+  @SubscribeMessage('gameUpdateToServer')
+  handleGameInput(client: Socket, data: string): void {
+    let input: GameInput;
+    try {
+      input = JSON.parse(data);
+      input.username = this.getUsernameFromToken(client);
+      this.gameService.processUserInput(input);
+    } catch (e) {
+      console.log('message to server erroneous');
+    }
+  }
+
   emitMessage(roomName: string, message: Message) {
     this.server.in(roomName).emit('messageToClient', JSON.stringify(message));
   }
 
-  emitGameUpdate(roomName: string, update: GameUpdate) {}
+  emitGameUpdate(roomName: string, update: GameOutput) {
+    this.server.in(roomName).emit('gameUpdateToClient', JSON.stringify(update));
+  }
 
   async handleConnection(client: Socket) {
     if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);

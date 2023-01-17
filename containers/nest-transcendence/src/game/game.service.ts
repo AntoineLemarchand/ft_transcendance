@@ -1,8 +1,14 @@
-import {forwardRef, Inject, Injectable} from '@nestjs/common';
-import {UserService} from '../user/user.service';
-import {GameObjectRepository} from './game.currentGames.repository';
-import {BroadcastingGateway, GameUpdate,} from '../broadcasting/broadcasting.gateway';
-import {GameObject, GameProgress} from './game.entities';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { UserService } from '../user/user.service';
+import { GameObjectRepository } from './game.currentGames.repository';
+import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import {
+  GameInput,
+  GameObject,
+  GameOutput,
+  GameProgress,
+  Player,
+} from './game.entities';
 
 @Injectable()
 export class GameService {
@@ -38,7 +44,10 @@ export class GameService {
       if (game.collision.isReset()) {
         this.broadcastingGateway.emitGameUpdate(
           game.getId().toString(),
-          new GameUpdate([game.players[0].score, game.players[1].score], game.getProgress()),
+          new GameOutput(
+            [game.players[0].score, game.players[1].score],
+            game.getProgress(),
+          ),
         );
       }
       await new Promise((resolve) =>
@@ -80,5 +89,18 @@ export class GameService {
       player2name,
       gameId.toString(),
     );
+  }
+
+  async processUserInput(input: GameInput) {
+    const game = await this.currentGames.findOne(input.gameId);
+    let player: Player;
+    if (input.username === game.getPlayerNames()[0]) player = game.players[0];
+    else player = game.players[1];
+    if (input.action.includes('start')) {
+      if (input.action.includes('Up'))
+        player.bar.startMoving(input.timeStamp, 1);
+      if (input.action.includes('Down'))
+        player.bar.startMoving(input.timeStamp, -1);
+    } else player.bar.stopMoving(input.timeStamp);
   }
 }
