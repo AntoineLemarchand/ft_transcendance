@@ -185,6 +185,15 @@ describe('running a game', () => {
     );
   });
 
+  it('should access saved game once it is finished', async () => {
+    const gameObject = new GameObject(0, 'p1', 'p2');
+    gameObject.players[0].score = 9;
+
+    await gameService.runGame(gameObject);
+
+    expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
+  });
+
   //todo: test persistant save
 });
 

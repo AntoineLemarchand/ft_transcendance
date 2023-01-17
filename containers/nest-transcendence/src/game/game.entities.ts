@@ -1,4 +1,7 @@
 import { Collision, isAlmostEqual, PlayerBar } from './game.logic';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { deg2rad } from './game.logic';
 
 export enum GameProgress {
   INITIALIZED,
@@ -34,6 +37,7 @@ export class GameObject {
   collision: Collision;
   players: Player[];
   constructor(private gameId: number, player1: string, player2: string) {
+    this.collision = new Collision({x: 0.5, y: 0.5}, deg2rad(45), 1);
     this.progress = GameProgress.INITIALIZED;
     this.players = [
       new Player(player1, new PlayerBar({ x: 0, y: 0.5 })),
