@@ -13,6 +13,7 @@ function ChatName(props: {username: string,
   }) {
 
 	const [ menuToggle, setMenuToggle ] = useState(false);
+	const [ muteTime, setMuteTime ] = useState(false);
 
 	const ToggleUserMenu = () => {
 		setMenuToggle(!menuToggle);
@@ -73,6 +74,31 @@ function ChatName(props: {username: string,
       ToggleUserMenu();
     })
   }
+  //req.body.mutedUsername,
+  //req.body.muteForMinutes,
+  //req.body.channelName,
+  
+  const MuteUser = () => {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/channel/mute', {
+      credentials: 'include',
+      method: 'POST',
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify({
+        'mutedUsername': props.sender,
+        'muteForMinutes': 30,
+        'channelName': props.channel.channelName,
+      }),
+    }).then((result)=>{
+      if (result.status === 401) {
+        alert(props.sender + ' cannot be muted');
+      } else {
+        alert(props.sender + ' has been muted for ' + muteTime + 'minutes')
+      }
+      ToggleUserMenu();
+    })
+  }
 
 	const options = [
 		{name: "Invite To Play", onClick: ()=>{}},
@@ -80,7 +106,7 @@ function ChatName(props: {username: string,
 
   const adminOption = [
 		{name: "Make Admin", onClick: MakeAdmin},
-		{name: "Mute 30min", onClick: ()=>{}},
+		{name: "Mute 30min", onClick: MuteUser},
 		{name: "Ban", onClick: BanUser},
   ]
 

@@ -29,6 +29,12 @@ function Main(props: {component: any}) {
 		navigate('/');
 	}
 
+  useEffect(() => {
+    if (cookie['auth'] === undefined || cookie['userInfo'] === undefined)
+      navigate('/')
+  })
+
+
 	const pages = [
 		{ icon: <FaHome/>, ref: 'home', component: <Home />},
 		{ icon: <FaTableTennis/>, ref: 'game', component: <Play/>},
@@ -42,11 +48,6 @@ function Main(props: {component: any}) {
 			color: "#ebdbb2"
 		}: {}
 	}
-
-  useEffect(() => {
-    if (cookie['auth'] === undefined || cookie['userInfo'] === undefined)
-      navigate('/')
-  }, [cookie, navigate])
 
 
 	return (
