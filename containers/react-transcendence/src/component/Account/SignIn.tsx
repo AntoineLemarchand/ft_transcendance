@@ -37,17 +37,15 @@ function SignIn() {
     alert('Please upload an image file');
     return;
   }
-  let body = new FormData();
-  body.append('username', username);
-  body.append('password', password);
-  if (selectedImage)
-    body.append('image', selectedImage);
   fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/signin', {
     method: 'POST',
     headers: {
-      'Content-type': 'multipart/form-data; charset=UTF-8',
+      'Content-type': 'application/json; charset=UTF-8',
     },
-    body: body,
+    body: JSON.stringify({
+      'username': username,
+      'password': password,
+    }),
   })
   .then(response => {
     if (response.status === 201) {
