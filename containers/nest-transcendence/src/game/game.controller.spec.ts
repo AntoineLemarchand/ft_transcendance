@@ -8,6 +8,7 @@ import { User } from '../user/user.entities';
 import { GameService } from './game.service';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { GameObject } from './game.entities';
+import { getAllRunning } from '../test.request.utils';
 
 jest.mock('../broadcasting/broadcasting.gateway');
 jest.mock('./game.service');
@@ -66,7 +67,7 @@ describe('initializing a game', () => {
     expect(spy).toHaveBeenCalledWith('admin', 'Thomas');
   });
 
-  it('should call the appropriate service ', async () => {
+  it('should return the game object', async () => {
     const spy = jest
       .spyOn(GameService.prototype, 'initGame')
       .mockImplementation(async (p1: string, s: string) => {
@@ -97,5 +98,25 @@ describe('starting a game', () => {
     await testUtils.setReadyForGame(app, jwt, 0);
 
     expect(spy).toHaveBeenCalledWith('admin', 0);
+  });
+});
+
+describe('fetching info', () => {
+  it('should fail if user not logged in', async function () {
+    const result = await testUtils.getAllRunning(app, 'invalid jwt');
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should return games in body', async function () {
+    jest
+      .spyOn(GameService.prototype, 'getRunningGames')
+      .mockImplementation(() => {
+        return [];
+      });
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.getAllRunning(app, jwt);
+
+    expect(result.body.games).toBeDefined();
   });
 });

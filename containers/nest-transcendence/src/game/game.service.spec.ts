@@ -17,6 +17,8 @@ import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { Collision, PlayerBar } from './game.logic';
 
+jest.mock('../broadcasting/broadcasting.gateway');
+
 let gameService: GameService;
 let userService: UserService;
 let dataSource: DataSource;
@@ -57,7 +59,7 @@ describe('setting up a game', () => {
     await expect(
       async () => await gameService.initGame('player1', 'player2'),
     ).rejects.toThrowError('all players must be registered users');
-    expect(gameService.getOpenGames().length).toBe(0);
+    expect(gameService.getRunningGames().length).toBe(0);
   });
 
   //todo: do we need protection against ddos? -> allow only a limited number of open games
@@ -67,14 +69,6 @@ describe('setting up a game', () => {
 
     expect(result.getProgress()).toBe(GameProgress.INITIALIZED);
     expect(result.getPlayerNames()).toStrictEqual(['player1', 'player42']);
-  });
-
-  it('should add a GameObject to the list of open games', async function () {
-    await gameService.initGame('player1', 'player42');
-
-    const result: GameObject[] = gameService.getOpenGames();
-
-    expect(result.length).toBe(1);
   });
 
   it('should put both players in a socket room', async function () {
@@ -236,5 +230,43 @@ describe('updating gameObjects with user input', () => {
     await gameService.processUserInput(gameInput);
 
     expect(spy).toHaveBeenCalledWith(0);
+  });
+});
+
+describe('game info', () => {
+  beforeEach(async () => {
+    jest.spyOn(GameService.prototype, 'runGame').mockImplementation(jest.fn());
+  });
+
+  it('should add a GameObject to the list of running games only when both players ready', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady(gameObject.players[0].name, gameObject.getId());
+    await gameService.setReady(gameObject.players[1].name, gameObject.getId());
+
+    const result: GameObject[] = gameService.getRunningGames();
+
+    expect(result.length).toBe(1);
+  });
+
+  it('should return all running games', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady('player1', gameObject.getId());
+    await gameService.setReady('player42', gameObject.getId());
+    await gameService.initGame('player1', 'player42');
+
+    const result = gameService.getRunningGames();
+
+    expect(result.length).toBe(1);
+  });
+
+  it('should return all games for user', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady('player1', gameObject.getId());
+    await gameService.setReady('player42', gameObject.getId());
+    await gameService.initGame('player1', 'outsider');
+
+    const result = gameService.getGamesForUser('player1');
+
+    expect(result.length).toBe(2);
   });
 });

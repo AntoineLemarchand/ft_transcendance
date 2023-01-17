@@ -28,8 +28,22 @@ export class GameService {
     return result;
   }
 
-  getOpenGames() {
-    return this.currentGames.findAll();
+  getRunningGames(): GameObject[] {
+    return this.currentGames
+      .findAll()
+      .filter(
+        (gameObject) => gameObject.getProgress() === GameProgress.RUNNING,
+      );
+  }
+
+  getGamesForUser(username: string) {
+    return this.currentGames
+      .findAll()
+      .filter(
+        (gameObject) =>
+          gameObject.players[0].name === username ||
+          gameObject.players[1].name === username,
+      );
   }
 
   async setReady(executorName: string, gameId: number) {

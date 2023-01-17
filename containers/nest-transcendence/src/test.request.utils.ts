@@ -321,6 +321,12 @@ export async function initGame(
     });
 }
 
+export async function getAllRunning(callerModule: INestApplication, jwt: any) {
+  return request(callerModule.getHttpServer())
+    .post('/game/getRunning')
+    .set('Authorization', 'Bearer ' + jwt);
+}
+
 export async function setReadyForGame(
   callerModule: INestApplication,
   jwt: any,
