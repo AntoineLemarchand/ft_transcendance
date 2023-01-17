@@ -15,6 +15,7 @@ export class GameService {
   constructor(
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
+    @Inject(forwardRef(() => BroadcastingGateway))
     private broadcastingGateway: BroadcastingGateway,
     private currentGames: GameObjectRepository,
   ) {}

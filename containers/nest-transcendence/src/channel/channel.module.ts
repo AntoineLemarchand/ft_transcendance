@@ -17,7 +17,6 @@ import {GameService} from "../game/game.service";
     forwardRef(() => AuthModule),
     forwardRef(() => UserModule),
     forwardRef(() => BroadcastingModule),
-    forwardRef(() => GameModule),
     TypeOrmModule.forFeature([Channel]),
   ],
   providers: [ChannelService],
