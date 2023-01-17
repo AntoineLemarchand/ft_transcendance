@@ -239,6 +239,20 @@ describe('calculating the point of collision', () => {
     expect(result.x).toBeCloseTo(1);
     expect(result.y).toBeCloseTo(0.6339746);
   });
+
+  it('should work for consecutive calls', () => {
+    const origin = { x: 0.5, y: 0.5 };
+    const angle = deg2rad(45);
+    const speed = 1;
+    const collision = new Collision(origin, angle, speed);
+
+    collision.update();
+    collision.update();
+
+    const result = collision.getCoordinates();
+    expect(result.x).toBeCloseTo(0);
+    expect(result.y).toBeCloseTo(0);
+  });
 });
 
 describe('calculating the time until the next collision', () => {

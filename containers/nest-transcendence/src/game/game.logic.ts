@@ -146,6 +146,10 @@ export class Collision {
       this.angle,
       this.speed,
     );
+    if (this.coordinates.y === 1 || this.coordinates.y === 0)
+      this.angle = MinimalPhysics.calcNewAngle(this.angle, WallDirection.Horizontal);
+    if (this.coordinates.x === 1 || this.coordinates.x === 0)
+      this.angle = MinimalPhysics.calcNewAngle(this.angle, WallDirection.Vertical);
   }
 
   getCoordinates() {
