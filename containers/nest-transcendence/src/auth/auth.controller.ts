@@ -36,6 +36,8 @@ export class AuthController {
     @UploadedFile() image: Express.Multer.File,
     @Res({ passthrough: true }) res: ExpressResponse,
   ) {
+    if (image)
+      userCandidate.image = image;
     const token = await this.authService.createUser(userCandidate);
     res.cookie('token', { access_token: token });
     return token;

@@ -2,6 +2,8 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class User {
+  @Column({type: 'bytea'})
+  public image: Buffer;
   @Column('text', { array: true })
   public friends: string[] = [];
   @Column('text', { array: true })
@@ -16,9 +18,13 @@ export class User {
   })
   public password: string;
 
-  constructor(name: string, password: string) {
+  constructor(name: string, password: string, image?: Buffer) {
     this.password = password;
     this.name = name;
+    if (image)
+      this.image = image
+    else
+      this.image = Buffer.from('');
   }
 
   getName() {

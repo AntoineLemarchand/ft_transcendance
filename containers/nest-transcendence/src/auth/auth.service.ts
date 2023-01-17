@@ -48,9 +48,11 @@ export class AuthService {
         'no underscores in usernames',
         HttpStatus.FORBIDDEN,
       );
-    await this.userService.createUser(
-      new User(userCandidate.username, userCandidate.password),
-    );
+      let newUser: User =
+        new User(userCandidate.username, userCandidate.password);
+      if (userCandidate.image)
+        newUser.image = userCandidate.image.buffer;
+    await this.userService.createUser(newUser);
     return this.login(new Identity(userCandidate.username, 1));
   }
 }
