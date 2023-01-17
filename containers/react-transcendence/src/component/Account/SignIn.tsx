@@ -49,9 +49,6 @@ function SignIn() {
 
   fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/signin', {
     method: 'POST',
-    headers: {
-      'Content-type': 'application/json; charset=UTF-8',
-    },
     body: body,
   })
   .then(response => {
