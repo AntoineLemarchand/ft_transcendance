@@ -13,7 +13,8 @@ function DisplayList(props: {
 			backgroundColor:  props.currentChannel === undefined
     || channel.channelName !== props.currentChannel.channelName ?
       '#458588' : '#83a598',
-      gridColumn: channel.admins.includes(props.userName) ? '1' : '1/3',
+      gridColumn: channel.admins.includes(props.userName) &&
+      channel.channelName.indexOf('_') === -1 ? '1' : '1/3',
 		}
 	}
 
@@ -35,6 +36,7 @@ function DisplayList(props: {
         }</button>
         {
           channel.admins.includes(props.userName) &&
+          channel.channelName.indexOf('_') === -1 &&
           <button
           onClick={()=>props.modifyChannel(channel.channelName)}>
           <FaPen /></button>
