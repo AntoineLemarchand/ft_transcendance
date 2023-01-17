@@ -116,7 +116,7 @@ function ProfileBadge(props: {
       if (response.status === 201 || response.status === 200) {
         response.text().then((content) => {
           const game = JSON.parse(content);
-          navigate("/game/" + game.id);
+          navigate("/game/" + game.gameObject.gameId);
           console.log("game created");
         });
       }
