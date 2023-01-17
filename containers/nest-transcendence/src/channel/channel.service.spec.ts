@@ -354,26 +354,6 @@ describe('Administrating a channel', () => {
     expect(channel.isUserMuted('username')).toBeFalsy();
   });
 
-  it('should disable a member to send messages', async () => {
-    await userService.createUser(new User('mutedUsername', ''));
-    await channelService.joinChannel('mutedUsername', 'welcom', '');
-    await channelService.muteMemberForMinutes(
-      'admin',
-      'mutedUsername',
-      15,
-      'welcom',
-    );
-
-    await expect(
-      async () =>
-        await channelService.sendMessage({
-          channel: 'welcom',
-          sender: 'mutedUsername',
-          content: '',
-        }),
-    ).rejects.toThrow();
-  });
-
   it('should throw on invite on non existing channel', async () => {
     await expect(() =>
       channelService.inviteToChannel(

@@ -10,7 +10,7 @@ export class GameController {
   @UseGuards(JwtAuthGuard)
   @Post('init')
   async createGame(@Request() req: any) {
-    await this.gameService.initGame(req.user.name, req.body.player2);
+    return { gameObject: await this.gameService.initGame(req.user.name, req.body.player2) };
   }
 
   @UseGuards(JwtAuthGuard)
