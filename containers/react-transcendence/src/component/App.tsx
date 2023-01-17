@@ -10,7 +10,7 @@ import SignIn from './Account/SignIn'
 
 import Home from './Home/Home'
 import Play from './Play/Play'
-import WaitingRoom from './Play/WaitingRoom'
+import { MatchMakingRoom, PreMatchRoom } from './Play/WaitingRooms'
 import Spectate from './Play/Spectate'
 import Chat from './Chat/Chat'
 import Profile from './Profile/Profile'
@@ -39,13 +39,13 @@ function App() {
       component: <Main component={<Chat />}/>
     }, {
       path:'/waitingroom',
-      component: <Main component={<WaitingRoom />}/>
+      component: <Main component={<MatchMakingRoom />}/>
     }, {
       path:'/game',
       component: <Main component={<Play />}/>
     }, {
       path:'/game/:gid',
-      component: <Main component={<Play />}/>
+      component: <Main component={<PreMatchRoom />}/>
     }, {
       path:'/profile',
       component: <Main component={<Profile user={cookie['userInfo']}/>}/>

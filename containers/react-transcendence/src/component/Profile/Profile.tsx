@@ -15,7 +15,6 @@ function InviteMenu(props: {callback: any, mainUser: string, shownUser: string})
 	const [ joinedChannels, setJoinedChannels ] = useState<Channel[]>([])
 
   const InviteToChannel = (event: any) => {
-    console.log(event.target.value);
     fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/channel/invite', {
         credentials: 'include',
         method: 'POST',

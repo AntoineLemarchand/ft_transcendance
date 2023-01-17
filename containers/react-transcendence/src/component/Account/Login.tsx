@@ -45,7 +45,9 @@ function Login() {
 									},
 							}).then((result) => {
 								result.text().then((text)=> {
-									setCookie('userInfo', JSON.parse(text).userInfo, {path: '/'});
+                  let cookie = JSON.parse(text).userInfo;
+                  cookie.image = [];
+									setCookie('userInfo', cookie, {path: '/'});
 								})
 							})
               navigate('/home');

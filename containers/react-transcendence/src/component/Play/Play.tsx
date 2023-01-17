@@ -11,7 +11,7 @@ function Play() {
 	return (
 		<div className="Play">
       {
-        params.gid === undefined ? <Lobby /> : <Game/>
+        params.gid === undefined ? <Lobby /> : <Game />
       }
 		</div>
 	)

@@ -30,22 +30,29 @@ function SignIn() {
   }
 
 	const ProcessSignIn = () => {
-  if (password !== confirmation) {
+  if (username === '') {
+    alert('Please provide a username');
+    return;
+  } else if (password !== confirmation) {
     alert('Passwords do not match');
     return;
   } else if (selectedImage !== undefined && !selectedImage.type.includes('image')) {
     alert('Please upload an image file');
     return;
   }
+
+  let body = new FormData();
+  body.append('username', username);
+  body.append('password', password);
+  if (selectedImage)
+    body.append('image', selectedImage)
+
   fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/signin', {
     method: 'POST',
     headers: {
       'Content-type': 'application/json; charset=UTF-8',
     },
-    body: JSON.stringify({
-      'username': username,
-      'password': password,
-    }),
+    body: body,
   })
   .then(response => {
     if (response.status === 201) {
