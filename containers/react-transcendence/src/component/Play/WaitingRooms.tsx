@@ -1,21 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import "static/Play/WaitingRoom.scss";
 
-function WaitingRoom() {
-  const navigate = useNavigate();
-  const [dotAmount, setDotAmount] = useState("");
-  const [gameFound, setGameFound] = useState(true);
-  const [Gamemode, setGamemode] = useState("Normal");
+export function PreMatchRoom() {
   const [userReady, setUserReady] = useState(false);
   const [opponentReady, setOpponentReady] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setDotAmount(dotAmount + ".");
-      if (dotAmount === "...") setDotAmount("");
-    }, 500);
-  });
+  const [Gamemode, setGamemode] = useState("Normal");
 
   const GamemodeButtonStyle = (gamemode: string) => {
     return gamemode === Gamemode
@@ -38,16 +27,6 @@ function WaitingRoom() {
           background: "#cc241d",
         };
   };
-
-  if (gameFound)
-    return (
-      <div className="waitingRoom">
-        <button onClick={() => setGameFound(!gameFound)}>switch</button>
-        <div className="Prompt">
-          <p>waiting for a game{dotAmount}</p>
-        </div>
-      </div>
-    );
 
   return (
     <div className="waitingRoom">
@@ -82,4 +61,23 @@ function WaitingRoom() {
   );
 }
 
-export default WaitingRoom;
+export function MatchMakingRoom() {
+  const [dotAmount, setDotAmount] = useState("");
+
+  useEffect(() => {
+    setTimeout(() => {
+      setDotAmount(dotAmount + ".");
+      if (dotAmount === "...") setDotAmount("");
+    }, 500);
+  });
+
+  return (
+    <div className="waitingRoom">
+      <div className="Prompt">
+        <p>waiting for a game{dotAmount}</p>
+      </div>
+    </div>
+  );
+
+}
+
