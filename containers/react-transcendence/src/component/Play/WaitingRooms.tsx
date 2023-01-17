@@ -32,6 +32,7 @@ export function PreMatchRoom() {
 
   useEffect(() => {
     fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/game/setReady', {
+      credentials: 'include',
       method: userReady ? 'POST' : 'DELETE',
       headers: {
         'Content-type': 'application/json; charset=UTF-8',
