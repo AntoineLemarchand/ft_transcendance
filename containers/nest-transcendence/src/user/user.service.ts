@@ -6,16 +6,19 @@ import { Channel } from '../channel/channel.entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ErrConflict, ErrForbidden, ErrNotFound, ErrUnAuthorized } from "../exceptions";
+import { RoomHandler } from "../broadcasting/broadcasting.roomHandler";
 
 @Injectable()
 export class UserService {
   users: User[];
 
-	constructor(
-		@Inject(forwardRef(() => ChannelService))
-		private channelService: ChannelService,
-    @InjectRepository(User) private readonly userRepository: Repository<User>)
-{}
+  constructor(
+    @Inject(forwardRef(() => ChannelService))
+    private channelService: ChannelService,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @Inject(forwardRef(() => RoomHandler))
+    private roomHandler: RoomHandler) {
+  }
 
   async getUser(name: string): Promise<User | undefined> {
     const test = await this.userRepository.findOneBy({ name: name });

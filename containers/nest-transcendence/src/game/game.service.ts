@@ -5,7 +5,6 @@ import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import {
   GameInput,
   GameObject,
-  GameOutput,
   GameProgress,
   Player,
 } from './game.entities';

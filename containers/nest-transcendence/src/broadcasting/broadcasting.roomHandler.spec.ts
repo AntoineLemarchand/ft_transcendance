@@ -130,3 +130,20 @@ describe('Removing from room', () => {
     handler.leave('non existing user name', 'non existing room');
   });
 });
+
+describe('Derriving user log status from connections', () => {
+  it('should return false for offline user', function () {
+    const handler = new RoomHandler(new Server());
+    handler.addUserInstance('username', '');
+    handler.removeUserInstance('username', '');
+
+    expect(handler.isUserOnline('username')).toBeFalsy();
+  });
+
+  it('should return false for offline user', function () {
+    const handler = new RoomHandler(new Server());
+    handler.addUserInstance('username', '');
+
+    expect(handler.isUserOnline('username')).toBeTruthy();
+  });
+});

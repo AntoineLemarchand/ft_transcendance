@@ -4,6 +4,8 @@ import { ChannelModule } from '../channel/channel.module';
 import { AuthModule } from '../auth/auth.module';
 import { GameModule } from '../game/game.module';
 import { BroadcastingGateway } from './broadcasting.gateway';
+import { RoomHandler } from './broadcasting.roomHandler';
+import { Server } from "socket.io";
 
 @Module({
   imports: [
@@ -12,7 +14,7 @@ import { BroadcastingGateway } from './broadcasting.gateway';
     forwardRef(() => AuthModule),
     forwardRef(() => GameModule),
   ],
-  providers: [BroadcastingGateway],
-  exports: [BroadcastingGateway],
+  providers: [BroadcastingGateway, RoomHandler, Server],
+  exports: [BroadcastingGateway, RoomHandler],
 })
 export class BroadcastingModule {}
