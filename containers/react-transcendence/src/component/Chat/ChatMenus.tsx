@@ -204,8 +204,9 @@ export function SearchMenu( props: {
 		newDirectMessage(event.target.value).then(result=> {
 			if (result === 401)
         alert("You cannot discuss with this user at the moment")
+      else
+        closeSearch();
 		})
-    closeSearch();
 	}
 
 	const connectWithPassword = () => {

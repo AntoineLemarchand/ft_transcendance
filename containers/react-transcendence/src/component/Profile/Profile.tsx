@@ -45,7 +45,6 @@ function InviteMenu(props: {callback: any, mainUser: string, shownUser: string})
     }).then((result) => {
       result.text().then((text)=> {
         setJoinedChannels(JSON.parse(text).channels);
-        console.log(JSON.parse(text).channels);
       });
     })
   }, [])
