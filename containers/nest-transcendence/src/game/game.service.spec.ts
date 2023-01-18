@@ -15,7 +15,7 @@ import {
 } from './game.entities';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
-import { Collision, PlayerBar } from './game.logic';
+import { Collision } from './game.logic';
 
 jest.mock('../broadcasting/broadcasting.gateway');
 
@@ -24,6 +24,7 @@ let userService: UserService;
 let dataSource: DataSource;
 let currentGames: GameObjectRepository;
 let testDataBase: TestDatabase;
+let broadcastingGateway: BroadcastingGateway;
 
 beforeAll(async () => {
   testDataBase = await setupDataSource();
@@ -43,6 +44,7 @@ beforeEach(async () => {
   gameService = module.get<GameService>(GameService);
   userService = module.get<UserService>(UserService);
   currentGames = module.get<GameObjectRepository>(GameObjectRepository);
+  broadcastingGateway = module.get<BroadcastingGateway>(BroadcastingGateway);
   await userService.createUser(new User('player1', 'admin'));
   await userService.createUser(new User('player42', 'test'));
   await userService.createUser(new User('outsider', 'password'));
@@ -72,7 +74,7 @@ describe('setting up a game', () => {
   });
 
   it('should put both players in a socket room', async function () {
-    const spy = jest.spyOn(BroadcastingGateway.prototype, 'putUserInRoom');
+    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom');
 
     const game = await gameService.initGame('player1', 'player42');
 
@@ -147,7 +149,7 @@ describe('starting a game', () => {
 describe('running a game', () => {
   it('should emit an event in case of goal', async () => {
     const spy = jest
-      .spyOn(BroadcastingGateway.prototype, 'emitGameUpdate')
+      .spyOn(broadcastingGateway, 'emitGameUpdate')
       .mockImplementation(jest.fn());
     const gameObject = new GameObject(0, 'p1', 'p2');
     gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
@@ -157,15 +159,12 @@ describe('running a game', () => {
 
     await gameService.runGame(gameObject);
 
-    expect(spy).toHaveBeenCalledWith(
-      gameObject.getId().toString(),
-      new GameOutput([9, 0], GameProgress.RUNNING),
-    );
+    expect(spy).toHaveBeenCalledWith(gameObject.getId().toString(), gameObject);
   });
 
   it('should emit an event once the game is over', async () => {
     const spy = jest
-      .spyOn(BroadcastingGateway.prototype, 'emitGameUpdate')
+      .spyOn(broadcastingGateway, 'emitGameUpdate')
       .mockImplementation(jest.fn());
     const gameObject = new GameObject(0, 'p1', 'p2');
     gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
@@ -173,14 +172,12 @@ describe('running a game', () => {
 
     await gameService.runGame(gameObject);
 
-    expect(spy).toHaveBeenCalledWith(
-      gameObject.getId().toString(),
-      new GameOutput([10, 0], GameProgress.FINISHED),
-    );
+    expect(spy).toHaveBeenCalledWith(gameObject.getId().toString(), gameObject);
   });
 
   it('should access saved game once it is finished', async () => {
     const gameObject = new GameObject(0, 'p1', 'p2');
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
     gameObject.players[0].score = 9;
 
     await gameService.runGame(gameObject);
@@ -231,11 +228,28 @@ describe('updating gameObjects with user input', () => {
 
     expect(spy).toHaveBeenCalledWith(0);
   });
+
+  it('should send an updateGame message', async function () {
+    const spy = jest
+      .spyOn(broadcastingGateway, 'emitGameUpdate')
+      .mockImplementation(jest.fn());
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const gameInput = new GameInput('player1', 'endUp', 0, gameObject.getId());
+
+    await gameService.processUserInput(gameInput);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(gameObject.getId().toString(), gameObject);
+  });
 });
 
 describe('game info', () => {
   beforeEach(async () => {
     jest.spyOn(GameService.prototype, 'runGame').mockImplementation(jest.fn());
+  });
+
+  afterEach(async () => {
+    jest.spyOn(GameService.prototype, 'runGame').mockRestore();
   });
 
   it('should add a GameObject to the list of running games only when both players ready', async function () {

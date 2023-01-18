@@ -13,7 +13,7 @@ import { ChannelService } from '../channel/channel.service';
 import { RoomHandler } from './broadcasting.roomHandler';
 import { UserService } from '../user/user.service';
 import { environment } from '../utils/environmentParser';
-import {GameInput, GameOutput} from '../game/game.entities';
+import { GameInput, GameObject, GameOutput } from "../game/game.entities";
 import { GameService } from '../game/game.service';
 
 //todo: is cors * a security concern in our case?
@@ -69,7 +69,7 @@ export class BroadcastingGateway
     this.server.in(roomName).emit('messageToClient', JSON.stringify(message));
   }
 
-  emitGameUpdate(roomName: string, update: GameOutput) {
+  emitGameUpdate(roomName: string, update: GameObject) {
     this.server.in(roomName).emit('gameUpdateToClient', JSON.stringify(update));
   }
 

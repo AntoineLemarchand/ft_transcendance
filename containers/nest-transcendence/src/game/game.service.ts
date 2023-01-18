@@ -56,15 +56,7 @@ export class GameService {
   async runGame(game: GameObject) {
     while (game.getProgress() !== GameProgress.FINISHED) {
       game.executeStep();
-      if (game.collision.isReset()) {
-        this.broadcastingGateway.emitGameUpdate(
-          game.getId().toString(),
-          new GameOutput(
-            [game.players[0].score, game.players[1].score],
-            game.getProgress(),
-          ),
-        );
-      }
+      this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
       await new Promise((resolve) =>
         setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
       );
@@ -117,5 +109,6 @@ export class GameService {
       if (input.action.includes('Down'))
         player.bar.startMoving(input.timeStamp, -1);
     } else player.bar.stopMoving(input.timeStamp);
+    this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
   }
 }
