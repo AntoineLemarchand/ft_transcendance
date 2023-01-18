@@ -9,6 +9,7 @@ import {
   GameProgress,
   Player,
 } from './game.entities';
+import { ErrUnAuthorized } from '../exceptions';
 
 @Injectable()
 export class GameService {
@@ -80,18 +81,22 @@ export class GameService {
   ) {
     if (!game.getPlayerNames().find((name) => name === executorName))
       return Promise.reject(
-        new Error('only active players can set themselves as ready'),
+        new ErrUnAuthorized('only active players can set themselves as ready'),
       );
   }
 
   private async areValidPlayers(player1name: string, player2name: string) {
     if (player1name === player2name)
-      return Promise.reject(new Error('a player cannot play against himself'));
+      return Promise.reject(
+        new ErrUnAuthorized('a player cannot play against himself'),
+      );
     if (
       (await this.userService.getUser(player1name)) === undefined ||
       (await this.userService.getUser(player2name)) === undefined
     )
-      return Promise.reject(new Error('all players must be registered users'));
+      return Promise.reject(
+        new ErrUnAuthorized('all players must be registered users'),
+      );
   }
 
   private async createRoom(

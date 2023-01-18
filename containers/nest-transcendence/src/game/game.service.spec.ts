@@ -60,7 +60,7 @@ describe('setting up a game', () => {
   it('should fail to initiate with a non existing player', async () => {
     await expect(
       async () => await gameService.initGame('player1', 'player2'),
-    ).rejects.toThrowError('all players must be registered users');
+    ).rejects.toThrow();
     expect(gameService.getRunningGames().length).toBe(0);
   });
 

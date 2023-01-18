@@ -5,6 +5,7 @@ import { ChannelService } from '../channel/channel.service';
 import { Channel } from '../channel/channel.entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ErrConflict, ErrForbidden, ErrNotFound, ErrUnAuthorized } from "../exceptions";
 
 @Injectable()
 export class UserService {
@@ -38,12 +39,12 @@ export class UserService {
     const executingUser = await this.getUser(username) as User;
     const friend = await this.getUser(friendname);
     if (friend === undefined)
-      throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
+      throw new ErrNotFound('Could not find user');
     try {
       executingUser.addFriend(friendname);
       await this.userRepository.save(executingUser);
     } catch (e) {
-      throw new HttpException('is already a friend', HttpStatus.UNAUTHORIZED)
+      throw new ErrUnAuthorized('is already a friend')
     }
   }
 
@@ -54,7 +55,7 @@ export class UserService {
       await this.userRepository.save(user);
 
     } catch (e) {
-      throw new HttpException('not your friend', HttpStatus.NOT_FOUND)
+      throw new ErrNotFound('not your friend')
     }
   }
 
@@ -74,9 +75,9 @@ export class UserService {
 	async addChannelName(username: string, channelName: string) {
 		const user = await this.getUser(username);
     if (user === undefined)
-      throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
+      throw new ErrNotFound('Could not find user');
 		if (user.getChannelNames().includes(channelName))
-			throw new HttpException('user has already joined the channel', HttpStatus.CONFLICT);
+			throw new ErrConflict('user has already joined the channel');
 		user.addChannelName(channelName);
     await this.userRepository.save(user);
   }
@@ -106,12 +107,12 @@ export class UserService {
   async blockUser(username: string, userToBlock: string) {
       const executingUser = await this.getUser(username) as User;
       if (userToBlock === undefined)
-        throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
+        throw new ErrNotFound('Could not find user');
       try {
         executingUser.blockUser(userToBlock);
         await this.userRepository.save(executingUser);
       } catch (e) {
-        throw new HttpException('is already blocked', HttpStatus.UNAUTHORIZED)
+        throw new ErrForbidden('is already blocked')
       }
     }
 	

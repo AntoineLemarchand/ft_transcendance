@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GameObject } from './game.entities';
+import { ErrNotFound } from "../exceptions";
 
 @Injectable()
 export class GameObjectRepository {
@@ -14,7 +15,7 @@ export class GameObjectRepository {
 
   findOne(GameId: number) {
     const Game = this.currentGames.get(GameId);
-    if (!Game) return Promise.reject(new Error('No such Game'));
+    if (!Game) return Promise.reject(new ErrNotFound('No such Game'));
     return Game;
   }
 

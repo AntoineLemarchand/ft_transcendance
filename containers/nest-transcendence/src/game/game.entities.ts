@@ -2,15 +2,12 @@ import { Collision, isAlmostEqual, PlayerBar } from './game.logic';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { deg2rad } from './game.logic';
+import { ErrUnAuthorized } from '../exceptions';
 
 export enum GameProgress {
   INITIALIZED,
   RUNNING,
   FINISHED,
-}
-
-export class GameOutput {
-  constructor(public score: number[], public gameProgress: GameProgress) {}
 }
 
 export class GameInput {
@@ -54,7 +51,9 @@ export class GameObject {
 
   unsetReady(executorName: string) {
     if (this.progress !== GameProgress.INITIALIZED)
-      throw new Error('cannot unset readyness once the game has started');
+      throw new ErrUnAuthorized(
+        'cannot unset readyness once the game has started',
+      );
     for (const player of this.players) {
       if (player.name === executorName) player.ready = false;
     }
