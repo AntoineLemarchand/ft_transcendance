@@ -195,10 +195,33 @@ describe('running a game', () => {
 		await gameService.runGame(gameObject);
 		
 		expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
-		//console.log(await gameService.getGameById(gameObject.getId()));
 		expect(
 			await gameService.getGameById(gameObject.getId())
 		).toBeDefined();
+		expect(
+			await gameService.getGamesCount()
+		).toBe(1);
+	});
+	
+	it('should return all the finished games', async () => {
+		const game1 = new GameObject(0, 'pépé', 'mémé');
+		const game2 = new GameObject(1, 'hehe', 'haha');
+		const game3 = new GameObject(2, 'huhu', 'hihi');
+
+		game1.players[0].score = 10;
+		game2.players[1].score = 90;
+		game3.players[0].score = 90;
+
+		await gameService.saveGameStat(game1);
+		await gameService.saveGameStat(game2);
+		await gameService.saveGameStat(game3);
+		
+		expect(
+			await gameService.getGames()
+		).toBeDefined();
+		expect(
+			await gameService.getGamesCount()
+		).toBe(3);
 	});
 
 });

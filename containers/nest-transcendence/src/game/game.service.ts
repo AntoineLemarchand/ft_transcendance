@@ -127,7 +127,11 @@ export class GameService {
 			return Promise.reject(new Error('No such id'));
 	}
 	
-	async getGamesList(): Promise<GameStat[]> {
+	async getGames(): Promise<GameStat[]> {
 		return await this.gameRepository.find();
+	}
+
+	async getGamesCount() {
+		return await this.gameRepository.count();
 	}
 }
