@@ -59,6 +59,7 @@ export class GameService {
         setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
       );
     }
+		await this.saveGameStat(game);
   }
 
   private async prohibitNonPlayerActions(
@@ -108,4 +109,25 @@ export class GameService {
         player.bar.startMoving(input.timeStamp, -1);
     } else player.bar.stopMoving(input.timeStamp);
   }
+	
+	async saveGameStat(game: GameObject) {
+		await this.gameRepository.save(
+			new GameStat(
+				game.getId(),
+				game.getPlayerNames(),
+				game.getPlayerScores()
+		));
+	}
+
+	async getGameById(id: number) {
+		const result = await this.gameRepository.findOneBy({gameId: id});
+		if (result)
+			return result;
+		else
+			return Promise.reject(new Error('No such id'));
+	}
+	
+	async getGamesList(): Promise<GameStat[]> {
+		return await this.gameRepository.find();
+	}
 }

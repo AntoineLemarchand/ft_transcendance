@@ -188,16 +188,19 @@ describe('running a game', () => {
     );
   });
 
-  it('should return saved game once it is finished', async () => {
-    const gameObject = new GameObject(0, 'p1', 'p2');
-    gameObject.players[0].score = 9;
+	it('should save game once it is finished', async () => {
+		const gameObject = new GameObject(0, 'pépé', 'mémé');
+		gameObject.players[0].score = 9;
 
-    await gameService.runGame(gameObject);
+		await gameService.runGame(gameObject);
+		
+		expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
+		//console.log(await gameService.getGameById(gameObject.getId()));
+		expect(
+			await gameService.getGameById(gameObject.getId())
+		).toBeDefined();
+	});
 
-    expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
-  });
-
-  //todo: test persistant save
 });
 
 describe('updating gameObjects with user input', () => {
