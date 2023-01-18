@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "static/Play/WaitingRoom.scss";
 
 export function PreMatchRoom() {
@@ -7,6 +7,7 @@ export function PreMatchRoom() {
   const [opponentReady, setOpponentReady] = useState(false);
   const [Gamemode, setGamemode] = useState("Normal");
 	const params = useParams();
+  const navigate = useNavigate();
 
   const GamemodeButtonStyle = (gamemode: string) => {
     return gamemode === Gamemode
@@ -40,6 +41,9 @@ export function PreMatchRoom() {
       body: JSON.stringify({
         'gameId': params.gid,
       }),
+    }).then((response) => {
+      if (response.status === 500)
+        navigate('/game');
     })
   }, [userReady])
 
