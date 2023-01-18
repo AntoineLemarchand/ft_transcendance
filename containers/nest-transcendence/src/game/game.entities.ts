@@ -37,7 +37,7 @@ export class GameObject {
   collision: Collision;
   players: Player[];
   constructor(private gameId: number, player1: string, player2: string) {
-    this.collision = new Collision({x: 0.5, y: 0.5}, deg2rad(45), 1);
+    this.collision = new Collision({ x: 0.5, y: 0.5 }, deg2rad(45), 1);
     this.progress = GameProgress.INITIALIZED;
     this.players = [
       new Player(player1, new PlayerBar({ x: 0, y: 0.5 })),
@@ -50,6 +50,14 @@ export class GameObject {
     }
     if (this.players[0].ready && this.players[1].ready)
       this.progress = GameProgress.RUNNING;
+  }
+
+  unsetReady(executorName: string) {
+    if (this.progress !== GameProgress.INITIALIZED)
+      throw new Error('cannot unset readyness once the game has started');
+    for (const player of this.players) {
+      if (player.name === executorName) player.ready = false;
+    }
   }
   getId() {
     return this.gameId;
