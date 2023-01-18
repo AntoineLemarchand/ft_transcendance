@@ -1,11 +1,14 @@
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService, Identity } from './auth.service';
 import { Strategy, VerifyCallback } from 'passport-oauth2';
+import User from '../user/user.entities';
 
 @Injectable()
 export class Oauth2Strategy extends PassportStrategy(Strategy) {
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+  ) {
     super({
       authorizationURL: 'https://api.intra.42.fr/oauth/authorize',
       tokenURL: 'https://api.intra.42.fr/oauth/token',
@@ -15,10 +18,26 @@ export class Oauth2Strategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(accessToken: string, cb: VerifyCallback): Promise<any> {
+  // goal : check if is user request with 42api is find and return it
+  async validate(
+    accessToken: string,
+    profile: User,
+    cb: VerifyCallback,
+  ) : Promise<Identity> {
     const userCandidate = await this.authService.fetchUser(accessToken);
-    const user = await this.authService.validateUser('42user_' + userCandidate.login, '');
-    if (!user) throw new UnauthorizedException();
-    return new Identity(user.getName(), 999);
+    let user;
+    let userCreate;
+    try {
+      user = await this.authService.validateUser(userCandidate.login, '');
+      console.log(user);
+    }
+    catch (HttpException) {
+      let userCreate = await this.authService.createUser({
+        username: userCandidate.login,
+        password: '',
+      });
+    }
+    return new Identity(userCandidate.login, 999);
   }
+
 }
