@@ -8,7 +8,7 @@ import { User } from '../user/user.entities';
 import { GameService } from './game.service';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { GameObject } from './game.entities';
-import { getAllRunning } from '../test.request.utils';
+import { getAllGamesForUser, getAllRunning } from "../test.request.utils";
 
 jest.mock('../broadcasting/broadcasting.gateway');
 jest.mock('./game.service');
@@ -101,7 +101,7 @@ describe('starting a game', () => {
   });
 });
 
-describe('fetching info', () => {
+describe('fetching running games', () => {
   it('should fail if user not logged in', async function () {
     const result = await testUtils.getAllRunning(app, 'invalid jwt');
 
@@ -109,7 +109,7 @@ describe('fetching info', () => {
   });
 
   it('should return games in body', async function () {
-    jest
+    const spy = jest
       .spyOn(GameService.prototype, 'getRunningGames')
       .mockImplementation(() => {
         return [];
@@ -118,5 +118,27 @@ describe('fetching info', () => {
     const result = await testUtils.getAllRunning(app, jwt);
 
     expect(result.body.games).toBeDefined();
+    expect(spy).toHaveBeenCalled();
+  });
+});
+
+describe('fetching games for user', () => {
+  it('should fail if user not logged in', async function () {
+    const result = await testUtils.getAllGamesForUser(app, 'invalid jwt');
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should return games in body', async function () {
+    const spy = jest
+      .spyOn(GameService.prototype, 'getGamesForUser')
+      .mockImplementation(() => {
+        return [];
+      });
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.getAllGamesForUser(app, jwt);
+
+    expect(result.body.games).toBeDefined();
+    expect(spy).toHaveBeenCalled();
   });
 });

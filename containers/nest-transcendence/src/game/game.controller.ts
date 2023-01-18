@@ -28,4 +28,10 @@ export class GameController {
   async getRunning(@Request() req: any) {
     return { games: this.gameService.getRunningGames() };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('getPerUser')
+  async getPerUser(@Request() req: any) {
+    return { games: this.gameService.getGamesForUser(req.user.name) };
+  }
 }

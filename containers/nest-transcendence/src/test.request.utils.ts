@@ -327,6 +327,15 @@ export async function getAllRunning(callerModule: INestApplication, jwt: any) {
     .set('Authorization', 'Bearer ' + jwt);
 }
 
+export async function getAllGamesForUser(
+  callerModule: INestApplication,
+  jwt: any,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/game/getPerUser')
+    .set('Authorization', 'Bearer ' + jwt);
+}
+
 export async function setReadyForGame(
   callerModule: INestApplication,
   jwt: any,
