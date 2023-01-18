@@ -1,7 +1,9 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import {useNavigate} from 'react-router-dom';
 import { useCookies } from 'react-cookie';
+
+import { SocketContext } from '../WebSocket'
 
 import 'static/Account/Prompt.scss'
 
@@ -12,6 +14,7 @@ function Login() {
     const [cookie, setCookie] = useCookies(['auth', 'userInfo']);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const context = useContext(SocketContext);
 
     useEffect(() => {
 			if (cookie['auth'] !== undefined)
@@ -34,6 +37,7 @@ function Login() {
 									return JSON.parse(body).access_token
 							})
 							setCookie('auth', token, {path: '/'})
+              context.auth = token;
               setCookie('userInfo', '', {path: '/'})
               fetch('http://' + process.env.REACT_APP_SERVER_IP
                 +'/api/user/info', {

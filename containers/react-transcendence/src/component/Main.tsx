@@ -1,6 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useCookies } from 'react-cookie';
+import { SocketContext } from './WebSocket'
+import { io } from 'socket.io-client'
 
 import 'static/Main.scss'
 
@@ -17,11 +19,13 @@ import Play from './Play/Play'
 import Chat from './Chat/Chat'
 import Profile from './Profile/Profile'
 
+
 function Main(props: {component: any}) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const tab = location.pathname.split('/')[1];
   const [cookie,, removeCookie] = useCookies(['auth', 'userInfo']);
+  const context = useContext(SocketContext);
 
 	const ProcessLogout = () => {
     removeCookie('auth', {path: '/'});
@@ -31,8 +35,15 @@ function Main(props: {component: any}) {
 
   useEffect(() => {
     if (cookie['auth'] === undefined || cookie['userInfo'] === undefined)
-      navigate('/')
-  })
+      navigate('/');
+    context.auth = cookie['auth'];
+    context.socket =
+    io('http://' + process.env.REACT_APP_SERVER_IP, {
+        withCredentials: true,
+        query: {auth: context.auth},
+    })
+    console.log(context);
+  }, []);
 
 
 	const pages = [
@@ -49,7 +60,6 @@ function Main(props: {component: any}) {
 		}: {}
 	}
 
-
 	return (
 			<main>
 				<div className="links">
@@ -62,9 +72,9 @@ function Main(props: {component: any}) {
 					)
 				}
 				<button onClick={ProcessLogout}><FaDoorOpen /></button></div>
-				<div className="slides">{props.component}</div>
+          <div className="slides">{props.component}</div>
 			</main>
-		   )
+   )
 }
 
 export default Main;

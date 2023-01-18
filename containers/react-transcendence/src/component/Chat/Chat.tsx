@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useContext} from 'react';
 import { useState } from 'react'
 
 import { GiHamburgerMenu } from 'react-icons/gi'
@@ -11,6 +11,7 @@ import ChannelMenu from './ChannelMenu'
 import {Channel, Message, putMessageInChannels} from "../../utils/Message";
 import {io,  Socket } from 'socket.io-client'
 import { useCookies } from 'react-cookie';
+import { SocketContext } from '../WebSocket'
 
 function Chat() {
 	const [NewConvMenu, SetNewConvMenu] = useState(false)
@@ -23,10 +24,12 @@ function Chat() {
 	const [blockedUsers, setBlockedUsers] = useState<string[]>([])
 
   const [cookie] = useCookies(['auth', 'userInfo']);
-	const [socket, setSocket] = useState<Socket>()
+
+  const context = useContext(SocketContext)
+  const socket = context.socket;
 
 	const send = (sender: string, content: string, channel: string) =>{
-		socket?.emit("messageToServer",
+		context.socket!.emit("messageToServer",
       JSON.stringify({sender: sender, content: content, channel: channel}))
 	}
 
@@ -63,12 +66,6 @@ function Chat() {
 
 	useEffect( () => {
 		updateJoinedChannels();
-    setSocket(
-      io('http://' + process.env.REACT_APP_SERVER_IP, {
-        withCredentials: true,
-        query: {auth: cookie.auth},
-      })
-    );
   // eslint-disable-next-line
 	}, [])
 

@@ -35,7 +35,8 @@ function Lobby() {
         alert("ERROR 401");
       } else {
         result.text().then((text) => {
-          setInvites(JSON.parse(text));
+          console.log(text);
+          //setInvites(JSON.parse(text));
         });
       }
     });

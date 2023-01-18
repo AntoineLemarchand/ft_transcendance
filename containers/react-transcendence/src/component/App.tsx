@@ -15,6 +15,7 @@ import Spectate from './Play/Spectate'
 import Chat from './Chat/Chat'
 import Profile from './Profile/Profile'
 
+import { SocketProvider } from './WebSocket';
 
 import '../static/App.scss'
 
@@ -66,6 +67,7 @@ function App() {
 	<div className="App">
 		<BrowserRouter>
 		<Header/>
+    <SocketProvider>
 		<Routes>
       {
         routes.map((route: {path: string, component: JSX.Element}, idx: number) => {
@@ -78,6 +80,7 @@ function App() {
         })
       }
 		</Routes>
+    </SocketProvider>
 		</BrowserRouter>
 	</div>
 	)
