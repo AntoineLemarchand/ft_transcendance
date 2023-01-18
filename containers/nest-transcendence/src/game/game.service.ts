@@ -60,6 +60,11 @@ export class GameService {
   }
 
   async runGame(game: GameObject) {
+    function sendStartEvent(broadcastingGateway: BroadcastingGateway) {
+      broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
+    }
+
+    sendStartEvent(this.broadcastingGateway);
     while (game.getProgress() !== GameProgress.FINISHED) {
       game.executeStep();
       this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
