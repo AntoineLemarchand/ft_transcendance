@@ -9,7 +9,6 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import User from '../user/user.entities';
 import { CreateUserDTO } from '../app.controller';
-import * as https from 'https';
 import axios from 'axios'
 
 export class Identity {
@@ -42,7 +41,7 @@ export class AuthService {
   }
 
   async createUser(userCandidate: CreateUserDTO) {
-    const user = await this.userService.getUser(userCandidate.username);
+    const user = this.userService.getUser(userCandidate.username);
     if (user !== undefined)
       throw new HttpException('User already exists', HttpStatus.UNAUTHORIZED);
     if (userCandidate.username.includes('_'))
@@ -56,8 +55,7 @@ export class AuthService {
     return this.login(new Identity(userCandidate.username, 1));
   }
 
-  // need to throw e
-  async fetchUser(accessToken: string) : Promise<any> {
+  async fetchUser(accessToken: string): Promise<any> {
     const { data: searchResponse } = await axios.get('https://api.intra.42.fr/v2/me', {
       headers: { 
         'Authorization': `Bearer ${ accessToken }`,

@@ -44,23 +44,13 @@ export class AuthController {
   @Get('oauth/callback')
   @UseGuards(Oauth2Guard)
   async signinFortyTwo(
-    user: User,
     @Request() req: Express.Request,
     @Res() res: ExpressResponse,
   ): Promise<{ access_token: string }> {
-    console.log('TRY TO connect');
-    console.log(req.user);
 
-    // token ??? need to  do this in validate
-    // const userCandidate = this.authService.fetchUser(res.req.code);
-    // console.log(this.authService.login(req.user));
-    // const token = await this.authService.createUser(none);
-    // res.cookie('token', { access_token: token });
-
-    // console.log(this/);
-    res.cookie('token', { access_token: 'future token' });
-    const token = { access_token: 'future token' };
-
+    const token = this.authService.login(req.user as Identity);
+    res.cookie('token', { access_token: token });
+    console.log(token);
     return token;
   }
 }
