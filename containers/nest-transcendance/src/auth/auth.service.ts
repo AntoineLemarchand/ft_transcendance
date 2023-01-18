@@ -33,7 +33,7 @@ export class AuthService {
     throw new HttpException('Could not find user', HttpStatus.UNAUTHORIZED);
   }
 
-  async login(user: Identity) {
+  async login(user: Identity): Promise<{ access_token: string }> {
     const payload = { user };
     return {
       access_token: this.jwtService.sign(payload),
@@ -62,5 +62,9 @@ export class AuthService {
        }
     });
     return searchResponse;
+  }
+
+  async getUserInfo(user: Identity): Promise<User> {
+    return this.userService.getInfo(user.name);
   }
 }

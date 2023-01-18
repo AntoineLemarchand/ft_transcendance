@@ -46,11 +46,14 @@ export class AuthController {
   async signinFortyTwo(
     @Request() req: Express.Request,
     @Res() res: ExpressResponse,
-  ): Promise<{ access_token: string }> {
+  ) {
+    const { access_token: token } = await this.authService.login(req.user as Identity);
+    const userInfo = this.authService.getUserInfo(req.user as Identity);
+    res.cookie('auth', token);
+    res.cookie('userInfo', userInfo);
 
-    const token = this.authService.login(req.user as Identity);
-    res.cookie('token', { access_token: token });
-    console.log(token);
+    res.redirect('http://localhost:3001/home');
     return token;
   }
+
 }
