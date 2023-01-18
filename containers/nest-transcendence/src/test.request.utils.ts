@@ -345,6 +345,6 @@ export async function setReadyForGame(
     .post('/game/setReady')
     .set('Authorization', 'Bearer ' + jwt)
     .send({
-      gameId: gameId,
+      gameId: gameId.toString(),
     });
 }

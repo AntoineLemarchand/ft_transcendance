@@ -20,7 +20,7 @@ export class GameController {
   @UseGuards(JwtAuthGuard)
   @Post('setReady')
   async setReady(@Request() req: any) {
-    await this.gameService.setReady(req.user.name, req.body.gameId);
+    await this.gameService.setReady(req.user.name, parseInt(req.body.gameId));
   }
 
   @UseGuards(JwtAuthGuard)

@@ -99,6 +99,16 @@ describe('starting a game', () => {
 
     expect(spy).toHaveBeenCalledWith('admin', 0);
   });
+
+  it('should parse int body', async () => {
+    const spy = jest.spyOn(GameService.prototype, 'setReady');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    await testUtils.initGame(app, jwt, 'Thomas');
+
+    await testUtils.setReadyForGame(app, jwt, 0);
+
+    expect(spy).toHaveBeenCalledWith('admin', 0);
+  });
 });
 
 describe('fetching running games', () => {
