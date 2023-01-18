@@ -323,7 +323,7 @@ export async function initGame(
 
 export async function getAllRunning(callerModule: INestApplication, jwt: any) {
   return request(callerModule.getHttpServer())
-    .post('/game/getRunning')
+    .get('/game/getRunning')
     .set('Authorization', 'Bearer ' + jwt);
 }
 
@@ -332,7 +332,7 @@ export async function getAllGamesForUser(
   jwt: any,
 ) {
   return request(callerModule.getHttpServer())
-    .post('/game/getPerUser')
+    .get('/game/getPerUser')
     .set('Authorization', 'Bearer ' + jwt);
 }
 
