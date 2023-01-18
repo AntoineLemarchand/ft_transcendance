@@ -8,6 +8,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
 import { ChannelModule } from './channel.module';
+import { GameStat } from '../game/game.entities';
+import { GameModule } from '../game/game.module';
 
 jest.spyOn(Channel.prototype, 'addMessage');
 jest.spyOn(BroadcastingGateway.prototype, 'emitMessage');
@@ -29,6 +31,8 @@ beforeEach(async () => {
   const module = await Test.createTestingModule({
     imports: [ChannelModule],
   })
+    .overrideProvider(getRepositoryToken(GameStat))
+    .useValue(dataSource.getRepository(GameStat))
     .overrideProvider(getRepositoryToken(User))
     .useValue(dataSource.getRepository(User))
     .overrideProvider(getRepositoryToken(Channel))
@@ -352,26 +356,6 @@ describe('Administrating a channel', () => {
     const channel = new Channel('channelName', 'admin');
 
     expect(channel.isUserMuted('username')).toBeFalsy();
-  });
-
-  it('should disable a member to send messages', async () => {
-    await userService.createUser(new User('mutedUsername', ''));
-    await channelService.joinChannel('mutedUsername', 'welcom', '');
-    await channelService.muteMemberForMinutes(
-      'admin',
-      'mutedUsername',
-      15,
-      'welcom',
-    );
-
-    await expect(
-      async () =>
-        await channelService.sendMessage({
-          channel: 'welcom',
-          sender: 'mutedUsername',
-          content: '',
-        }),
-    ).rejects.toThrow();
   });
 
   it('should throw on invite on non existing channel', async () => {

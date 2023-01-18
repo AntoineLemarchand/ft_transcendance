@@ -2,12 +2,15 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import {
   GameInput,
   GameObject,
   GameOutput,
   GameProgress,
   Player,
+  GameStat,
 } from './game.entities';
 
 @Injectable()
@@ -18,6 +21,7 @@ export class GameService {
     @Inject(forwardRef(() => BroadcastingGateway))
     private broadcastingGateway: BroadcastingGateway,
     private currentGames: GameObjectRepository,
+    @InjectRepository(GameStat) private readonly gameRepository: Repository<GameStat>
   ) {}
 
   //todo: add exception filter -> transform Error to HTTPException

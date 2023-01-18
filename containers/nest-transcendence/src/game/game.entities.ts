@@ -2,6 +2,45 @@ import { Collision, isAlmostEqual, PlayerBar } from './game.logic';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { deg2rad } from './game.logic';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+
+@Entity()
+export class GameStat {
+  @Column('int')
+  @Column('text', { array: true })
+  public players: string[];
+  @Column('int', { array: true })
+  public scores: string[];
+  @PrimaryColumn()
+  public gameId: number;
+  @Column({
+    nullable: false,
+    default: '',
+  })
+  
+  constructor(
+    gameId: number,
+    players: string[],
+    scores: number[],
+  ) {
+    this.gameId   = gameId;
+    this.players  = players;
+    this.scores   = scores;
+  }
+
+  getGameId() {
+    return this.gameId;
+  }
+
+  getPlayers() {
+    return this.players;
+  }
+
+  getScores() {
+    return this.scores;
+  }
+
+}
 
 export enum GameProgress {
   INITIALIZED,
