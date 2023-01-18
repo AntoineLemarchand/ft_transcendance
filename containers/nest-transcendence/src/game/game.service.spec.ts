@@ -144,6 +144,36 @@ describe('starting a game', () => {
 
     expect(spy).toHaveBeenCalledTimes(0);
   });
+
+  it('should unset a player readiness', async () => {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady('player1', gameObject.getId());
+    await gameService.unsetReady('player1', gameObject.getId());
+
+    expect(gameObject.players[0].ready).toBeFalsy();
+  });
+
+  it('should not unset a player readiness once the game has started and throw on trying to do so', async () => {
+    jest.spyOn(gameService, 'runGame').mockImplementation(jest.fn());
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady('player1', gameObject.getId());
+    await gameService.setReady('player42', gameObject.getId());
+
+    await expect(async () =>
+      gameService.unsetReady('player1', gameObject.getId()),
+    ).rejects.toThrow();
+    expect(gameObject.players[0].ready).toBeTruthy();
+  });
+
+  it('should not unset a player readiness if not an active player and throw on trying to do so', async () => {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady('player1', gameObject.getId());
+
+    await expect(async () =>
+      gameService.unsetReady('outsider', gameObject.getId()),
+    ).rejects.toThrow();
+    expect(gameObject.players[0].ready).toBeTruthy();
+  });
 });
 
 describe('running a game', () => {

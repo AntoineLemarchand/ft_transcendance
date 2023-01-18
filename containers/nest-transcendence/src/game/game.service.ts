@@ -53,6 +53,12 @@ export class GameService {
     if (game.getProgress() === GameProgress.RUNNING) this.runGame(game);
   }
 
+  async unsetReady(executorName: string, gameId: number) {
+    const game = await this.currentGames.findOne(gameId);
+    await this.prohibitNonPlayerActions(executorName, game);
+    game.unsetReady(executorName);
+  }
+
   async runGame(game: GameObject) {
     while (game.getProgress() !== GameProgress.FINISHED) {
       game.executeStep();
