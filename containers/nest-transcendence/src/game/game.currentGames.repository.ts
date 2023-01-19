@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GameObject } from './game.entities';
-import { ErrNotFound } from "../exceptions";
+import { ErrNotFound } from '../exceptions';
 
 @Injectable()
 export class GameObjectRepository {

@@ -21,10 +21,10 @@ export class GameService {
     @Inject(forwardRef(() => BroadcastingGateway))
     private broadcastingGateway: BroadcastingGateway,
     private currentGames: GameObjectRepository,
-    @InjectRepository(GameStat) private readonly gameRepository: Repository<GameStat>
+    @InjectRepository(GameStat)
+    private readonly gameRepository: Repository<GameStat>,
   ) {}
 
-  //todo: add exception filter -> transform Error to HTTPException
   async initGame(player1name: string, player2name: string) {
     await this.areValidPlayers(player1name, player2name);
     const result = this.currentGames.create(player1name, player2name);
@@ -76,7 +76,7 @@ export class GameService {
         setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
       );
     }
-		await this.saveGameStat(game);
+    await this.saveGameStat(game);
   }
 
   private async prohibitNonPlayerActions(
@@ -120,6 +120,7 @@ export class GameService {
 
   async processUserInput(input: GameInput) {
     const game = await this.currentGames.findOne(input.gameId);
+    await this.prohibitNonPlayerActions(input.username, game);
     let player: Player;
     if (input.username === game.getPlayerNames()[0]) player = game.players[0];
     else player = game.players[1];
@@ -131,29 +132,24 @@ export class GameService {
     } else player.bar.stopMoving(input.timeStamp);
     this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
   }
-	
-	async saveGameStat(game: GameObject) {
-		await this.gameRepository.save(
-			new GameStat(
-				game.getId(),
-				game.getPlayerNames(),
-				game.getPlayerScores()
-		));
-	}
 
-	async getGameById(id: number) {
-		const result = await this.gameRepository.findOneBy({gameId: id});
-		if (result)
-			return result;
-		else
-			return Promise.reject(new Error('No such id'));
-	}
-	
-	async getGames(): Promise<GameStat[]> {
-		return await this.gameRepository.find();
-	}
+  async saveGameStat(game: GameObject) {
+    await this.gameRepository.save(
+      new GameStat(game.getId(), game.getPlayerNames(), game.getPlayerScores()),
+    );
+  }
 
-	async getGamesCount() {
-		return await this.gameRepository.count();
-	}
+  async getGameById(id: number) {
+    const result = await this.gameRepository.findOneBy({ gameId: id });
+    if (result) return result;
+    else return Promise.reject(new Error('No such id'));
+  }
+
+  async getGames(): Promise<GameStat[]> {
+    return await this.gameRepository.find();
+  }
+
+  async getGamesCount() {
+    return await this.gameRepository.count();
+  }
 }

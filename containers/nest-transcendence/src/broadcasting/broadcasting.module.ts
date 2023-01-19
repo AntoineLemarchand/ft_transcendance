@@ -5,7 +5,7 @@ import { AuthModule } from '../auth/auth.module';
 import { GameModule } from '../game/game.module';
 import { BroadcastingGateway } from './broadcasting.gateway';
 import { RoomHandler } from './broadcasting.roomHandler';
-import { Server } from "socket.io";
+import { Server } from 'socket.io';
 
 @Module({
   imports: [

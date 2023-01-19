@@ -5,10 +5,10 @@ import {
   Post,
   Request,
   UseGuards
-} from "@nestjs/common";
+} from '@nestjs/common';
 import { GameService } from './game.service';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
-import { Err } from "../exceptions";
+import { Err } from '../exceptions';
 
 @Controller()
 export class GameController {

@@ -1,4 +1,3 @@
-//todo: how to prevent duplication with react?
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 export class Message {

@@ -10,7 +10,7 @@ import { GameObjectRepository } from './game.currentGames.repository';
 import { GameObject } from './game.entities';
 import { getAllGamesForUser, getAllRunning } from '../test.request.utils';
 import { MyExceptionFilter } from '../exceptions.filter';
-import { ErrNotFound, ErrUnAuthorized } from "../exceptions";
+import { ErrNotFound, ErrUnAuthorized } from '../exceptions';
 
 jest.mock('../broadcasting/broadcasting.gateway');
 jest.mock('./game.service');

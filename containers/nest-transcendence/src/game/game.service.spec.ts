@@ -215,6 +215,7 @@ describe('running a game', () => {
 
   it('should save game once it is finished', async () => {
     const gameObject = new GameObject(0, 'pépé', 'mémé');
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
     gameObject.players[0].score = 9;
 
     await gameService.runGame(gameObject);
@@ -243,6 +244,25 @@ describe('running a game', () => {
 });
 
 describe('updating gameObjects with user input', () => {
+  it('should throw to update a game when not active player', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const gameInput = new GameInput(
+      'outsider',
+      'startUp',
+      0,
+      gameObject.getId(),
+    );
+    const p1Spy = jest.spyOn(gameObject.players[0].bar, 'startMoving');
+    const p2Spy = jest.spyOn(gameObject.players[1].bar, 'startMoving');
+
+    await expect(
+      async () => await gameService.processUserInput(gameInput),
+    ).rejects.toThrow();
+
+    expect(p1Spy).toHaveBeenCalledTimes(0);
+    expect(p2Spy).toHaveBeenCalledTimes(0);
+  });
+
   it('should call start moving with direction = 1', async function () {
     const gameObject = await gameService.initGame('player1', 'player42');
     const gameInput = new GameInput(
