@@ -1,11 +1,11 @@
 import {
-  Controller,
+  Controller, Delete,
   Get,
   HttpStatus,
   Post,
   Request,
-  UseGuards,
-} from '@nestjs/common';
+  UseGuards
+} from "@nestjs/common";
 import { GameService } from './game.service';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { Err } from "../exceptions";
@@ -29,6 +29,12 @@ export class GameController {
   @Post('setReady')
   async setReady(@Request() req: any) {
     await this.gameService.setReady(req.user.name, parseInt(req.body.gameId));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('setReady')
+  async unsetReady(@Request() req: any) {
+    await this.gameService.unsetReady(req.user.name, parseInt(req.body.gameId));
   }
 
   @UseGuards(JwtAuthGuard)

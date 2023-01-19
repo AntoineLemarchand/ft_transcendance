@@ -348,3 +348,16 @@ export async function setReadyForGame(
       gameId: gameId.toString(),
     });
 }
+
+export async function setNotReadyForGame(
+  callerModule: INestApplication,
+  jwt: any,
+  gameId: number,
+) {
+  return request(callerModule.getHttpServer())
+    .delete('/game/setReady')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      gameId: gameId.toString(),
+    });
+}
