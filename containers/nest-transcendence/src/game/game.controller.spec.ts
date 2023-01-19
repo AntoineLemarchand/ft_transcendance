@@ -87,7 +87,7 @@ describe('initializing a game', () => {
   });
 
   it('should call the appropriate service ', async () => {
-    const spy = jest.spyOn(GameService.prototype, 'initGame');
+    const spy = jest.spyOn(gameService, 'initGame');
     const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
 
     await testUtils.initGame(app, jwt, 'Thomas');
@@ -97,7 +97,7 @@ describe('initializing a game', () => {
 
   it('should return the game object', async () => {
     const spy = jest
-      .spyOn(GameService.prototype, 'initGame')
+      .spyOn(gameService, 'initGame')
       .mockImplementation(async (p1: string, s: string) => {
         return new GameObject(666, p1, s);
       });
@@ -119,7 +119,7 @@ describe('starting a game', () => {
   });
 
   it('should call the appropriate service ', async () => {
-    const spy = jest.spyOn(GameService.prototype, 'setReady');
+    const spy = jest.spyOn(gameService, 'setReady');
     const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
     await testUtils.initGame(app, jwt, 'Thomas');
 
@@ -129,11 +129,41 @@ describe('starting a game', () => {
   });
 
   it('should parse int body', async () => {
-    const spy = jest.spyOn(GameService.prototype, 'setReady');
+    const spy = jest.spyOn(gameService, 'setReady');
     const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
     await testUtils.initGame(app, jwt, 'Thomas');
 
     await testUtils.setReadyForGame(app, jwt, 0);
+
+    expect(spy).toHaveBeenCalledWith('admin', 0);
+  });
+});
+
+describe('unset ready a game', () => {
+  it('should fail if user not logged in', async function () {
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    await testUtils.initGame(app, jwt, 'Thomas');
+    const result = await testUtils.setNotReadyForGame(app, 'invalid token', 0);
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should call the appropriate service ', async () => {
+    const spy = jest.spyOn(gameService, 'unsetReady');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    await testUtils.initGame(app, jwt, 'Thomas');
+
+    await testUtils.setNotReadyForGame(app, jwt, 0);
+
+    expect(spy).toHaveBeenCalledWith('admin', 0);
+  });
+
+  it('should parse int body', async () => {
+    const spy = jest.spyOn(gameService, 'unsetReady');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    await testUtils.initGame(app, jwt, 'Thomas');
+
+    await testUtils.setNotReadyForGame(app, jwt, 0);
 
     expect(spy).toHaveBeenCalledWith('admin', 0);
   });
@@ -148,7 +178,7 @@ describe('fetching running games', () => {
 
   it('should return games in body', async function () {
     const spy = jest
-      .spyOn(GameService.prototype, 'getRunningGames')
+      .spyOn(gameService, 'getRunningGames')
       .mockImplementation(() => {
         return [];
       });
@@ -169,7 +199,7 @@ describe('fetching games for user', () => {
 
   it('should return games in body', async function () {
     const spy = jest
-      .spyOn(GameService.prototype, 'getGamesForUser')
+      .spyOn(gameService, 'getGamesForUser')
       .mockImplementation(() => {
         return [];
       });
