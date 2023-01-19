@@ -62,7 +62,6 @@ describe('Sending a message', () => {
   });
 
   it('should emit the message as event on the gateway', async () => {
-    // jest.spyOn(BroadcastingGateway.prototype, 'emitMessage').mockImplementation(() => {throw new Error('test me wrd')});
     const messageToBeSent = await initChannelWithMessage();
 
     await channelService.sendMessage(messageToBeSent);

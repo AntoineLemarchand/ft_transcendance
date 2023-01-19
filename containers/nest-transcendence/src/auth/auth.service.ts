@@ -9,6 +9,7 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/user.entities';
 import { CreateUserDTO } from '../app.controller';
+import { ErrForbidden, ErrUnAuthorized } from '../exceptions';
 
 export class Identity {
   constructor(public name: string, public id: number) {}
@@ -27,9 +28,9 @@ export class AuthService {
 
     if (user !== undefined) {
       if (user.getPassword() === password) return user;
-      throw new HttpException('Wrong password', HttpStatus.UNAUTHORIZED);
+      throw new ErrUnAuthorized('Wrong password');
     }
-    throw new HttpException('Could not find user', HttpStatus.UNAUTHORIZED);
+    throw new ErrUnAuthorized('Could not find user');
   }
 
   async login(user: Identity) {
@@ -41,17 +42,14 @@ export class AuthService {
 
   async createUser(userCandidate: CreateUserDTO) {
     const user = await this.userService.getUser(userCandidate.username);
-    if (user !== undefined)
-      throw new HttpException('User already exists', HttpStatus.UNAUTHORIZED);
+    if (user !== undefined) throw new ErrUnAuthorized('User already exists');
     if (userCandidate.username.includes('_'))
-      throw new HttpException(
-        'no underscores in usernames',
-        HttpStatus.FORBIDDEN,
-      );
-      let newUser: User =
-        new User(userCandidate.username, userCandidate.password);
-      if (userCandidate.image)
-        newUser.image = userCandidate.image.buffer;
+      throw new ErrForbidden('no underscores in usernames');
+    const newUser: User = new User(
+      userCandidate.username,
+      userCandidate.password,
+    );
+    if (userCandidate.image) newUser.image = userCandidate.image.buffer;
     await this.userService.createUser(newUser);
     return this.login(new Identity(userCandidate.username, 1));
   }

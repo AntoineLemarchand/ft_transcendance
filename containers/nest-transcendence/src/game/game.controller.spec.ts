@@ -1,4 +1,4 @@
-import { INestApplication, Module } from '@nestjs/common';
+import { HttpStatus, INestApplication, Module } from '@nestjs/common';
 import * as testUtils from '../test.request.utils';
 import { UserService } from '../user/user.service';
 import { DataSource } from 'typeorm';
@@ -8,7 +8,9 @@ import { User } from '../user/user.entities';
 import { GameService } from './game.service';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { GameObject } from './game.entities';
-import { getAllGamesForUser, getAllRunning } from "../test.request.utils";
+import { getAllGamesForUser, getAllRunning } from '../test.request.utils';
+import { MyExceptionFilter } from '../exceptions.filter';
+import { ErrNotFound, ErrUnAuthorized } from "../exceptions";
 
 jest.mock('../broadcasting/broadcasting.gateway');
 jest.mock('./game.service');
@@ -29,6 +31,7 @@ let userService: UserService;
 let dataSource: DataSource;
 let testDataBase: TestDatabase;
 let repo: GameObjectRepository;
+let gameService: GameService;
 
 beforeAll(async () => {
   testDataBase = await setupDataSource();
@@ -38,6 +41,7 @@ beforeEach(async () => {
   testDataBase.reset();
   app = await createTestModule(dataSource);
   userService = app.get<UserService>(UserService);
+  gameService = app.get<GameService>(GameService);
   repo = app.get<GameObjectRepository>(GameObjectRepository);
   await app.init();
   await userService.createUser(new User('admin', 'admin'));
@@ -47,6 +51,30 @@ beforeEach(async () => {
 describe('initializing a game', () => {
   it('should fail if user not logged in ', async () => {
     const result = await testUtils.initGame(app, 'invalid token', 'Thomas');
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should transform all not found errors of the logic into 404 responses', async () => {
+    jest
+      .spyOn(gameService, 'initGame')
+      .mockImplementation(async (p1: string, p2: string) => {
+        throw new ErrNotFound('what the heck');
+      });
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.initGame(app, jwt, 'Thomas');
+
+    expect(result.status).toBe(404);
+  });
+
+  it('should transform all unauthorized errors of the logic into 401 responses', async () => {
+    jest
+      .spyOn(gameService, 'initGame')
+      .mockImplementation(async (p1: string, p2: string) => {
+        throw new ErrUnAuthorized('what the heck');
+      });
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.initGame(app, jwt, 'Thomas');
 
     expect(result.status).toBe(401);
   });

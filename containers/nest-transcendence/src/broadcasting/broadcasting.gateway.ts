@@ -13,7 +13,7 @@ import { ChannelService } from '../channel/channel.service';
 import { RoomHandler } from './broadcasting.roomHandler';
 import { UserService } from '../user/user.service';
 import { environment } from '../utils/environmentParser';
-import { GameInput, GameObject, GameOutput } from "../game/game.entities";
+import { GameInput, GameObject } from '../game/game.entities';
 import { GameService } from '../game/game.service';
 
 //todo: is cors * a security concern in our case?

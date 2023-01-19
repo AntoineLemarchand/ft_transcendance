@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io';
-import { raw } from 'express';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class RoomHandler {
   constructor(public server: Server) {}
 
@@ -45,9 +46,7 @@ export class RoomHandler {
     const deviceIds = this.instanceMap.get(username) as string[];
     if (deviceIds === undefined) return;
     for (const deviceId of deviceIds)
-      (this.server.sockets.sockets.get(deviceId) as Socket).join(
-        roomName,
-      );
+      (this.server.sockets.sockets.get(deviceId) as Socket).join(roomName);
   }
 
   leave(username: string, roomName: string) {
@@ -56,5 +55,9 @@ export class RoomHandler {
       const instance = this.server.sockets.sockets.get(deviceId);
       if (instance !== undefined) instance.leave(roomName);
     }
+  }
+
+  isUserOnline(username: string) {
+    return this.getDeviceIdsFor(username).length > 0;
   }
 }

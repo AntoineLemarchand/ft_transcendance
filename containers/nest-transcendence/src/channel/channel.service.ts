@@ -10,6 +10,7 @@ import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { UserService } from '../user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
+import { ErrForbidden, ErrNotFound, ErrUnAuthorized } from "../exceptions";
 
 @Injectable()
 export class ChannelService {
@@ -44,9 +45,9 @@ export class ChannelService {
     );
     const muteCandidate = await this.userService.getUser(mutedUsername);
     if (muteCandidate === undefined)
-      throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
+      throw new ErrNotFound('User does exist');
     if (!muteCandidate.channelNames.includes(channelName))
-      throw new HttpException('User is not a member', HttpStatus.NOT_FOUND);
+      throw new ErrNotFound('User is not ErrNotFoundmember');
     channel.muteUser(mutedUsername, minutesToMute);
     await this.channelRepository.save(channel);
   }
@@ -111,9 +112,8 @@ export class ChannelService {
         (channelName.includes('_') && channelType != 'directMessage') ||
         channelName.match(/\d/)
       )
-        throw new HttpException(
+        throw new ErrForbidden(
           'channelnames cannot contain underscores or numbers',
-          HttpStatus.FORBIDDEN,
         );
     }
     async function isJoiningAllowed() {
@@ -121,17 +121,15 @@ export class ChannelService {
         channel.getType() == 'privateChannel' &&
         targetUsername != channel.getAdmins()[0]
       )
-        throw new HttpException(
-          'joining a private channel is not allowed',
-          HttpStatus.UNAUTHORIZED,
+        throw new ErrUnAuthorized('joining a private channel is not allowed',
         );
-      if (await channel.isUserBanned(targetUsername))
-        throw new HttpException('the user is banned', HttpStatus.UNAUTHORIZED);
+      if (channel.isUserBanned(targetUsername))
+        throw new ErrUnAuthorized('the user is banned');
       if (
         (await channel.getPassword()) &&
         (await channel.getPassword()) != channelPassword
       )
-        throw new HttpException('wrong password', HttpStatus.UNAUTHORIZED);
+        throw new ErrUnAuthorized('wrong password');
     }
   }
 
@@ -166,7 +164,7 @@ export class ChannelService {
   ) {
     const channel = (await this.getChannelByName(channelName).catch(
       (exception) => {
-        throw new HttpException(exception, HttpStatus.NOT_FOUND);
+        throw new ErrNotFound(exception);
       },
     )) as Channel;
     this.prohibitNonAdminAccess(
@@ -224,6 +222,6 @@ export class ChannelService {
     message: string,
   ) {
     if (!channel.isAdmin(executor))
-      throw new HttpException(message, HttpStatus.UNAUTHORIZED);
+      throw new ErrUnAuthorized(message);
   }
 }
