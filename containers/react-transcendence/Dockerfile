@@ -13,9 +13,8 @@ COPY .env /app
 
 # PROD BUILD
 RUN npm run build
-
 CMD ["serve", "-s", "build"]
 
 # DEV BUILD
-#CMD ["npm","run","start"]
+# CMD ["npm","run","start"]
 

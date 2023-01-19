@@ -117,7 +117,6 @@ function ProfileBadge(props: {
         response.text().then((content) => {
           const game = JSON.parse(content);
           navigate("/game/" + game.gameObject.gameId);
-          console.log("game created");
         });
       }
     });

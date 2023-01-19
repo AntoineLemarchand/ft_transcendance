@@ -23,9 +23,8 @@ function DisplayList(props: {
 		<div className="channelList">
 		{
 		props.joinedChannels.map((channel: Channel, idx: number) =>
-    <div className="Channel">
+    <div className="Channel" key={idx}>
 			<button
-				key={idx}
 				style={ChannelButtonStyle(channel)}
 				onClick={()=>props.setCurrentChannel(channel)}
 				>

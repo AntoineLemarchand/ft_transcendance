@@ -8,11 +8,12 @@ import "static/Play/Game.scss";
 function Game(props: {firstMove: string}) {
   const context = useContext(SocketContext);
   const [currentMove, setCurrentMove] = useState(JSON.parse(props.firstMove));
+  const [ballSpeed, setBallSpeed] = useState(0)
 
   const ballStyle = {
     left: (parseFloat(currentMove.collision.coordinates.x) * 100) + "%",
     top: (parseFloat(currentMove.collision.coordinates.y) * 100) + "%",
-    transition: currentMove.time + "s",
+    transition: ballSpeed + "s",
   };
 
   const LeftPaddleStyle = {
@@ -27,7 +28,7 @@ function Game(props: {firstMove: string}) {
 
   useEffect(()=> {
     const messageListener = (payload: string) => {
-      console.log(ballStyle);
+      setBallSpeed(JSON.parse(payload).collision.time.toFixed(5));
       setCurrentMove(JSON.parse(payload));
     }
     if (!context.socket) {
@@ -35,7 +36,6 @@ function Game(props: {firstMove: string}) {
       context.socket!.on("gameUpdateToClient", messageListener)
     } else
       context.socket.on("gameUpdateToClient", messageListener)
-    console.log('ready to receive game update')
   }, [context.socket])
 
   return (

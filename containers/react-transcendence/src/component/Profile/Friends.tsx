@@ -1,5 +1,4 @@
 import 'static/Profile/Friends.scss'
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 function Friends(props: {isSelected: boolean, friends: string[]}) {
@@ -11,10 +10,6 @@ function Friends(props: {isSelected: boolean, friends: string[]}) {
     else
       return {background: '#cc241d',}
   }
-
-  useEffect(()=> {
-    console.log(props.friends)
-  }, [])
 
 	return (
     <div

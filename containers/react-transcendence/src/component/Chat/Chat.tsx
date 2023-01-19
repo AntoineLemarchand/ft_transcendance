@@ -1,31 +1,29 @@
-import React, {useEffect, useContext} from 'react';
-import { useState } from 'react'
+import { useEffect, useContext, useState} from 'react';
 
-import { GiHamburgerMenu } from 'react-icons/gi'
+import { GiHamburgerMenu } from 'react-icons/gi';
 
-import 'static/Chat/Chat.scss'
+import 'static/Chat/Chat.scss';
 
-import ChatName from './ChatName'
-import * as Menus from './ChatMenus'
-import ChannelMenu from './ChannelMenu'
+import ChatName from './ChatName';
+import * as Menus from './ChatMenus';
+import ChannelMenu from './ChannelMenu';
 import {Channel, Message, putMessageInChannels} from "../../utils/Message";
-import {io,  Socket } from 'socket.io-client'
 import { useCookies } from 'react-cookie';
-import { SocketContext } from '../WebSocket'
+import { SocketContext } from '../WebSocket';
 
 function Chat() {
-	const [NewConvMenu, SetNewConvMenu] = useState(false)
-	const [SearchMenu, SetSearchMenu] = useState(false)
-	const [channelToModify, setChannelToModify] = useState('')
-
-	const [currentChannel, setCurrentChannel ] =  useState<Channel>()
-	const [currentMessage, setCurrentMessage ] =  useState('')
-	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([])
-	const [blockedUsers, setBlockedUsers] = useState<string[]>([])
+	const [NewConvMenu, SetNewConvMenu] = useState(false);
+	const [SearchMenu, SetSearchMenu] = useState(false);
+	const [channelToModify, setChannelToModify] = useState('');
+;
+	const [currentChannel, setCurrentChannel ] =  useState<Channel>();
+	const [currentMessage, setCurrentMessage ] =  useState('');
+	const [joinedChannel, setJoinedChannel] = useState<Channel[]>([]);
+	const [blockedUsers, setBlockedUsers] = useState<string[]>([]);
 
   const [cookie] = useCookies(['auth', 'userInfo']);
 
-  const context = useContext(SocketContext)
+  const context = useContext(SocketContext);
 
 	const send = (sender: string, content: string, channel: string) =>{
 		context.socket!.emit("messageToServer",
@@ -74,10 +72,17 @@ function Chat() {
       const allChannels = putMessageInChannels(message, joinedChannel)
       setJoinedChannel(allChannels);
     }
-		context.socket!.on("messageToClient", messageListener)
+    if (!context.socket) {
+      context.initSocket() && 
+      context.socket!.on("messageToClient", messageListener);
+    } else {
+      context.socket.on("messageToClient", messageListener);
+    }
     if (currentChannel === undefined && joinedChannel.length > 0)
       setCurrentChannel(joinedChannel[0])
-		return () => {context.socket!.off("messageToClient", messageListener)}
+		return () => {
+      context.socket && context.socket.off("messageToClient", messageListener)
+    }
   // eslint-disable-next-line
 	}, [context.socket, joinedChannel])
 
