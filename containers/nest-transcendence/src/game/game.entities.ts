@@ -102,6 +102,10 @@ export class GameObject {
     return [this.players[0].name, this.players[1].name];
   }
 
+  getPlayerScores() {
+    return [this.players[0].score, this.players[1].score];
+  }
+
   private calcScorer() {
     if (
       isAlmostEqual(this.collision.getCoordinates().x, 0) &&
