@@ -85,7 +85,7 @@ export class GameService {
   ) {
     if (!game.getPlayerNames().find((name) => name === executorName))
       return Promise.reject(
-        new ErrUnAuthorized('only active players can set themselves as ready'),
+        new ErrUnAuthorized('this action is reserved to active players'),
       );
   }
 

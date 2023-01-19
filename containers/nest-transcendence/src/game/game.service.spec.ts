@@ -263,6 +263,19 @@ describe('updating gameObjects with user input', () => {
     expect(p2Spy).toHaveBeenCalledTimes(0);
   });
 
+  it('should throw to update a non existing game', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const gameInput = new GameInput(
+      'player1',
+      'startUp',
+      0,
+      666,
+    );
+    await expect(
+      async () => await gameService.processUserInput(gameInput),
+    ).rejects.toThrow();
+  });
+
   it('should call start moving with direction = 1', async function () {
     const gameObject = await gameService.initGame('player1', 'player42');
     const gameInput = new GameInput(
