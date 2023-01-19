@@ -154,9 +154,6 @@ describe('starting a game', () => {
     await gameService.setReady('player1', gameObject.getId());
     await gameService.setReady('player42', gameObject.getId());
 
-    await expect(async () =>
-      gameService.unsetReady('player1', gameObject.getId()),
-    ).rejects.toThrow();
     expect(gameObject.players[0].ready).toBeTruthy();
   });
 
@@ -169,6 +166,20 @@ describe('starting a game', () => {
     ).rejects.toThrow();
     expect(gameObject.players[0].ready).toBeTruthy();
   });
+
+  it('should not unset a player readiness if not an active player and throw on trying to do so', async () => {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+    await gameService.setReady('player42', gameObject.getId());
+    await gameService.runGame(gameObject);
+    expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
+
+    await gameService.unsetReady('player1', gameObject.getId());
+    expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
+
+    await gameService.setReady('player1', gameObject.getId());
+    expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
+  });
 });
 
 describe('running a game', () => {
@@ -178,8 +189,6 @@ describe('running a game', () => {
       .mockImplementation(jest.fn());
     const gameObject = new GameObject(0, 'p1', 'p2');
     gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
-    gameObject.setReady('p1');
-    gameObject.setReady('p2');
     gameObject.players[0].score = 8;
 
     await gameService.runGame(gameObject);
