@@ -7,7 +7,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../user/user.entities';
 import { Channel, Message } from '../channel/channel.entities';
 import { GameModule } from './game.module';
-import { GameInput, GameObject, GameProgress } from './game.entities';
+import { GameInput, GameObject, GameProgress, GameStat } from './game.entities';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { Collision } from './game.logic';
@@ -31,6 +31,8 @@ beforeEach(async () => {
   const module = await Test.createTestingModule({
     imports: [GameModule],
   })
+    .overrideProvider(getRepositoryToken(GameStat))
+    .useValue(dataSource.getRepository(GameStat))
     .overrideProvider(getRepositoryToken(User))
     .useValue(dataSource.getRepository(User))
     .overrideProvider(getRepositoryToken(Channel))
@@ -211,17 +213,33 @@ describe('running a game', () => {
     expect(spy).toHaveBeenCalledWith(gameObject.getId().toString(), gameObject);
   });
 
-  it('should access saved game once it is finished', async () => {
-    const gameObject = new GameObject(0, 'p1', 'p2');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+  it('should save game once it is finished', async () => {
+    const gameObject = new GameObject(0, 'pépé', 'mémé');
     gameObject.players[0].score = 9;
 
     await gameService.runGame(gameObject);
 
     expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
+    expect(await gameService.getGameById(gameObject.getId())).toBeDefined();
+    expect(await gameService.getGamesCount()).toBe(1);
   });
 
-  //todo: test persistant save
+  it('should return all the finished games', async () => {
+    const game1 = new GameObject(0, 'pépé', 'mémé');
+    const game2 = new GameObject(1, 'hehe', 'haha');
+    const game3 = new GameObject(2, 'huhu', 'hihi');
+
+    game1.players[0].score = 10;
+    game2.players[1].score = 90;
+    game3.players[0].score = 90;
+
+    await gameService.saveGameStat(game1);
+    await gameService.saveGameStat(game2);
+    await gameService.saveGameStat(game3);
+
+    expect(await gameService.getGames()).toBeDefined();
+    expect(await gameService.getGamesCount()).toBe(3);
+  });
 });
 
 describe('updating gameObjects with user input', () => {

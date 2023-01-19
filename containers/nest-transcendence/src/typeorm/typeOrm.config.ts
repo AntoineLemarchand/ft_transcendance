@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { environment } from '../utils/environmentParser';
-import entities, { Channel, User } from './index';
+import entities, { Channel, User, GameStat } from './index';
 import { initDataBase1673427329295 } from './migrations/1673427329295-initDataBase';
 
 export default new DataSource({
@@ -11,6 +11,6 @@ export default new DataSource({
   password: environment.DB_PASSWORD,
   database: environment.DB_NAME,
   synchronize: true,
-  entities: [User, Channel],
+  entities: [User, Channel, GameStat],
   migrations: [initDataBase1673427329295],
 });

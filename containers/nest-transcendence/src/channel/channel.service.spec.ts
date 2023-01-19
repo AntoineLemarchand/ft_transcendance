@@ -8,6 +8,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
 import { ChannelModule } from './channel.module';
+import { GameStat } from '../game/game.entities';
+import { GameModule } from '../game/game.module';
 
 jest.spyOn(Channel.prototype, 'addMessage');
 jest.spyOn(BroadcastingGateway.prototype, 'emitMessage');
@@ -29,6 +31,8 @@ beforeEach(async () => {
   const module = await Test.createTestingModule({
     imports: [ChannelModule],
   })
+    .overrideProvider(getRepositoryToken(GameStat))
+    .useValue(dataSource.getRepository(GameStat))
     .overrideProvider(getRepositoryToken(User))
     .useValue(dataSource.getRepository(User))
     .overrideProvider(getRepositoryToken(Channel))

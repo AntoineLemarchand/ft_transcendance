@@ -2,11 +2,14 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import {
   GameInput,
   GameObject,
   GameProgress,
   Player,
+  GameStat,
 } from './game.entities';
 import { ErrUnAuthorized } from '../exceptions';
 
@@ -18,6 +21,7 @@ export class GameService {
     @Inject(forwardRef(() => BroadcastingGateway))
     private broadcastingGateway: BroadcastingGateway,
     private currentGames: GameObjectRepository,
+    @InjectRepository(GameStat) private readonly gameRepository: Repository<GameStat>
   ) {}
 
   //todo: add exception filter -> transform Error to HTTPException
@@ -72,6 +76,7 @@ export class GameService {
         setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
       );
     }
+		await this.saveGameStat(game);
   }
 
   private async prohibitNonPlayerActions(
@@ -126,4 +131,29 @@ export class GameService {
     } else player.bar.stopMoving(input.timeStamp);
     this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
   }
+	
+	async saveGameStat(game: GameObject) {
+		await this.gameRepository.save(
+			new GameStat(
+				game.getId(),
+				game.getPlayerNames(),
+				game.getPlayerScores()
+		));
+	}
+
+	async getGameById(id: number) {
+		const result = await this.gameRepository.findOneBy({gameId: id});
+		if (result)
+			return result;
+		else
+			return Promise.reject(new Error('No such id'));
+	}
+	
+	async getGames(): Promise<GameStat[]> {
+		return await this.gameRepository.find();
+	}
+
+	async getGamesCount() {
+		return await this.gameRepository.count();
+	}
 }
