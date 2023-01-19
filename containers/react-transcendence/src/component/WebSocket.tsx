@@ -1,6 +1,5 @@
-import { createContext, useEffect, useState } from "react";
-import { io, Socket } from 'socket.io-client';
-import { useCookies } from 'react-cookie'
+import { createContext, useState } from "react";
+import { Socket } from 'socket.io-client';
 
 /*
 function useAuthCookie() {
@@ -34,14 +33,31 @@ const InitSocket = () => {
 const socket = InitSocket();
 */
 
-let auth: string | undefined;
-let socket: Socket | undefined;
+const initialAuth: string | undefined = undefined
+const initialSocket: Socket | undefined = undefined
 
-export const SocketContext = createContext({auth: auth, socket: socket});
+interface ContextProps {
+  auth: string | undefined;
+  setAuth: React.Dispatch<React.SetStateAction<string | undefined>>;
+  socket: Socket | undefined;
+  setSocket: React.Dispatch<React.SetStateAction<Socket | undefined>>;
+}
+
+export const SocketContext = createContext<ContextProps>(
+{
+  auth: '',
+  setAuth: () => {},
+  socket: undefined,
+  setSocket: () => {}
+});
 
 export const SocketProvider = (props: {children: React.ReactNode}) => {
+  const [auth, setAuth] = useState(initialAuth);
+  const [socket, setSocket] = useState(initialSocket);
+
   return (
-    <SocketContext.Provider value={{auth: auth, socket: socket}}>
+    <SocketContext.Provider
+      value={{auth, setAuth, socket, setSocket}}>
       {props.children}
     </SocketContext.Provider>
   );

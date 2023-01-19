@@ -37,7 +37,7 @@ function Login() {
 									return JSON.parse(body).access_token
 							})
 							setCookie('auth', token, {path: '/'})
-              context.auth = token;
+              context.setAuth(token);
               setCookie('userInfo', '', {path: '/'})
               fetch('http://' + process.env.REACT_APP_SERVER_IP
                 +'/api/user/info', {

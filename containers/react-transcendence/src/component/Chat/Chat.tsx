@@ -26,7 +26,6 @@ function Chat() {
   const [cookie] = useCookies(['auth', 'userInfo']);
 
   const context = useContext(SocketContext)
-  const socket = context.socket;
 
 	const send = (sender: string, content: string, channel: string) =>{
 		context.socket!.emit("messageToServer",
@@ -75,12 +74,12 @@ function Chat() {
       const allChannels = putMessageInChannels(message, joinedChannel)
       setJoinedChannel(allChannels);
     }
-		socket?.on("messageToClient", messageListener)
+		context.socket!.on("messageToClient", messageListener)
     if (currentChannel === undefined && joinedChannel.length > 0)
       setCurrentChannel(joinedChannel[0])
-		return () => {socket?.off("messageToClient", messageListener)}
+		return () => {context.socket!.off("messageToClient", messageListener)}
   // eslint-disable-next-line
-	}, [socket, joinedChannel])
+	}, [context.socket, joinedChannel])
 
   useEffect(() => {
     updateBlockedUsers();
