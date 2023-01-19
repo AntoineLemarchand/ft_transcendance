@@ -45,15 +45,16 @@ export class GameObject {
     for (const player of this.players) {
       if (player.name === executorName) player.ready = true;
     }
-    if (this.players[0].ready && this.players[1].ready)
+    if (
+      this.players[0].ready &&
+      this.players[1].ready &&
+      this.progress === GameProgress.INITIALIZED
+    )
       this.progress = GameProgress.RUNNING;
   }
 
   unsetReady(executorName: string) {
-    if (this.progress !== GameProgress.INITIALIZED)
-      throw new ErrUnAuthorized(
-        'cannot unset readyness once the game has started',
-      );
+    if (this.progress !== GameProgress.INITIALIZED) return;
     for (const player of this.players) {
       if (player.name === executorName) player.ready = false;
     }

@@ -64,6 +64,7 @@ export class GameService {
       broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
     }
 
+    console.log("game started");
     sendStartEvent(this.broadcastingGateway);
     while (game.getProgress() !== GameProgress.FINISHED) {
       game.executeStep();
