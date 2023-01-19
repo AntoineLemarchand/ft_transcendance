@@ -1,13 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { SocketContext } from '../WebSocket'
 import "static/Play/WaitingRoom.scss";
+import Game from './Game'
 
 export function PreMatchRoom() {
   const [userReady, setUserReady] = useState(false);
   const [opponentReady, setOpponentReady] = useState(false);
+  const [gameStart, setGameStart] = useState('');
   const [Gamemode, setGamemode] = useState("Normal");
 	const params = useParams();
   const navigate = useNavigate();
+  const context = useContext(SocketContext);
 
   const GamemodeButtonStyle = (gamemode: string) => {
     return gamemode === Gamemode
@@ -47,6 +51,21 @@ export function PreMatchRoom() {
     })
   }, [userReady])
 
+  useEffect(()=> {
+    const messageListener = (payload: string) => {
+      setGameStart(payload);
+    }
+    if (!context.socket) {
+      context.initSocket() &&
+      context.socket!.on("gameUpdateToClient", messageListener)
+    } else
+      context.socket.on("gameUpdateToClient", messageListener)
+    console.log('ready to receive game update')
+  }, [])
+
+  if (gameStart != '') {
+    return (<Game firstMove={gameStart}/>)
+  }
   return (
     <div className="waitingRoom">
       <div className="Prompt">

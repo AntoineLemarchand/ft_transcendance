@@ -35,8 +35,8 @@ function Lobby() {
         alert("ERROR 401");
       } else {
         result.text().then((text) => {
-          console.log(text);
-          //setInvites(JSON.parse(text));
+          console.log(JSON.parse(text).games);
+          setInvites(JSON.parse(text).games);
         });
       }
     });
@@ -52,21 +52,18 @@ function Lobby() {
         </button>
         <div className="Invites">
           {invites.map((invite, idx) => {
-            if (invite.status === "online") {
-              return (
-                <button
-                  key={idx}
-                  className="Invite"
-                  onClick={() => navigate("/game/" + invite.name)}
-                >
-                  <img src={invite.avatar} alt="avatar" />
-                  <p>
-                    {invite.name.slice(0, 10) +
-                      (invite.name.length > 10 ? "..." : "")}
-                  </p>
-                </button>
-              );
-            }
+            return (
+              <button
+                key={idx}
+                className="Invite"
+                onClick={() => navigate("/game/" + invite.gameId)}
+              >
+                <img src='' alt="avatar" />
+                <p>
+                {invite.players[0].name + ' VS ' + invite.players[1].name}
+                </p>
+              </button>
+            );
           })}
         </div>
       </div>
