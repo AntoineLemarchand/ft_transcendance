@@ -7,7 +7,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../user/user.entities';
 import { Channel, Message } from '../channel/channel.entities';
 import { GameModule } from './game.module';
-import { GameInput, GameObject, GameProgress } from './game.entities';
+import { GameInput, GameObject, GameProgress, GameStat } from './game.entities';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { Collision } from './game.logic';
@@ -31,6 +31,8 @@ beforeEach(async () => {
   const module = await Test.createTestingModule({
     imports: [GameModule],
   })
+    .overrideProvider(getRepositoryToken(GameStat))
+    .useValue(dataSource.getRepository(GameStat))
     .overrideProvider(getRepositoryToken(User))
     .useValue(dataSource.getRepository(User))
     .overrideProvider(getRepositoryToken(Channel))
@@ -45,6 +47,16 @@ beforeEach(async () => {
   await userService.createUser(new User('outsider', 'password'));
 });
 
+async function finishAGame(p1: string, p2: string) {
+  const gameObject = await gameService.initGame(p1, p2);
+  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+  await gameService.setReady(p2, gameObject.getId());
+  await gameService.runGame(gameObject);
+  // do not put before run game, else await will not work
+  await gameService.setReady(p1, gameObject.getId());
+  return gameObject;
+}
+
 describe('setting up a game', () => {
   it('should fail to initiate when given a player twice', async () => {
     await expect(
@@ -58,8 +70,6 @@ describe('setting up a game', () => {
     ).rejects.toThrow();
     expect(gameService.getRunningGames().length).toBe(0);
   });
-
-  //todo: do we need protection against ddos? -> allow only a limited number of open games
 
   it('should a GameObject which has not yet started', async function () {
     const result = await gameService.initGame('player1', 'player42');
@@ -77,7 +87,6 @@ describe('setting up a game', () => {
     expect(spy).toHaveBeenCalledWith('player42', game.getId().toString());
   });
 });
-
 describe('starting a game', () => {
   it('should fail if the executing user is not one of the players', async () => {
     const gameObject = await gameService.initGame('player1', 'player42');
@@ -150,9 +159,7 @@ describe('starting a game', () => {
 
   it('should not unset a player readiness once the game has started and throw on trying to do so', async () => {
     jest.spyOn(gameService, 'runGame').mockImplementation(jest.fn());
-    const gameObject = await gameService.initGame('player1', 'player42');
-    await gameService.setReady('player1', gameObject.getId());
-    await gameService.setReady('player42', gameObject.getId());
+    const gameObject = await finishAGame('player1', 'player42');
 
     expect(gameObject.players[0].ready).toBeTruthy();
   });
@@ -168,10 +175,7 @@ describe('starting a game', () => {
   });
 
   it('should not unset a player readiness if not an active player and throw on trying to do so', async () => {
-    const gameObject = await gameService.initGame('player1', 'player42');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
-    await gameService.setReady('player42', gameObject.getId());
-    await gameService.runGame(gameObject);
+    const gameObject = await finishAGame('player1', 'player42');
     expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
 
     await gameService.unsetReady('player1', gameObject.getId());
@@ -209,20 +213,69 @@ describe('running a game', () => {
     expect(spy).toHaveBeenCalledWith(gameObject.getId().toString(), gameObject);
   });
 
-  it('should access saved game once it is finished', async () => {
-    const gameObject = new GameObject(0, 'p1', 'p2');
+  it('should save game once it is finished', async () => {
+    const gameObject = new GameObject(0, 'pépé', 'mémé');
     gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
     gameObject.players[0].score = 9;
 
     await gameService.runGame(gameObject);
 
     expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
+    expect(await gameService.getGameById(gameObject.getId())).toBeDefined();
+    expect(await gameService.getGamesCount()).toBe(1);
   });
 
-  //todo: test persistant save
+  it('should return all the finished games', async () => {
+    const game1 = new GameObject(0, 'pépé', 'mémé');
+    const game2 = new GameObject(1, 'hehe', 'haha');
+    const game3 = new GameObject(2, 'huhu', 'hihi');
+
+    game1.players[0].score = 10;
+    game2.players[1].score = 90;
+    game3.players[0].score = 90;
+
+    await gameService.saveGameStat(game1);
+    await gameService.saveGameStat(game2);
+    await gameService.saveGameStat(game3);
+
+    expect(await gameService.getGames()).toBeDefined();
+    expect(await gameService.getGamesCount()).toBe(3);
+  });
 });
 
 describe('updating gameObjects with user input', () => {
+  it('should throw to update a game when not active player', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const gameInput = new GameInput(
+      'outsider',
+      'startUp',
+      0,
+      gameObject.getId(),
+    );
+    const p1Spy = jest.spyOn(gameObject.players[0].bar, 'startMoving');
+    const p2Spy = jest.spyOn(gameObject.players[1].bar, 'startMoving');
+
+    await expect(
+      async () => await gameService.processUserInput(gameInput),
+    ).rejects.toThrow();
+
+    expect(p1Spy).toHaveBeenCalledTimes(0);
+    expect(p2Spy).toHaveBeenCalledTimes(0);
+  });
+
+  it('should throw to update a non existing game', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const gameInput = new GameInput(
+      'player1',
+      'startUp',
+      0,
+      666,
+    );
+    await expect(
+      async () => await gameService.processUserInput(gameInput),
+    ).rejects.toThrow();
+  });
+
   it('should call start moving with direction = 1', async function () {
     const gameObject = await gameService.initGame('player1', 'player42');
     const gameInput = new GameInput(

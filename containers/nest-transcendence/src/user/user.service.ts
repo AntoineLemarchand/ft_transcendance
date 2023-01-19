@@ -5,8 +5,8 @@ import { ChannelService } from '../channel/channel.service';
 import { Channel } from '../channel/channel.entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ErrConflict, ErrForbidden, ErrNotFound, ErrUnAuthorized } from "../exceptions";
-import { RoomHandler } from "../broadcasting/broadcasting.roomHandler";
+import { ErrConflict, ErrForbidden, ErrNotFound, ErrUnAuthorized } from '../exceptions';
+import { RoomHandler } from '../broadcasting/broadcasting.roomHandler';
 
 @Injectable()
 export class UserService {

@@ -8,8 +8,8 @@ import { UserModule } from '../user/user.module';
 import { BroadcastingModule } from '../broadcasting/broadcasting.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/user.entities';
-import {GameModule} from "../game/game.module";
-import {GameService} from "../game/game.service";
+import {GameModule} from '../game/game.module';
+import {GameService} from '../game/game.service';
 
 @Module({
   imports: [

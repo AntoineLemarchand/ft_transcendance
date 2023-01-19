@@ -10,7 +10,7 @@ import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { UserService } from '../user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
-import { ErrForbidden, ErrNotFound, ErrUnAuthorized } from "../exceptions";
+import { ErrForbidden, ErrNotFound, ErrUnAuthorized } from '../exceptions';
 
 @Injectable()
 export class ChannelService {

@@ -3,6 +3,36 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { deg2rad } from './game.logic';
 import { ErrUnAuthorized } from '../exceptions';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+
+@Entity()
+export class GameStat {
+  @Column('int')
+  @Column('text', { array: true })
+  public players: string[];
+  @Column('int', { array: true })
+  public scores: number[];
+  @PrimaryColumn()
+  public gameId: number;
+
+  constructor(gameId: number, players: string[], scores: number[]) {
+    this.gameId = gameId;
+    this.players = players;
+    this.scores = scores;
+  }
+
+  getGameId() {
+    return this.gameId;
+  }
+
+  getPlayers() {
+    return this.players;
+  }
+
+  getScores() {
+    return this.scores;
+  }
+}
 
 export enum GameProgress {
   INITIALIZED,
@@ -69,6 +99,10 @@ export class GameObject {
 
   getPlayerNames() {
     return [this.players[0].name, this.players[1].name];
+  }
+
+  getPlayerScores() {
+    return [this.players[0].score, this.players[1].score];
   }
 
   private calcScorer() {

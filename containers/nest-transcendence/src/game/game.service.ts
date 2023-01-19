@@ -2,11 +2,14 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import {
   GameInput,
   GameObject,
   GameProgress,
   Player,
+  GameStat,
 } from './game.entities';
 import { ErrUnAuthorized } from '../exceptions';
 
@@ -18,9 +21,10 @@ export class GameService {
     @Inject(forwardRef(() => BroadcastingGateway))
     private broadcastingGateway: BroadcastingGateway,
     private currentGames: GameObjectRepository,
+    @InjectRepository(GameStat)
+    private readonly gameRepository: Repository<GameStat>,
   ) {}
 
-  //todo: add exception filter -> transform Error to HTTPException
   async initGame(player1name: string, player2name: string) {
     await this.areValidPlayers(player1name, player2name);
     const result = this.currentGames.create(player1name, player2name);
@@ -64,7 +68,6 @@ export class GameService {
       broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
     }
 
-    console.log("game started");
     sendStartEvent(this.broadcastingGateway);
     while (game.getProgress() !== GameProgress.FINISHED) {
       game.executeStep();
@@ -73,6 +76,7 @@ export class GameService {
         setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
       );
     }
+    await this.saveGameStat(game);
   }
 
   private async prohibitNonPlayerActions(
@@ -81,7 +85,7 @@ export class GameService {
   ) {
     if (!game.getPlayerNames().find((name) => name === executorName))
       return Promise.reject(
-        new ErrUnAuthorized('only active players can set themselves as ready'),
+        new ErrUnAuthorized('this action is reserved to active players'),
       );
   }
 
@@ -116,6 +120,7 @@ export class GameService {
 
   async processUserInput(input: GameInput) {
     const game = await this.currentGames.findOne(input.gameId);
+    await this.prohibitNonPlayerActions(input.username, game);
     let player: Player;
     if (input.username === game.getPlayerNames()[0]) player = game.players[0];
     else player = game.players[1];
@@ -126,5 +131,25 @@ export class GameService {
         player.bar.startMoving(input.timeStamp, -1);
     } else player.bar.stopMoving(input.timeStamp);
     this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
+  }
+
+  async saveGameStat(game: GameObject) {
+    await this.gameRepository.save(
+      new GameStat(game.getId(), game.getPlayerNames(), game.getPlayerScores()),
+    );
+  }
+
+  async getGameById(id: number) {
+    const result = await this.gameRepository.findOneBy({ gameId: id });
+    if (result) return result;
+    else return Promise.reject(new Error('No such id'));
+  }
+
+  async getGames(): Promise<GameStat[]> {
+    return await this.gameRepository.find();
+  }
+
+  async getGamesCount() {
+    return await this.gameRepository.count();
   }
 }
