@@ -36,11 +36,7 @@ function Main(props: {component: any}) {
   useEffect(() => {
     if (cookie['auth'] === undefined || cookie['userInfo'] === undefined)
       navigate('/');
-    context.setSocket(
-    io('http://' + process.env.REACT_APP_SERVER_IP, {
-        withCredentials: true,
-        query: {auth: context.auth},
-    }))
+    context.initSocket()
   }, []);
 
 
