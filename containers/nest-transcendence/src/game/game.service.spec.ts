@@ -45,6 +45,16 @@ beforeEach(async () => {
   await userService.createUser(new User('outsider', 'password'));
 });
 
+async function finishAGame(p1: string, p2: string) {
+  const gameObject = await gameService.initGame(p1, p2);
+  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+  await gameService.setReady(p2, gameObject.getId());
+  await gameService.runGame(gameObject);
+  // do not put before run game, else await will not work
+  await gameService.setReady(p1, gameObject.getId());
+  return gameObject;
+}
+
 describe('setting up a game', () => {
   it('should fail to initiate when given a player twice', async () => {
     await expect(
@@ -58,8 +68,6 @@ describe('setting up a game', () => {
     ).rejects.toThrow();
     expect(gameService.getRunningGames().length).toBe(0);
   });
-
-  //todo: do we need protection against ddos? -> allow only a limited number of open games
 
   it('should a GameObject which has not yet started', async function () {
     const result = await gameService.initGame('player1', 'player42');
@@ -77,7 +85,6 @@ describe('setting up a game', () => {
     expect(spy).toHaveBeenCalledWith('player42', game.getId().toString());
   });
 });
-
 describe('starting a game', () => {
   it('should fail if the executing user is not one of the players', async () => {
     const gameObject = await gameService.initGame('player1', 'player42');
@@ -150,9 +157,7 @@ describe('starting a game', () => {
 
   it('should not unset a player readiness once the game has started and throw on trying to do so', async () => {
     jest.spyOn(gameService, 'runGame').mockImplementation(jest.fn());
-    const gameObject = await gameService.initGame('player1', 'player42');
-    await gameService.setReady('player1', gameObject.getId());
-    await gameService.setReady('player42', gameObject.getId());
+    const gameObject = await finishAGame('player1', 'player42');
 
     expect(gameObject.players[0].ready).toBeTruthy();
   });
@@ -168,10 +173,7 @@ describe('starting a game', () => {
   });
 
   it('should not unset a player readiness if not an active player and throw on trying to do so', async () => {
-    const gameObject = await gameService.initGame('player1', 'player42');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
-    await gameService.setReady('player42', gameObject.getId());
-    await gameService.runGame(gameObject);
+    const gameObject = await finishAGame('player1', 'player42');
     expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
 
     await gameService.unsetReady('player1', gameObject.getId());
