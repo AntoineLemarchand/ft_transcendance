@@ -112,7 +112,10 @@ export class PlayerBar {
       x: this.position.x,
       y:
         this.position.y +
-        this.movement.direction * (timeStamp - this.movement.startTimeStamp),
+        ((this.movement.direction *
+          (timeStamp - this.movement.startTimeStamp)) /
+          1000) *
+          this.speed,
     };
     if (result.y < 0) result.y = 0;
     if (result.y > 1) result.y = 1;

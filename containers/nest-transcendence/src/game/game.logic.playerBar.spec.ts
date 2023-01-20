@@ -5,7 +5,7 @@ describe('starting the movement of a PlayerBar', () => {
 
     playerBar.startMoving(0, -1);
 
-    const positionAtT = playerBar.getPositionAtT(0.1);
+    const positionAtT = playerBar.getPositionAtT(100);
     expect(positionAtT.y).toBeCloseTo(0.9);
   });
 
@@ -14,7 +14,7 @@ describe('starting the movement of a PlayerBar', () => {
 
     playerBar.startMoving(0, 1);
 
-    const positionAtT = playerBar.getPositionAtT(0.1);
+    const positionAtT = playerBar.getPositionAtT(100);
     expect(positionAtT.y).toBeCloseTo(0.1);
   });
 
@@ -35,6 +35,15 @@ describe('starting the movement of a PlayerBar', () => {
     const positionAtT = playerBar.getPositionAtT(1);
     expect(positionAtT.y).toBeCloseTo(1);
   });
+
+  it('should move the bar -0.5 when travelling five second with speed 0.1', () => {
+    const playerBar = new PlayerBar({ x: 0, y: 1 }, 0.1, 0.2);
+
+    playerBar.startMoving(0, -1);
+    playerBar.stopMoving(5000);
+
+    expect(playerBar.getPositionAtT(10000).y).toBeCloseTo(0.5);
+  });
 });
 
 describe('ending the movement of a PlayerBar', () => {
@@ -42,10 +51,10 @@ describe('ending the movement of a PlayerBar', () => {
     const playerBar = new PlayerBar({ x: 0, y: 1 }, 1, 0.2);
 
     playerBar.startMoving(0, -1);
-    playerBar.stopMoving(1);
+    playerBar.stopMoving(100);
 
-    const positionAtT = playerBar.getPositionAtT(100);
-    expect(positionAtT.y).toBeCloseTo(0);
+    const positionAtT = playerBar.getPositionAtT(10000000);
+    expect(positionAtT.y).toBeCloseTo(0.9);
   });
 });
 
