@@ -370,4 +370,31 @@ describe('game info', () => {
 
     expect(result.length).toBe(2);
   });
+
+  it('should return undefined if user not in active game', async function () {
+    const result = gameService.getRunningGameForUser('player1');
+
+    expect(result).toBeUndefined();
+  });
+
+  it('should return active game for user', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady('player1', gameObject.getId());
+    await gameService.setReady('player42', gameObject.getId());
+
+    const result = gameService.getRunningGameForUser('player1');
+
+    expect(result).toBe(gameObject);
+  });
+
+  it('should not return non running game for user', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady('player1', gameObject.getId());
+
+    const result = gameService.getRunningGameForUser('player1');
+
+    expect(result).toBeUndefined();
+  });
 });
+
+

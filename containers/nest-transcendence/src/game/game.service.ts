@@ -8,8 +8,8 @@ import {
   GameInput,
   GameObject,
   GameProgress,
-  Player,
   GameStat,
+  Player,
 } from './game.entities';
 import { ErrUnAuthorized } from '../exceptions';
 
@@ -151,5 +151,17 @@ export class GameService {
 
   async getGamesCount() {
     return await this.gameRepository.count();
+  }
+
+  getRunningGameForUser(username: string) {
+    for (const gameObject of this.currentGames.findAll()) {
+      if (
+        (gameObject.players[0].name === username ||
+          gameObject.players[1].name === username) &&
+        gameObject.getProgress() === GameProgress.RUNNING
+      )
+        return gameObject;
+    }
+    return undefined;
   }
 }
