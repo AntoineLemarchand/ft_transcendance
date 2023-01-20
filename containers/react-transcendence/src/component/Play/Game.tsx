@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from "react";
+import { useCookies } from 'react-cookie';
 
 import { SocketContext } from '../WebSocket';
 
@@ -8,35 +9,104 @@ import "static/Play/Game.scss";
 function Game(props: {firstMove: string}) {
   const context = useContext(SocketContext);
   const [currentMove, setCurrentMove] = useState(JSON.parse(props.firstMove));
-  const [ballSpeed, setBallSpeed] = useState(0)
+  const [cookies] = useCookies(['userInfo']);
+  const [direction, setDirection] = useState(0);
 
   const ballStyle = {
     left: (parseFloat(currentMove.collision.coordinates.x) * 100) + "%",
-    top: (parseFloat(currentMove.collision.coordinates.y) * 100) + "%",
-    transition: ballSpeed + "s",
+    bottom: (parseFloat(currentMove.collision.coordinates.y) * 100) + "%",
+    transition: currentMove.collision.time + "s linear",
   };
 
   const LeftPaddleStyle = {
-    left: "5%",
-    top: currentMove.players[0].y + "%",
+    left: "0%",
+    bottom: (currentMove.players[0].bar.position.y - currentMove.players[0].bar.barHeight / 2) * 100 + "%",
+    height: currentMove.players[0].bar.barHeight * 100 + "%",
   };
 
   const RightPaddleStyle = {
-    left: "95%",
-    top: currentMove.players[1].y + "%",
+    right: "100%",
+    bottom: (currentMove.players[1].bar.position.y - currentMove.players[0].bar.barHeight / 2) * 100 + "%",
+    height: currentMove.players[1].bar.barHeight * 100 + "%",
   };
 
-  useEffect(()=> {
+  useEffect(() => {
     const messageListener = (payload: string) => {
-      setBallSpeed(JSON.parse(payload).collision.time.toFixed(5));
+      console.log(currentMove);
       setCurrentMove(JSON.parse(payload));
     }
     if (!context.socket) {
       context.initSocket() &&
       context.socket!.on("gameUpdateToClient", messageListener)
-    } else
+    } else {
       context.socket.on("gameUpdateToClient", messageListener)
+    }
+    return (() => {context.socket &&
+      context.socket.off("gameUpdateToClient", messageListener)});
   }, [context.socket])
+
+  const keyDownHandler = (event: any) => {
+    if (event.repeat)
+      return;
+    if (event.code === "ArrowUp") {
+      setDirection(1);
+      context.socket!.emit("gameUpdateToServer", JSON.stringify({
+        'username': cookies['userInfo'].name,
+        'action': 'startUp',
+        'timeStamp': Date.now(),
+        'gameId': currentMove.gameId,
+      }));
+    } else if (event.code === "ArrowDown") {
+      setDirection(-1);
+      context.socket!.emit("gameUpdateToServer", JSON.stringify({
+        'username': cookies['userInfo'].name,
+        'action': 'startDown',
+        'timeStamp': Date.now(),
+        'gameId': currentMove.gameId,
+      }));
+    }
+  };
+
+  const keyUpHandler = (event: any) => {
+    setDirection(0);
+    if (event.code === "ArrowUp") {
+      context.socket!.emit("gameUpdateToServer", JSON.stringify({
+        'username': cookies['userInfo'].name,
+        'action': 'endUp',
+        'timeStamp': Date.now(),
+        'gameId': currentMove.gameId,
+      }));
+    } else if (event.code === "ArrowDown") {
+      context.socket!.emit("gameUpdateToServer", JSON.stringify({
+        'username': cookies['userInfo'].name,
+        'action': 'endDown',
+        'timeStamp': Date.now(),
+        'gameId': currentMove.gameId,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    const playerBar = currentMove.players[0].bar;
+    if (playerBar.position.y > 1)
+      currentMove.players[0].bar.position.y = 1;
+    else if (playerBar.position.y < 0)
+      currentMove.players[0].bar.position.y = 0;
+    else
+      currentMove.players[0].bar.position.y +=
+        playerBar.speed * direction / 10;
+  });
+
+
+  useEffect(() => {
+    window.addEventListener("keydown", keyDownHandler);
+    window.addEventListener("keyup", keyUpHandler);
+    return function cleanup() {
+      window.removeEventListener("keydown", keyDownHandler);
+      window.removeEventListener("keyup", keyUpHandler);
+    };
+  });
+
 
   return (
     <div className="container">
@@ -62,26 +132,6 @@ function Game() {
   const [ballPos, setBallPos] = useState({ x: 48, y: 45 });
   const [ballDirection, setBallDirection] = useState({ x: 1, y: 1 });
   const [score, setScore] = useState({ player1: 0, player2: 0 });
-
-  const keypressHandler = (event: any) => {
-    if (event.code === "KeyJ" && paddle1.y < 75)
-      setPaddle1({
-        x: paddle1.x,
-        y: paddle1.y + paddleSpeed > 75 ? 75 : paddle1.y + paddleSpeed,
-      });
-    else if (event.code === "KeyK" && paddle1.y > 0)
-      setPaddle1({
-        x: paddle1.x,
-        y: paddle1.y - paddleSpeed < 0 ? 0 : paddle1.y - paddleSpeed,
-      });
-  };
-
-  useEffect(() => {
-    window.addEventListener("keypress", keypressHandler, false);
-    return function cleanup() {
-      window.removeEventListener("keypress", keypressHandler);
-    };
-  });
 
   useEffect(() => {
     if (ballPos.y <= 0 || ballPos.y >= 90)
