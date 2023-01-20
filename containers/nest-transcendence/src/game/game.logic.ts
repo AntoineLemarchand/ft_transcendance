@@ -164,6 +164,7 @@ export class Collision {
     this.coordinates = {x: 0.5, y: 0.5};
     this.angle = deg2rad(randomIntFromInterval(15, 45));
     if (randomIntFromInterval(0, 1)) this.angle *= -1;
+    if (randomIntFromInterval(0, 1)) this.angle += Math.PI;
   }
 
   isReset() {
