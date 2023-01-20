@@ -24,12 +24,17 @@ function randomIntFromInterval(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+function normalizeAngle(result: number) {
+  while (result < 0) result += 2 * Math.PI;
+  while (result >= 2 * Math.PI) result -= 2 * Math.PI;
+  return result;
+}
+
 export class MinimalPhysics {
   static calcNewAngle(incomingAngle: number, wallDirection: WallDirection) {
     let result = -incomingAngle + Math.PI;
     if (wallDirection == WallDirection.Horizontal) result += Math.PI;
-    if (result < 0) result += 2 * Math.PI;
-    if (result >= 2 * Math.PI) result -= 2 * Math.PI;
+    result = normalizeAngle(result);
     return result;
   }
 
@@ -165,6 +170,7 @@ export class Collision {
     this.angle = deg2rad(randomIntFromInterval(15, 45));
     if (randomIntFromInterval(0, 1)) this.angle *= -1;
     if (randomIntFromInterval(0, 1)) this.angle += Math.PI;
+    this.angle = normalizeAngle(this.angle);
   }
 
   isReset() {
