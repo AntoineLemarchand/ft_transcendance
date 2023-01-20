@@ -20,13 +20,13 @@ function Game(props: {firstMove: string}) {
 
   const LeftPaddleStyle = {
     left: "0%",
-    bottom: currentMove.players[0].bar.position.y * 100 + "%",
+    bottom: (currentMove.players[0].bar.position.y - currentMove.players[0].bar.barHeight / 2) * 100 + "%",
     height: currentMove.players[0].bar.barHeight * 100 + "%",
   };
 
   const RightPaddleStyle = {
-    left: "95%",
-    bottom: currentMove.players[1].bar.position.y * 100 + "%",
+    right: "100%",
+    bottom: (currentMove.players[1].bar.position.y - currentMove.players[0].bar.barHeight / 2) * 100 + "%",
     height: currentMove.players[1].bar.barHeight * 100 + "%",
   };
 
@@ -88,13 +88,13 @@ function Game(props: {firstMove: string}) {
 
   useEffect(() => {
     const playerBar = currentMove.players[0].bar;
-    if (playerBar.position.y > 100 - playerBar.barHeight / 2)
-      currentMove.players[0].bar.position.y = 100 - playerBar.barHeight;
-    else if (playerBar.position.y < playerBar.barHeight / 2)
-      currentMove.players[0].bar.position.y = playerBar.barHeight / 2;
+    if (playerBar.position.y > 1)
+      currentMove.players[0].bar.position.y = 1;
+    else if (playerBar.position.y < 0)
+      currentMove.players[0].bar.position.y = 0;
     else
-    currentMove.players[0].bar.position.y +=
-      playerBar.speed * direction / 10;
+      currentMove.players[0].bar.position.y +=
+        playerBar.speed * direction / 10;
   });
 
 

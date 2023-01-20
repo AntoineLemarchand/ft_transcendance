@@ -124,12 +124,15 @@ export class GameService {
     let player: Player;
     if (input.username === game.getPlayerNames()[0]) player = game.players[0];
     else player = game.players[1];
+    console.log(game);
+    console.log(game.players[0].bar);
     if (input.action.includes('start')) {
       if (input.action.includes('Up'))
         player.bar.startMoving(input.timeStamp, 1);
       if (input.action.includes('Down'))
         player.bar.startMoving(input.timeStamp, -1);
     } else player.bar.stopMoving(input.timeStamp);
+    console.log(game.players[0].bar);
     this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
   }
 

@@ -56,8 +56,10 @@ export class BroadcastingGateway
   @SubscribeMessage('gameUpdateToServer')
   handleGameInput(client: Socket, data: string): void {
     let input: GameInput;
+    console.log('receiving gam inpout');
     try {
       input = JSON.parse(data);
+      console.log(input);
       input.username = this.getUsernameFromToken(client);
       this.gameService.processUserInput(input);
     } catch (e) {

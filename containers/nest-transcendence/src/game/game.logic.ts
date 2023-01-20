@@ -97,14 +97,16 @@ export class PlayerBar {
 
   constructor(
     private position = { x: 0, y: 0.5 },
-    private speed = 0.75,
+    private speed = 0.0000075,
     private barHeight: number = 0.2,
   ) {
     this.movement = { startTimeStamp: 0, direction: 0 };
   }
 
   startMoving(timeStamp: number, direction: number) {
+    console.log(this.movement)
     this.movement = { startTimeStamp: timeStamp, direction: direction };
+    console.log(this.movement)
   }
 
   getPositionAtT(timeStamp: number) {
@@ -171,6 +173,7 @@ export class Collision {
     if (randomIntFromInterval(0, 1)) this.angle *= -1;
     if (randomIntFromInterval(0, 1)) this.angle += Math.PI;
     this.angle = normalizeAngle(this.angle);
+    this.time = 0;
   }
 
   isReset() {
