@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {
   Controller,
   Delete,
@@ -6,15 +5,16 @@ import {
   Post,
   Request,
   UseGuards,
-  Param, HttpException, HttpStatus
+  Param,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 
 @Controller()
 export class UserController {
-  constructor(private userService: UserService) {
-  }
+  constructor(private userService: UserService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('friend')
@@ -42,7 +42,7 @@ export class UserController {
     const result = await this.userService.getUser(username);
     if (result === undefined)
       throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
-    return { userInfo:  result};
+    return { userInfo: result };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -51,7 +51,7 @@ export class UserController {
     const result = await this.userService.getUser(req.user.name);
     if (result === undefined)
       throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
-    return { userInfo:  result};
+    return { userInfo: result };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -64,7 +64,7 @@ export class UserController {
   @Get('getMatchingNames/:regexString')
   async findMatching(@Param() params: any) {
     const matchingUsernames = await this.userService.findMatching(
-      params.regexString
+      params.regexString,
     );
     return { usernames: matchingUsernames };
   }
@@ -75,18 +75,20 @@ export class UserController {
     const matchingUsernames = await this.userService.findMatching('');
     return { usernames: matchingUsernames };
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Post('blockedUser')
   async blockUser(@Request() req: any) {
     await this.userService.blockUser(req.user.name, req.body.username);
     return req.username + ' is now blocked';
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Get('blockedUser')
   async getBlockedUsers(@Request() req: any) {
-    return { blockedUsers: await this.userService.getBlockedUsers(req.user.name) };
+    return {
+      blockedUsers: await this.userService.getBlockedUsers(req.user.name),
+    };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -95,5 +97,4 @@ export class UserController {
     await this.userService.unblockUser(req.user.name, req.body.username);
     return req.username + ' is no longer blocked';
   }
-
 }
