@@ -152,9 +152,15 @@ export class Collision {
       this.speed,
     );
     if (this.coordinates.y === 1 || this.coordinates.y === 0)
-      this.angle = MinimalPhysics.calcNewAngle(this.angle, WallDirection.Horizontal);
+      this.angle = MinimalPhysics.calcNewAngle(
+        this.angle,
+        WallDirection.Horizontal,
+      );
     if (this.coordinates.x === 1 || this.coordinates.x === 0)
-      this.angle = MinimalPhysics.calcNewAngle(this.angle, WallDirection.Vertical);
+      this.angle = MinimalPhysics.calcNewAngle(
+        this.angle,
+        WallDirection.Vertical,
+      );
   }
 
   getCoordinates() {
@@ -166,11 +172,12 @@ export class Collision {
   }
 
   reset() {
-    this.coordinates = {x: 0.5, y: 0.5};
+    this.coordinates = { x: 0.5, y: 0.5 };
     this.angle = deg2rad(randomIntFromInterval(15, 45));
     if (randomIntFromInterval(0, 1)) this.angle *= -1;
     if (randomIntFromInterval(0, 1)) this.angle += Math.PI;
     this.angle = normalizeAngle(this.angle);
+    this.time = 0;
   }
 
   isReset() {
