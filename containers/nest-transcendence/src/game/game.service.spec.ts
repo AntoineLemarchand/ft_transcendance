@@ -221,8 +221,8 @@ describe('running a game', () => {
     await gameService.runGame(gameObject);
 
     expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
-    expect(await gameService.getGameById(gameObject.getId())).toBeDefined();
-    expect(await gameService.getGamesCount()).toBe(1);
+    expect(await gameService.getSavedGameById(gameObject.getId())).toBeDefined();
+    expect(await gameService.getSavedGamesCount()).toBe(1);
   });
 
   it('should return all the finished games', async () => {
@@ -238,8 +238,8 @@ describe('running a game', () => {
     await gameService.saveGameStat(game2);
     await gameService.saveGameStat(game3);
 
-    expect(await gameService.getGames()).toBeDefined();
-    expect(await gameService.getGamesCount()).toBe(3);
+    expect(await gameService.getSavedGames()).toBeDefined();
+    expect(await gameService.getSavedGamesCount()).toBe(3);
   });
 });
 

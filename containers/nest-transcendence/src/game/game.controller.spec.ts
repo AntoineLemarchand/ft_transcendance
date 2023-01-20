@@ -7,7 +7,7 @@ import { createTestModule } from '../test.module.utils';
 import { User } from '../user/user.entities';
 import { GameService } from './game.service';
 import { GameObjectRepository } from './game.currentGames.repository';
-import { GameObject } from './game.entities';
+import { GameObject, GameStat } from './game.entities';
 import { getAllGamesForUser, getAllRunning } from '../test.request.utils';
 import { MyExceptionFilter } from '../exceptions.filter';
 import { ErrNotFound, ErrUnAuthorized } from '../exceptions';
@@ -207,6 +207,35 @@ describe('fetching games for user', () => {
     const result = await testUtils.getAllGamesForUser(app, jwt);
 
     expect(result.body.games).toBeDefined();
+    expect(spy).toHaveBeenCalled();
+  });
+});
+
+describe('fetching saved games', () => {
+  it('should call getSavedGames func', async function () {
+    const spy = jest.spyOn(gameService, 'getSavedGames');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    
+    await testUtils.getSavedGames(app, jwt);
+   
+    expect(spy).toHaveBeenCalled();
+  });
+  
+  it('should call getSavedGameById func', async function () {
+    const spy = jest.spyOn(gameService, 'getSavedGameById');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    
+    await testUtils.getSavedGameById(app, jwt);
+   
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should call getSavedGamesCount func', async function () {
+    const spy = jest.spyOn(gameService, 'getSavedGamesCount');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    
+    await testUtils.getSavedGamesCount(app, jwt);
+   
     expect(spy).toHaveBeenCalled();
   });
 });

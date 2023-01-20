@@ -361,3 +361,30 @@ export async function setNotReadyForGame(
       gameId: gameId.toString(),
     });
 }
+
+export const getSavedGames = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getSavedGames')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getSavedGameById = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getSavedGameById')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getSavedGamesCount = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getSavedGamesCount')
+    .set('Authorization', 'Bearer ' + jwt);
+};
