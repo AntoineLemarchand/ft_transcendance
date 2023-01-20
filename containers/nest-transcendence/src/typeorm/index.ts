@@ -1,6 +1,6 @@
 import { User } from '../user/user.entities';
 import { Channel } from '../channel/channel.entities';
-import { GameStat } from '../game/game.entities.ts'
+import { GameStat } from '../game/game.entities';
 
 const entities = [User, Channel, GameStat];
 

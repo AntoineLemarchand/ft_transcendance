@@ -242,15 +242,26 @@ describe('calculating the point of collision', () => {
 
   it('should work for consecutive calls', () => {
     const origin = { x: 0.5, y: 0.5 };
-    const angle = deg2rad(45);
+    const angle = Math.atan(0.5 / 0.25);
     const speed = 1;
     const collision = new Collision(origin, angle, speed);
 
     collision.update();
+
+    let result = collision.getCoordinates();
+    expect(result.x).toBeCloseTo(0.75);
+    expect(result.y).toBeCloseTo(1);
+
     collision.update();
 
-    const result = collision.getCoordinates();
-    expect(result.x).toBeCloseTo(0);
+    result = collision.getCoordinates();
+    expect(result.x).toBeCloseTo(1);
+    expect(result.y).toBeCloseTo(0.5);
+
+    collision.update();
+
+    result = collision.getCoordinates();
+    expect(result.x).toBeCloseTo(0.75);
     expect(result.y).toBeCloseTo(0);
   });
 });
