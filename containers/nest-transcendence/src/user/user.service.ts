@@ -71,7 +71,13 @@ export class UserService {
 
   async getFriends(username: string) {
     const user = (await this.getUser(username)) as User;
-    return user.getFriends();
+    const result = user.getFriends().map((friendName) => {
+      return {
+        username: friendName,
+        status: this.getStatus(friendName),
+      };
+    });
+    return result;
   }
 
   async getChannels(username: string) {
@@ -135,5 +141,11 @@ export class UserService {
     const user = (await this.getUser(username)) as User;
     user.unblockUser(userToUnblock);
     this.userRepository.save(user);
+  }
+
+  getStatus(username: string) {
+    if (this.gameService.getRunningGameForUser(username)) return 'inGame';
+    if (this.roomHandler.isUserOnline(username)) return 'online';
+    return 'offline';
   }
 }
