@@ -23,9 +23,9 @@ function Home() {
       
       <p><RiCopyleftLine fill="#ebdbb2"/> 2023<br/>
         Jessica Boisserand,
-        <a href="https://antoinelemarchand.xyz">Antoine Lemarchand</a>,
+        <a href="https://antoinelemarchand.xyz"> Antoine Lemarchand</a>,
         Justine Saint-Jalmes, 
-        <a href="https://fleanegan.github.io/portfolio">Frederik Schlüter </a>
+        <a href="https://fleanegan.github.io/portfolio"> Frederik Schlüter </a>
         and Jeremy Semel
       </p>
     </div>
