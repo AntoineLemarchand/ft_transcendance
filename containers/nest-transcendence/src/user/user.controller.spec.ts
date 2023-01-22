@@ -1,15 +1,10 @@
-import { Test } from '@nestjs/testing';
 import { INestApplication, Module } from '@nestjs/common';
 import * as testUtils from '../test.request.utils';
-import { AppModule } from '../app.module';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
 import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
-import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../typeorm';
 import { UserService } from './user.service';
-import { ChannelService } from '../channel/channel.service';
 import { createTestModule } from '../test.module.utils';
 
 jest.mock('../broadcasting/broadcasting.gateway');
@@ -106,14 +101,12 @@ describe('Making friends', () => {
 
 describe('Getting user info', () => {
   it('should return 404 on non existing user info', async () => {
-
     const result = await testUtils.getUserData(app, jwt, 'non existing user');
 
     expect(result.status).toBe(404);
   });
 
   it('should return 200 and user info on successful query', async () => {
-
     const result = await testUtils.getUserData(app, jwt, 'Thomas');
 
     expect(result.status).toBe(200);
@@ -122,7 +115,6 @@ describe('Getting user info', () => {
   });
 
   it('should take username from token if empty query', async () => {
-
     const result = await testUtils.getUserData(app, jwt, '');
 
     expect(result.status).toBe(200);
@@ -175,7 +167,6 @@ describe('Getting user info', () => {
 
 describe('Login', () => {
   it('should be subscribed to the welcome channel on creation', async () => {
-
     const result = await testUtils.getUserData(app, jwt, 'Thomas');
 
     expect(result.status).toBe(200);
@@ -184,10 +175,6 @@ describe('Login', () => {
 });
 
 describe('Blocking users', () => {
-  //beforeEach(async () => {
-
-  //}
-
   it('should add user to the blockedUsers list', async () => {
     await testUtils.signinUser(app, 'Martin', 'yeye');
 
