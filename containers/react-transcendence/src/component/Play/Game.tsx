@@ -10,7 +10,8 @@ function Game(props: {firstMove: string}) {
   const context = useContext(SocketContext);
   const [currentMove, setCurrentMove] = useState(JSON.parse(props.firstMove));
   const [cookies] = useCookies(['userInfo']);
-  const [direction, setDirection] = useState(0);
+  const [leftPos, setLeftPos] = useState(0.5)
+  const [rightPos, setRightPos] = useState(0.5);
 
   const ballStyle = {
     left: (parseFloat(currentMove.collision.coordinates.x) * 100) + "%",
@@ -19,45 +20,29 @@ function Game(props: {firstMove: string}) {
   };
 
   const LeftPaddleStyle = {
-    left: "0%",
-    bottom: (currentMove.players[0].bar.position.y - currentMove.players[0].bar.barHeight / 2) * 100 + "%",
-    height: currentMove.players[0].bar.barHeight * 100 + "%",
+      left: "0%",
+      bottom: leftPos * 100 + "%",
+      height: currentMove.players[0].bar.barHeight * 100 + "%",
   };
 
   const RightPaddleStyle = {
-    right: "100%",
-    bottom: (currentMove.players[1].bar.position.y - currentMove.players[0].bar.barHeight / 2) * 100 + "%",
-    height: currentMove.players[1].bar.barHeight * 100 + "%",
+      right: "5%",
+      bottom: rightPos * 100 + "%",
+      height: currentMove.players[0].bar.barHeight * 100 + "%",
   };
-
-  useEffect(() => {
-    const messageListener = (payload: string) => {
-      console.log(currentMove);
-      setCurrentMove(JSON.parse(payload));
-    }
-    if (!context.socket) {
-      context.initSocket() &&
-      context.socket!.on("gameUpdateToClient", messageListener)
-    } else {
-      context.socket.on("gameUpdateToClient", messageListener)
-    }
-    return (() => {context.socket &&
-      context.socket.off("gameUpdateToClient", messageListener)});
-  }, [context.socket])
 
   const keyDownHandler = (event: any) => {
     if (event.repeat)
       return;
     if (event.code === "ArrowUp") {
-      setDirection(1);
       context.socket!.emit("gameUpdateToServer", JSON.stringify({
         'username': cookies['userInfo'].name,
         'action': 'startUp',
         'timeStamp': Date.now(),
         'gameId': currentMove.gameId,
       }));
+
     } else if (event.code === "ArrowDown") {
-      setDirection(-1);
       context.socket!.emit("gameUpdateToServer", JSON.stringify({
         'username': cookies['userInfo'].name,
         'action': 'startDown',
@@ -68,7 +53,6 @@ function Game(props: {firstMove: string}) {
   };
 
   const keyUpHandler = (event: any) => {
-    setDirection(0);
     if (event.code === "ArrowUp") {
       context.socket!.emit("gameUpdateToServer", JSON.stringify({
         'username': cookies['userInfo'].name,
@@ -86,17 +70,6 @@ function Game(props: {firstMove: string}) {
     }
   };
 
-  useEffect(() => {
-    const playerBar = currentMove.players[0].bar;
-    if (playerBar.position.y > 1)
-      currentMove.players[0].bar.position.y = 1;
-    else if (playerBar.position.y < 0)
-      currentMove.players[0].bar.position.y = 0;
-    else
-      currentMove.players[0].bar.position.y +=
-        playerBar.speed * direction / 10;
-  });
-
 
   useEffect(() => {
     window.addEventListener("keydown", keyDownHandler);
@@ -105,8 +78,35 @@ function Game(props: {firstMove: string}) {
       window.removeEventListener("keydown", keyDownHandler);
       window.removeEventListener("keyup", keyUpHandler);
     };
-  });
+  }, []);
 
+  useEffect(() => {
+    const messageListener = (payload: string) => {
+      setCurrentMove(JSON.parse(payload));
+    }
+    if (!context.socket) {
+    context.initSocket() &&
+    context.socket!.on("gameUpdateToClient", messageListener)
+  } else {
+    context.socket.on("gameUpdateToClient", messageListener)
+  }
+  return (() => {context.socket &&
+    context.socket.off("gameUpdateToClient", messageListener)});
+}, [context.socket])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const leftBar = currentMove.players[0].bar;
+      setLeftPos(leftBar.position.y +
+        (Date.now() - leftBar.movement.startTimeStamp) / 1000 *
+        leftBar.movement.direction * leftBar.speed)
+      const rightBar = currentMove.players[1].bar;
+      setRightPos(rightBar.position.y +
+        (Date.now() - rightBar.movement.startTimeStamp) / 1000 *
+        rightBar.movement.direction * rightBar.speed)
+    }, 100)
+    return (() => clearInterval(interval))
+  })
 
   return (
     <div className="container">
