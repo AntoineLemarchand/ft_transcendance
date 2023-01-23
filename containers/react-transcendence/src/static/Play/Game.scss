@@ -1,62 +1,59 @@
 @import "static/gruvbox";
 
-$paddleHeight: 25%;
 $paddleWidth: 3%;
 
-.container {
+.Game {
   height: 100%;
   width: 100%;
-}
+  display: grid;
+  grid-template-rows: auto 5rem;
 
-.statusbar {
-  height: 200%;
-  width: 100%;
-  bottom: 0;
-}
+  .Board {
+    height: 100%;
+    width: 100%;
 
-.Game {
-  width: 100%;
-  height: 85%;
-  top: 0;
-  position: relative;
+    .player {
+      height: 20%;
+      width: $paddleWidth;
+      display: block;
+      position: absolute;
+      transition: 0.2s linear;
 
-  & > .player {
-    height: $paddleHeight;
-    width: $paddleWidth;
-    display: block;
-    position: absolute;
-    transition: 0.2s linear;
+      &.left {
+        background: color("textPrimary");
+        left: 0;
+      }
 
-    &.left {
-      background: color("textPrimary");
-      left: 3%;
+      &.right {
+        background: color("greyPrimary");
+        right: 0;
+      }
     }
+    .Field {
+      width: calc(100% - 2 * $paddleWidth);
+      height: 100%;
+      margin: 0 auto 0 auto;
+      position: relative;
 
-    &.right {
-      background: color("greyPrimary");
-      right: 3%;
+      .separator {
+        height: 100%;
+        width: 0;
+        margin: auto;
+        position: absolute;
+        display: block;
+        left: 0;
+        right: 0;
+        border: dashed 0.1rem color("textSecondary");
+      }
+
+      .ball {
+        display: block;
+        position: absolute;
+        box-sizing: border-box;
+        background: color("greyPrimary");
+        border-radius: 50%;
+      }
     }
   }
 
-  .separator {
-    height: 99%;
-    width: 0;
-    margin: auto;
-    position: absolute;
-    display: block;
-    left: 0;
-    right: 0;
-    border: dashed 0.1rem color("textSecondary");
-  }
-
-  .ball {
-    display: block;
-    position: absolute;
-    box-sizing: border-box;
-    width: $paddleWidth + 2%;
-    height: $paddleWidth + 2%;
-    padding: calc(($paddleWidth + 2%) / 2);
-    background: color("greyPrimary");
-    border-radius: 50%;
-  }
 }

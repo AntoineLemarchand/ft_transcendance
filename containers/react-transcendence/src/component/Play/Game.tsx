@@ -13,21 +13,21 @@ function Game(props: { firstMove: string }) {
   const [score, setScore] = useState({ player1: 0, player2: 0 });
 
   const ballStyle = {
-    left: parseFloat(currentMove.collision.coordinates.x) * 100 + "%",
-    bottom: parseFloat(currentMove.collision.coordinates.y) * 100 + "%",
+    width: '4%',
+    height: '4%',
+    left: (parseFloat(currentMove.collision.coordinates.x + 0.02) * 100) + "%",
+    bottom: (parseFloat(currentMove.collision.coordinates.y + 0.02) * 100) + "%",
     transition: currentMove.collision.time + "s linear",
   };
 
   const LeftPaddleStyle = {
-    left: "0%",
     bottom: leftPos * 100 + "%",
     height: currentMove.players[0].bar.barHeight * 100 + "%",
   };
 
   const RightPaddleStyle = {
-    right: "5%",
     bottom: rightPos * 100 + "%",
-    height: currentMove.players[0].bar.barHeight * 100 + "%",
+    height: currentMove.players[1].bar.barHeight * 100 + "%",
   };
 
   const keyDownHandler = (event: any) => {
@@ -113,104 +113,48 @@ function Game(props: { firstMove: string }) {
   }, [context.socket]);
 
   useEffect(() => {
+
+    const updateBarPosition = (
+      bar: {
+        barHeight: number,
+        position: {x: number, y: number}
+        movement: { direction: number, startTimeStamp: number },
+        speed: number,
+      },
+      position: number,
+      setPosition: Function
+    ) => {
+      if (position >= 1 - bar.barHeight &&
+        bar.movement.direction === 1)
+        setPosition(1 - bar.barHeight);
+      else if (position <= 0 + bar.barHeight / 2 &&
+        bar.movement.direction === -1)
+        setPosition(0 + bar.barHeight / 2);
+      else
+        setPosition(bar.position.y +
+          (Date.now() - bar.movement.startTimeStamp) / 1000 *
+          bar.movement.direction * bar.speed)
+    }
     const interval = setInterval(() => {
-      const leftBar = currentMove.players[0].bar;
-      setLeftPos(
-        leftBar.position.y +
-          ((Date.now() - leftBar.movement.startTimeStamp) / 1000) *
-            leftBar.movement.direction *
-            leftBar.speed
-      );
-      const rightBar = currentMove.players[1].bar;
-      setRightPos(
-        rightBar.position.y +
-          ((Date.now() - rightBar.movement.startTimeStamp) / 1000) *
-            rightBar.movement.direction *
-            rightBar.speed
-      );
-    }, 100);
-    return () => clearInterval(interval);
-  });
+      updateBarPosition(currentMove.players[0].bar, leftPos, setLeftPos);
+      updateBarPosition(currentMove.players[1].bar, rightPos, setRightPos);
+    }, 5)
+    return (() => clearInterval(interval))
+  })
 
   return (
-    <div className="container">
-      <div className="Game">
+    <div className="Game">
+      <div className="Board">
         <span className="player left" style={LeftPaddleStyle} />
-        <span className="separator" />
+        <div className="Field">
+          <span className="separator" />
+          <span className="ball" style={ballStyle} />
+        </div>
         <span className="player right" style={RightPaddleStyle} />
-        <span className="ball" style={ballStyle} />
       </div>
       <GameStatus score={score} />
     </div>
   );
 }
 
-/*
-function Game() {
-  let ballSpeed: number = 0.1;
-  const paddleSpeed = 10;
-  const paddleHeight = 20;
-  const paddleWidth = 3;
-  const ballSize = paddleWidth + 2;
-  const [paddle1, setPaddle1] = useState({ x: 5, y: 0 });
-  const [paddle2, setPaddle2] = useState({ x: 95, y: 0 });
-  const [ballPos, setBallPos] = useState({ x: 48, y: 45 });
-  const [ballDirection, setBallDirection] = useState({ x: 1, y: 1 });
-  const [score, setScore] = useState({ player1: 0, player2: 0 });
-
-  useEffect(() => {
-    if (ballPos.y <= 0 || ballPos.y >= 90)
-      setBallDirection({ x: ballDirection.x, y: -ballDirection.y });
-    if (ballPos.x <= 0) {
-      setScore({ ...score, player2: score.player2 + 1 });
-      initBall();
-    }
-    if (ballPos.x >= 100) {
-      setScore({ ...score, player1: score.player1 + 1 });
-      initBall();
-    }
-    if (ballPos.x <= paddle1.x) {
-      if (ballPos.y > paddle1.y && ballPos.y < paddle1.y + paddleHeight) {
-        ballPos.x = paddle1.x + paddleWidth + ballSize; // prevent ball from getting stuck in paddle
-        setBallDirection({ x: -ballDirection.x, y: ballDirection.y });
-      }
-    }
-    if (ballPos.x >= paddle2.x - ballSize) {
-      if (ballPos.y > paddle2.y && ballPos.y < paddle2.y + paddleHeight) {
-        ballPos.x = paddle2.x - ballSize; // prevent ball from getting stuck in paddle
-        setBallDirection({ x: -ballDirection.x, y: ballDirection.y });
-      }
-    }
-  }, [ballPos]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBallPos({
-        x: ballPos.x + ballDirection.x * ballSpeed,
-        y: ballPos.y + ballDirection.y * ballSpeed,
-      });
-    }, ballSpeed * 10);
-    return () => clearInterval(interval);
-  }, [ballPos, ballDirection]);
-
-  function updateScore(player: "player1" | "player2", value: number) {
-    setScore({ ...score, [player]: value });
-  }
-
-  return (
-    <div className="container">
-      <div className="Game">
-        <span className="player left" style={{ top: paddle1.y + "%" }} />
-        <span className="separator" />
-        <span className="player right" style={{ top: paddle2.y + "%" }} />
-        <span className="ball" style={ballStyle} />
-      </div>
-      <div className="statusbar">
-        <GameStatus score={score} updateScore={updateScore} />
-      </div>
-    </div>
-  );
-}
-
-*/
 export default Game;
