@@ -24,12 +24,6 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('friend')
-  async getFriends(@Request() req: any) {
-    return { friends: await this.userService.getFriends(req.user.name) };
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Delete('friend')
   async removeFriend(@Request() req: any) {
     await this.userService.removeFriend(req.user.name, req.body.username);
@@ -39,7 +33,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('info/:username')
   async getInfo(@Param('username') username: string) {
-    const result = await this.userService.getUser(username);
+    const result = await this.userService.getUserInfo(username);
     if (result === undefined)
       throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
     return { userInfo: result };
@@ -48,7 +42,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('info')
   async getInfoAboutSelf(@Request() req: any) {
-    const result = await this.userService.getUser(req.user.name);
+    const result = await this.userService.getUserInfo(req.user.name);
     if (result === undefined)
       throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
     return { userInfo: result };

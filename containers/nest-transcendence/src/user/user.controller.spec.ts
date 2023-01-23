@@ -52,10 +52,11 @@ describe('Making friends', () => {
     await testUtils.signinUser(app, 'JayDee', 'yeah');
     await testUtils.addFriend(app, jwt, 'JayDee');
 
-    const result = await testUtils.addFriend(app, jwt, 'JayDee');
-    const friendsList = (await testUtils.getFriends(app, jwt)).body.friends;
+    const response = await testUtils.addFriend(app, jwt, 'JayDee');
+    const result = await testUtils.getUserData(app, jwt, 'Thomas');
+    const friendsList = result.body.userInfo.friends;
 
-    expect(result.status).toBe(401);
+    expect(response.status).toBe(401);
     expect(friendsList.length).toBe(1);
   });
 
@@ -68,14 +69,14 @@ describe('Making friends', () => {
   });
 
   it('should return 201 and a list of friends', async () => {
-    await testUtils.signinUser(app, 'JayDee', 'yeah');
-    await testUtils.addFriend(app, jwt, 'JayDee');
+    await testUtils.signinUser(app, 'new Friend', 'yeah');
+    await testUtils.addFriend(app, jwt, 'new Friend');
 
-    const result = await testUtils.getFriends(app, jwt);
+    const result = await testUtils.getUserData(app, jwt, 'Thomas');
 
     expect(result.status).toBe(200);
-    expect(result.body.friends).toBeDefined();
-    expect(result.body.friends.length).toBe(1);
+    expect(result.body.userInfo.friends).toBeDefined();
+    expect(result.body.userInfo.friends.length).toBe(1);
   });
 
   it('should return 404 when removing nonexistant friend', async () => {
@@ -92,7 +93,8 @@ describe('Making friends', () => {
     await testUtils.addFriend(app, jwt, 'JayDee');
 
     const result = await testUtils.removeFriend(app, jwt, 'JayDee');
-    const friendsList = (await testUtils.getFriends(app, jwt)).body.friends;
+    const friendsList = (await testUtils.getUserData(app, jwt, 'JayDee')).body
+      .userInfo.friends;
 
     expect(result.status).toBe(200);
     expect(friendsList.length).toBe(0);

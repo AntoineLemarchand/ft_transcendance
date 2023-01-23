@@ -1,10 +1,4 @@
-import {
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { User } from './user.entities';
 import { ChannelService } from '../channel/channel.service';
 import { Channel } from '../channel/channel.entities';
@@ -31,9 +25,30 @@ export class UserService {
     private gameService: GameService,
   ) {}
 
-  async getUser(name: string): Promise<User | undefined> {
+  async getUserInfo(name: string) {
+    const test = await this.getUser(name);
+    if (!test) return undefined;
+    const { password, friends, ...userWithoutPassword } = test;
+    return {
+      friends: await this.getFriendUserStatus(friends),
+      ...userWithoutPassword,
+    };
+  }
+
+  async getUser(name: string) {
     const test = await this.userRepository.findOneBy({ name: name });
-    if (test) return test;
+    if (!test) return undefined;
+    return test;
+  }
+
+  private async getFriendUserStatus(friends: string[]) {
+    const result = friends.map((friendName) => {
+      return {
+        username: friendName,
+        status: this.getStatus(friendName),
+      };
+    });
+    return result;
   }
 
   async createUser(user: User) {
@@ -67,17 +82,6 @@ export class UserService {
     } catch (e) {
       throw new ErrNotFound('not your friend');
     }
-  }
-
-  async getFriends(username: string) {
-    const user = (await this.getUser(username)) as User;
-    const result = user.getFriends().map((friendName) => {
-      return {
-        username: friendName,
-        status: this.getStatus(friendName),
-      };
-    });
-    return result;
   }
 
   async getChannels(username: string) {
