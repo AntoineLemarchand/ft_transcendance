@@ -340,6 +340,33 @@ export async function setReadyForGame(
     });
 }
 
+export async function startSpectatingGame(
+  callerModule: INestApplication,
+  jwt: any,
+  gameId: number,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/game/spectate')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      gameId: gameId.toString(),
+    });
+}
+
+export async function endSpectatingGame(
+  callerModule: INestApplication,
+  jwt: any,
+  gameId: number,
+) {
+  return request(callerModule.getHttpServer())
+    .delete('/game/spectate')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      gameId: gameId.toString(),
+    });
+}
+
+
 export async function setNotReadyForGame(
   callerModule: INestApplication,
   jwt: any,

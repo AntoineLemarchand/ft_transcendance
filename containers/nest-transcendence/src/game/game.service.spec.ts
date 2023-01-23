@@ -11,6 +11,7 @@ import { GameInput, GameObject, GameProgress, GameStat } from './game.entities';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { Collision } from './game.logic';
+import { ErrNotFound } from '../exceptions';
 
 jest.mock('../broadcasting/broadcasting.gateway');
 
@@ -265,12 +266,7 @@ describe('updating gameObjects with user input', () => {
 
   it('should throw to update a non existing game', async function () {
     const gameObject = await gameService.initGame('player1', 'player42');
-    const gameInput = new GameInput(
-      'player1',
-      'startUp',
-      0,
-      666,
-    );
+    const gameInput = new GameInput('player1', 'startUp', 0, 666);
     await expect(
       async () => await gameService.processUserInput(gameInput),
     ).rejects.toThrow();
@@ -397,4 +393,34 @@ describe('game info', () => {
   });
 });
 
+describe('spectating a game', () => {
+  it('should throw on trying to begin spectating a non existing game', async function () {
+    await expect(async () =>
+      gameService.beginSpectate('outsider', 666),
+    ).rejects.toThrowError(ErrNotFound);
+  });
 
+  it('should request the gateway to place the user into the game room when beginning spectating', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom').mockReset();
+
+    await gameService.beginSpectate('outsider', gameObject.getId());
+
+    expect(spy).toHaveBeenCalledWith('outsider', gameObject.getId().toString());
+  });
+
+  it('should throw on trying to end spectating a non existing game', async function () {
+    await expect(async () =>
+      gameService.endSpectate('outsider', 666),
+    ).rejects.toThrowError(ErrNotFound);
+  });
+
+  it('should request the gateway to remove the user into the game room when ending spectating', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const spy = jest.spyOn(broadcastingGateway, 'removeUserFromRoom').mockReset();
+
+    await gameService.endSpectate('outsider', gameObject.getId());
+
+    expect(spy).toHaveBeenCalledWith('outsider', gameObject.getId().toString());
+  });
+});

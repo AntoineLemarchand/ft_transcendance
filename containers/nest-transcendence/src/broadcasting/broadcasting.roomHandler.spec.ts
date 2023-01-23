@@ -124,10 +124,18 @@ describe('Removing from room', () => {
       (handler.server.sockets.sockets.get('deviceId1') as Socket).leave,
     ).toHaveBeenCalledWith('roomName');
   });
+
   it('should do nothing if calling leave on an offline device', async () => {
     const handler = new RoomHandler(new Server());
 
     handler.leave('non existing user name', 'non existing room');
+  });
+
+  it('should do nothing if calling leave on a not existing room', async () => {
+    const handler = new RoomHandler(new Server());
+    handler.addUserInstance('username', 'deviceId0');
+
+    handler.leave('username', 'non existing room');
   });
 });
 

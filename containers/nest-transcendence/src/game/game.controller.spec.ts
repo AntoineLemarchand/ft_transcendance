@@ -210,3 +210,71 @@ describe('fetching games for user', () => {
     expect(spy).toHaveBeenCalled();
   });
 });
+
+describe('beginning spectating a game', () => {
+  it('should fail if user not logged in', async function () {
+    const result = await testUtils.startSpectatingGame(app, 'invalid jwt', 666);
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should catch not found errors', async function () {
+    const spy = jest
+      .spyOn(gameService, 'beginSpectate')
+      .mockReset()
+      .mockImplementation((username: string, gameId: number) => {
+        throw new ErrNotFound('');
+      });
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.startSpectatingGame(app, jwt, 666);
+
+    expect(result.status).toBe(404);
+  });
+
+  it('should return 201 on success', async function () {
+    const spy = jest
+      .spyOn(gameService, 'beginSpectate')
+      .mockReset()
+      .mockImplementation(
+        async (username: string, gameId: number): Promise<void> => {},
+      );
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.startSpectatingGame(app, jwt, 666);
+
+    expect(result.status).toBe(201);
+  });
+});
+
+describe('ending spectating a game', () => {
+  it('should fail if user not logged in', async function () {
+    const result = await testUtils.endSpectatingGame(app, 'invalid jwt', 666);
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should catch not found errors', async function () {
+    const spy = jest
+      .spyOn(gameService, 'endSpectate')
+      .mockReset()
+      .mockImplementation((username: string, gameId: number) => {
+        throw new ErrNotFound('');
+      });
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.endSpectatingGame(app, jwt, 666);
+
+    expect(result.status).toBe(404);
+  });
+
+  it('should return 201 on success', async function () {
+    const spy = jest
+      .spyOn(gameService, 'endSpectate')
+      .mockReset()
+      .mockImplementation(
+        async (username: string, gameId: number): Promise<void> => {},
+      );
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.endSpectatingGame(app, jwt, 666);
+
+    expect(result.status).toBe(200);
+  });
+});
