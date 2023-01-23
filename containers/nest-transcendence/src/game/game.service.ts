@@ -152,4 +152,20 @@ export class GameService {
   async getSavedGamesCount() {
     return await this.gameRepository.count();
   }
+
+	async getSavedGamesLastId() {
+		const query = this.gameRepository.createQueryBuilder("GameStat");
+		const result = await query.select("MAX(GameStat.gameId)", "max").getRawOne();
+		if (!result.max) return 0;
+		else return result.max;
+	}
+
+	async getSavedGamesByPlayer(player: string) {
+		//this.gameRepository.find({
+			//where: [
+				//{ player1: player },
+				//{ player2: player },
+			//]
+		//});	
+	}
 }

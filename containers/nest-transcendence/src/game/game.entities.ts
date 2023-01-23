@@ -9,15 +9,21 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 export class GameStat {
   @Column('int')
   @Column('text', { array: true })
-  public players: string[];
-  @Column('int', { array: true })
+	public players: string[];
+	@Column('text', { array: true })
+  //public player1: string;
+  //@Column('text', { array: true })
+  //public player2: string;
+  //@Column('int', { array: true })
   public scores: number[];
   @PrimaryColumn()
   public gameId: number;
 
   constructor(gameId: number, players: string[], scores: number[]) {
     this.gameId = gameId;
-    this.players = players;
+		this.players = players;
+    //this.player1 = players[0];
+    //this.player2 = players[1];
     this.scores = scores;
   }
 
@@ -26,7 +32,7 @@ export class GameStat {
   }
 
   getPlayers() {
-    return this.players;
+    return [ this.player1, this.player2 ];
   }
 
   getScores() {

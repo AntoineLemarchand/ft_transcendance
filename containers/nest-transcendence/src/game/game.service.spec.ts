@@ -223,16 +223,24 @@ describe('running a game', () => {
     expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
     expect(await gameService.getSavedGameById(gameObject.getId())).toBeDefined();
     expect(await gameService.getSavedGamesCount()).toBe(1);
+    expect(await gameService.getSavedGamesLastId()).toBe(0);
   });
+});
 
-  it('should return all the finished games', async () => {
+describe('saved games data', () => {
+	it('should not be undefined when game stat repository is empty', async() => {
+		expect(await gameService.getSavedGamesCount()).toBe(0);
+		expect(await gameService.getSavedGamesLastId()).toBe(0);
+	});
+  
+	it('should return all the finished games', async () => {
     const game1 = new GameObject(0, 'pépé', 'mémé');
     const game2 = new GameObject(1, 'hehe', 'haha');
     const game3 = new GameObject(2, 'huhu', 'hihi');
 
     game1.players[0].score = 10;
-    game2.players[1].score = 90;
-    game3.players[0].score = 90;
+    game2.players[1].score = 10;
+    game3.players[0].score = 10;
 
     await gameService.saveGameStat(game1);
     await gameService.saveGameStat(game2);
@@ -240,6 +248,22 @@ describe('running a game', () => {
 
     expect(await gameService.getSavedGames()).toBeDefined();
     expect(await gameService.getSavedGamesCount()).toBe(3);
+  });
+	
+	it('should return all the players\' finished games', async () => {
+    const game1 = new GameObject(0, 'pépé', 'mémé');
+    const game2 = new GameObject(1, 'mémé', 'pépé');
+    const game3 = new GameObject(2, 'huhu', 'hihi');
+
+    game1.players[0].score = 10;
+    game2.players[1].score = 10;
+    game3.players[0].score = 10;
+
+    await gameService.saveGameStat(game1);
+    await gameService.saveGameStat(game2);
+    await gameService.saveGameStat(game3);
+
+		expect(await gameService.getSavedGamesByPlayer()).toBeDefined();
   });
 });
 
