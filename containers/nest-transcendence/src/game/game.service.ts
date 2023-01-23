@@ -11,7 +11,7 @@ import {
   GameStat,
   Player,
 } from './game.entities';
-import { ErrUnAuthorized } from '../exceptions';
+import { ErrNotFound, ErrUnAuthorized } from '../exceptions';
 
 @Injectable()
 export class GameService {
@@ -163,5 +163,21 @@ export class GameService {
         return gameObject;
     }
     return undefined;
+  }
+
+  async beginSpectate(executorName: string, gameId: number) {
+    await this.currentGames.findOne(gameId);
+    await this.broadcastingGateway.putUserInRoom(
+      executorName,
+      gameId.toString(),
+    );
+  }
+
+  async endSpectate(executorName: string, gameId: number) {
+    await this.currentGames.findOne(gameId);
+    await this.broadcastingGateway.removeUserFromRoom(
+      executorName,
+      gameId.toString(),
+    );
   }
 }

@@ -31,6 +31,18 @@ export class GameController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('spectate')
+  async beginSpectating(@Request() req: any) {
+    await this.gameService.beginSpectate(req.user.name, req.body.gameId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('spectate')
+  async endSpectating(@Request() req: any) {
+    await this.gameService.endSpectate(req.user.name, req.body.gameId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Delete('setReady')
   async unsetReady(@Request() req: any) {
     await this.gameService.unsetReady(req.user.name, parseInt(req.body.gameId));

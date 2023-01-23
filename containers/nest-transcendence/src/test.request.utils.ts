@@ -24,15 +24,6 @@ export const addFriend = async (
     });
 };
 
-export const getFriends = async (
-  callerModule: INestApplication,
-  jwt: string,
-) => {
-  return request(callerModule.getHttpServer())
-    .get('/user/friend')
-    .set('Authorization', 'Bearer ' + jwt);
-};
-
 export const removeFriend = async (
   callerModule: INestApplication,
   jwt: string,
@@ -348,6 +339,33 @@ export async function setReadyForGame(
       gameId: gameId.toString(),
     });
 }
+
+export async function startSpectatingGame(
+  callerModule: INestApplication,
+  jwt: any,
+  gameId: number,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/game/spectate')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      gameId: gameId.toString(),
+    });
+}
+
+export async function endSpectatingGame(
+  callerModule: INestApplication,
+  jwt: any,
+  gameId: number,
+) {
+  return request(callerModule.getHttpServer())
+    .delete('/game/spectate')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      gameId: gameId.toString(),
+    });
+}
+
 
 export async function setNotReadyForGame(
   callerModule: INestApplication,

@@ -84,14 +84,17 @@ describe('making friends', () => {
   it('should increment the new friend', async () => {
     await userService.addFriend('executing user', 'target user');
 
-    const friends = (await userService.getUser('executing user'))?.friends;
-    expect(friends?.includes('target user')).toBeTruthy();
+    const friends = (
+      await (await userService.getUserInfo('executing user'))!.friends
+    ).map((element) => element.username);
+    expect(friends!.includes('target user')).toBeTruthy();
   });
 
   it('should return an array of friend names and their statuses', async () => {
     await userService.addFriend('executing user', 'target user');
 
-    const friends = await userService.getFriends('executing user');
+    const friends = await (await userService.getUserInfo('executing user'))!
+      .friends;
     expect(friends[0].status).toStrictEqual('offline');
   });
 
@@ -102,7 +105,8 @@ describe('making friends', () => {
     await userService.addFriend('executing user', 'online user');
     await userService.addFriend('executing user', 'offline user');
 
-    const friends = await userService.getFriends('executing user');
+    const friends = await (await userService.getUserInfo('executing user'))!
+      .friends;
     expect(friends[0].status).toStrictEqual('online');
     expect(friends[1].status).toStrictEqual('offline');
   });
@@ -112,14 +116,14 @@ describe('getting users by name', () => {
   it('should return undefined on not found', async () => {
     await userService.createUser(new User('executing user', 'password'));
 
-    const user = await userService.getUser('nonexisting user');
+    const user = await userService.getUserInfo('nonexisting user');
     expect(user).toBeUndefined();
   });
 
   it('should return user', async () => {
     await userService.createUser(new User('executing user', 'password'));
 
-    const user = await userService.getUser('executing user');
+    const user = await userService.getUserInfo('executing user');
     expect(user).toBeDefined();
   });
 });

@@ -37,7 +37,9 @@ export class BroadcastingGateway
     private userService: UserService,
     @Inject(forwardRef(() => GameService))
     private gameService: GameService,
-  ) {}
+  ) {
+    this.roomHandler = new RoomHandler(this.server);
+  }
 
   @UseGuards(WsGuard)
   @SubscribeMessage('messageToServer')
@@ -74,7 +76,6 @@ export class BroadcastingGateway
   }
 
   async handleConnection(client: Socket) {
-    if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);
     const username = this.getUsernameFromToken(client);
     const channelNames: string[] = (await (
       await this.userService.getUser(username)
@@ -91,8 +92,11 @@ export class BroadcastingGateway
   }
 
   async putUserInRoom(username: string, roomName: string) {
-    if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);
     await this.roomHandler.join(username, roomName);
+  }
+
+  async removeUserFromRoom(username: string, roomName: string) {
+    await this.roomHandler.leave(username, roomName);
   }
 
   private getUsernameFromToken(client: Socket) {
