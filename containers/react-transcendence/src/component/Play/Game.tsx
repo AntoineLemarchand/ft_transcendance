@@ -1,75 +1,83 @@
 import { useEffect, useState, useContext } from "react";
-import { useCookies } from 'react-cookie';
-
-import { SocketContext } from '../WebSocket';
-
+import { useCookies } from "react-cookie";
+import { SocketContext } from "../WebSocket";
 import "static/Play/Game.scss";
-//import GameStatus from "./GameStatus";
+import GameStatus from "./GameStatus";
 
-function Game(props: {firstMove: string}) {
+function Game(props: { firstMove: string }) {
   const context = useContext(SocketContext);
   const [currentMove, setCurrentMove] = useState(JSON.parse(props.firstMove));
-  const [cookies] = useCookies(['userInfo']);
-  const [leftPos, setLeftPos] = useState(0.5)
+  const [cookies] = useCookies(["userInfo"]);
+  const [leftPos, setLeftPos] = useState(0.5);
   const [rightPos, setRightPos] = useState(0.5);
+  const [score, setScore] = useState({ player1: 0, player2: 0 });
 
   const ballStyle = {
-    left: (parseFloat(currentMove.collision.coordinates.x) * 100) + "%",
-    bottom: (parseFloat(currentMove.collision.coordinates.y) * 100) + "%",
+    left: parseFloat(currentMove.collision.coordinates.x) * 100 + "%",
+    bottom: parseFloat(currentMove.collision.coordinates.y) * 100 + "%",
     transition: currentMove.collision.time + "s linear",
   };
 
   const LeftPaddleStyle = {
-      left: "0%",
-      bottom: leftPos * 100 + "%",
-      height: currentMove.players[0].bar.barHeight * 100 + "%",
+    left: "0%",
+    bottom: leftPos * 100 + "%",
+    height: currentMove.players[0].bar.barHeight * 100 + "%",
   };
 
   const RightPaddleStyle = {
-      right: "5%",
-      bottom: rightPos * 100 + "%",
-      height: currentMove.players[0].bar.barHeight * 100 + "%",
+    right: "5%",
+    bottom: rightPos * 100 + "%",
+    height: currentMove.players[0].bar.barHeight * 100 + "%",
   };
 
   const keyDownHandler = (event: any) => {
-    if (event.repeat)
-      return;
+    if (event.repeat) return;
     if (event.code === "ArrowUp") {
-      context.socket!.emit("gameUpdateToServer", JSON.stringify({
-        'username': cookies['userInfo'].name,
-        'action': 'startUp',
-        'timeStamp': Date.now(),
-        'gameId': currentMove.gameId,
-      }));
-
+      context.socket!.emit(
+        "gameUpdateToServer",
+        JSON.stringify({
+          username: cookies["userInfo"].name,
+          action: "startUp",
+          timeStamp: Date.now(),
+          gameId: currentMove.gameId,
+        })
+      );
     } else if (event.code === "ArrowDown") {
-      context.socket!.emit("gameUpdateToServer", JSON.stringify({
-        'username': cookies['userInfo'].name,
-        'action': 'startDown',
-        'timeStamp': Date.now(),
-        'gameId': currentMove.gameId,
-      }));
+      context.socket!.emit(
+        "gameUpdateToServer",
+        JSON.stringify({
+          username: cookies["userInfo"].name,
+          action: "startDown",
+          timeStamp: Date.now(),
+          gameId: currentMove.gameId,
+        })
+      );
     }
   };
 
   const keyUpHandler = (event: any) => {
     if (event.code === "ArrowUp") {
-      context.socket!.emit("gameUpdateToServer", JSON.stringify({
-        'username': cookies['userInfo'].name,
-        'action': 'endUp',
-        'timeStamp': Date.now(),
-        'gameId': currentMove.gameId,
-      }));
+      context.socket!.emit(
+        "gameUpdateToServer",
+        JSON.stringify({
+          username: cookies["userInfo"].name,
+          action: "endUp",
+          timeStamp: Date.now(),
+          gameId: currentMove.gameId,
+        })
+      );
     } else if (event.code === "ArrowDown") {
-      context.socket!.emit("gameUpdateToServer", JSON.stringify({
-        'username': cookies['userInfo'].name,
-        'action': 'endDown',
-        'timeStamp': Date.now(),
-        'gameId': currentMove.gameId,
-      }));
+      context.socket!.emit(
+        "gameUpdateToServer",
+        JSON.stringify({
+          username: cookies["userInfo"].name,
+          action: "endDown",
+          timeStamp: Date.now(),
+          gameId: currentMove.gameId,
+        })
+      );
     }
   };
-
 
   useEffect(() => {
     window.addEventListener("keydown", keyDownHandler);
@@ -80,33 +88,49 @@ function Game(props: {firstMove: string}) {
     };
   }, []);
 
+  const updateScore = (scoreP1: number, scoreP2: number) => {
+    setScore({ player1: scoreP1, player2: scoreP2 });
+  };
+
   useEffect(() => {
     const messageListener = (payload: string) => {
       setCurrentMove(JSON.parse(payload));
-    }
+      updateScore(
+        JSON.parse(payload).players[0].score,
+        JSON.parse(payload).players[1].score
+      );
+    };
     if (!context.socket) {
-    context.initSocket() &&
-    context.socket!.on("gameUpdateToClient", messageListener)
-  } else {
-    context.socket.on("gameUpdateToClient", messageListener)
-  }
-  return (() => {context.socket &&
-    context.socket.off("gameUpdateToClient", messageListener)});
-}, [context.socket])
+      context.initSocket() &&
+        context.socket!.on("gameUpdateToClient", messageListener);
+    } else {
+      context.socket.on("gameUpdateToClient", messageListener);
+    }
+    return () => {
+      context.socket &&
+        context.socket.off("gameUpdateToClient", messageListener);
+    };
+  }, [context.socket]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       const leftBar = currentMove.players[0].bar;
-      setLeftPos(leftBar.position.y +
-        (Date.now() - leftBar.movement.startTimeStamp) / 1000 *
-        leftBar.movement.direction * leftBar.speed)
+      setLeftPos(
+        leftBar.position.y +
+          ((Date.now() - leftBar.movement.startTimeStamp) / 1000) *
+            leftBar.movement.direction *
+            leftBar.speed
+      );
       const rightBar = currentMove.players[1].bar;
-      setRightPos(rightBar.position.y +
-        (Date.now() - rightBar.movement.startTimeStamp) / 1000 *
-        rightBar.movement.direction * rightBar.speed)
-    }, 100)
-    return (() => clearInterval(interval))
-  })
+      setRightPos(
+        rightBar.position.y +
+          ((Date.now() - rightBar.movement.startTimeStamp) / 1000) *
+            rightBar.movement.direction *
+            rightBar.speed
+      );
+    }, 100);
+    return () => clearInterval(interval);
+  });
 
   return (
     <div className="container">
@@ -116,6 +140,7 @@ function Game(props: {firstMove: string}) {
         <span className="player right" style={RightPaddleStyle} />
         <span className="ball" style={ballStyle} />
       </div>
+      <GameStatus score={score} />
     </div>
   );
 }
