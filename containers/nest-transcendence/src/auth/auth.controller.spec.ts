@@ -101,11 +101,10 @@ describe('AuthController', () => {
   it('should load an image on user signin with image file', async () => {
     const testImage: Buffer = Buffer.from('test image buffer');
 
-    console.log((await testUtils.signinUser(app, 'Ginette', 'camemb3rt', testImage)).body);
+    await testUtils.signinUser(app, 'Ginette', 'camemb3rt', testImage);
     const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
     const result = await testUtils.getUserData(app, jwt, 'Ginette');
 
-    console.log(result.body);
     expect(result.body.userInfo.image).toBeDefined();
     expect(result.body.userInfo.imageFormat).toBe('image/png');
   })
