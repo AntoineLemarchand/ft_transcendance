@@ -388,3 +388,21 @@ export const getSavedGamesCount = async (
     .get('/game/getSavedGamesCount')
     .set('Authorization', 'Bearer ' + jwt);
 };
+
+export const getSavedGamesByPlayer = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getSavedGamesByPlayer')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getWonGamesByPlayer = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getWonGamesByPlayer')
+    .set('Authorization', 'Bearer ' + jwt);
+};

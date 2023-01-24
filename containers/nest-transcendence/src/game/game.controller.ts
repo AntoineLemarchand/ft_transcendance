@@ -68,4 +68,18 @@ export class GameController {
     const savedGamesCount = await this.gameService.getSavedGamesCount();
     return { games: savedGamesCount };
   }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('getSavedGamesByPlayer')
+  async getSavedGamesByPlayer() {
+    const savedGamesByPlayer = await this.gameService.getSavedGamesByPlayer();
+    return { games: savedGamesByPlayer };
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('getWonGamesByPlayer')
+  async getWonGamesByPlayer() {
+    const wonGamesByPlayer = await this.gameService.getWonGamesByPlayer();
+    return { games: wonGamesByPlayer };
+  }
 }

@@ -27,6 +27,8 @@ export class GameService {
 
   async initGame(player1name: string, player2name: string) {
     await this.areValidPlayers(player1name, player2name);
+    //if (this.currentGames.getCurrentId() == 0)
+      //this.currentGames.setCurrentId(this.getSavedGamesLastId());
     const result = this.currentGames.create(player1name, player2name);
     await this.createRoom(player1name, result.getId(), player2name);
     return result;
@@ -137,8 +139,8 @@ export class GameService {
     await this.gameRepository.save(
       new GameStat(
         game.getId(),
-        game.players[0].name, 
-        game.players[1].name, 
+        game.getPlayerNames()[0], 
+        game.getPlayerNames()[1], 
         game.getPlayerScores()[0],
         game.getPlayerScores()[1]
       ),
@@ -160,8 +162,8 @@ export class GameService {
   }
 
 	async getSavedGamesLastId() { 
-		const query = this.gameRepository.createQueryBuilder("GameStat");
-		const result = await query.select("MAX(GameStat.gameId)", "max").getRawOne();
+    const query = this.gameRepository.createQueryBuilder("GameStat");
+    const result = await query.select("MAX(GameStat.gameId)", "max").getRawOne();
 		if (!result.max) return 0;
 		else return result.max;
 	}
@@ -174,9 +176,17 @@ export class GameService {
         { player2: player },
       ]
     });
-    //const result = await this.gameRepository.findBy({
-        //players: ArrayContains([player]), 
-    //});
     if (result) return result;
 	}
+
+  async getWonGamesByPlayer(player: string)
+    : Promise<GameStat[] | undefined> {
+    const result = this.gameRepository.find({
+      where: [
+        { player1: player, score1: 10 },
+        { player2: player, score2: 10 },
+      ]
+    });
+    if (result) return result;
+  }
 }

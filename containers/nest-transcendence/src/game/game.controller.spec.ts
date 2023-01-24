@@ -238,4 +238,22 @@ describe('fetching saved games', () => {
    
     expect(spy).toHaveBeenCalled();
   });
+  
+  it('should call getSavedGamesByPlayer func', async function () {
+    const spy = jest.spyOn(gameService, 'getSavedGamesByPlayer');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    
+    await testUtils.getSavedGamesByPlayer(app, jwt);
+   
+    expect(spy).toHaveBeenCalled();
+  });
+  
+it('should call getWonGamesByPlayer func', async function () {
+  const spy = jest.spyOn(gameService, 'getWonGamesByPlayer');
+  const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+  
+  await testUtils.getWonGamesByPlayer(app, jwt);
+ 
+  expect(spy).toHaveBeenCalled();
+});
 });

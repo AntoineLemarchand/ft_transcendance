@@ -1,17 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { GameObject, GameStat } from './game.entities';
-import { GameService } from './game.service';
 import { ErrNotFound } from '../exceptions';
-
-let gameService: GameService;
 
 @Injectable()
 export class GameObjectRepository {
   private currentGames = new Map<number, GameObject>();
-	//private currentId = gameService.getSavedGamesLastId() + 1;
-	private currentId = 0;
+  //private currentId = gameService.getSavedGamesLastId() + 1;
+  private currentId = 0;
 
   constructor() {}
+  
+  setCurrentId(lastGameId: number) {
+    this.currentId = lastGameId + 1;
+  }
+  
+  getCurrentId() {
+    return this.currentId;
+  }
 
   findAll(): GameObject[] {
     return Array.from(this.currentGames.values());
