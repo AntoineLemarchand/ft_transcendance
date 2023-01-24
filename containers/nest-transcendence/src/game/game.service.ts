@@ -27,8 +27,9 @@ export class GameService {
 
   async initGame(player1name: string, player2name: string) {
     await this.areValidPlayers(player1name, player2name);
-    //if (this.currentGames.getCurrentId() == 0)
-      //this.currentGames.setCurrentId(this.getSavedGamesLastId());
+    if (await this.getSavedGamesCount() != 0 && this.currentGames.getCurrentId() == 0) {
+      this.currentGames.setCurrentId(this.getSavedGamesLastId());
+    }
     const result = this.currentGames.create(player1name, player2name);
     await this.createRoom(player1name, result.getId(), player2name);
     return result;
