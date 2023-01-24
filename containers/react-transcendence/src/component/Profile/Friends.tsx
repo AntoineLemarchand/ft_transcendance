@@ -1,7 +1,7 @@
 import 'static/Profile/Friends.scss'
 import { Link } from 'react-router-dom'
 
-function Friends(props: {isSelected: boolean, friends: string[]}) {
+function Friends(props: {isSelected: boolean, friends: {username: string, status: string}[]}) {
   const statusColor = (status: string) => {
     if (status === 'in game')
       return {background: '#b16286',}
@@ -20,12 +20,12 @@ function Friends(props: {isSelected: boolean, friends: string[]}) {
       {
         props.friends.map((friend: any, idx: number) => {
           return (
-            <Link to={'/profile/' + friend} className="friend" key={idx}>
+            <Link to={'/profile/' + friend.username} className="friend" key={idx}>
               <img alt="friend avatar"/>
-              <p>{friend}</p>
+              <p>{friend.username}</p>
               <div className="status">
-                <p>{}</p>
-                <span style={statusColor('online')}/>
+                <p>{friend.status}</p>
+                <span style={statusColor(friend.status)}/>
               </div>
             </Link>
           )

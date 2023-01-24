@@ -20,7 +20,7 @@ function ProfileBadge(props: {
   const navigate = useNavigate();
 
   const AddFriend = () => {
-    fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/user/friend", {
+    fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/user/info", {
       credentials: "include",
       method: "GET",
       headers: {
@@ -28,8 +28,11 @@ function ProfileBadge(props: {
       },
     }).then((response) => {
       response.text().then((content) => {
+        console.log(content);
         const method =
-          JSON.parse(content).friends.indexOf(props.shownUser.name) > -1
+          JSON.parse(content).userInfo.friends.findIndex(
+          (friend: {name: string, status: string}) =>
+            friend.name === props.shownUser.name) === undefined
             ? "DELETE"
             : "POST";
         fetch(
