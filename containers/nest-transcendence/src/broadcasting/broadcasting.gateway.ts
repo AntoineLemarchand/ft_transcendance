@@ -85,7 +85,6 @@ export class BroadcastingGateway
   }
 
   async handleDisconnect(client: Socket) {
-    throw new Error("disconnect calles");
     const username = this.getUsernameFromToken(client);
     const channelNames: string[] = (await (
       await this.userService.getUser(username)
