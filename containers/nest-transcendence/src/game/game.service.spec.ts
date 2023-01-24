@@ -250,7 +250,7 @@ describe('saved games data', () => {
     expect(await gameService.getSavedGamesCount()).toBe(3);
   });
 	
-	it('should return all the players\' finished games', async () => {
+	it('should return all the player\'s finished games', async () => {
     const game1 = new GameObject(0, 'pépé', 'mémé');
     const game2 = new GameObject(1, 'mémé', 'pépé');
     const game3 = new GameObject(2, 'huhu', 'hihi');
@@ -263,7 +263,7 @@ describe('saved games data', () => {
     await gameService.saveGameStat(game2);
     await gameService.saveGameStat(game3);
 
-		expect(await gameService.getSavedGamesByPlayer()).toBeDefined();
+		expect(await gameService.getSavedGamesByPlayer('pépé')).toBeDefined();
   });
 });
 

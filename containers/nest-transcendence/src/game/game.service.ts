@@ -3,7 +3,7 @@ import { UserService } from '../user/user.service';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ArrayContains } from 'typeorm';
 import {
   GameInput,
   GameObject,
@@ -135,7 +135,13 @@ export class GameService {
 
   async saveGameStat(game: GameObject) {
     await this.gameRepository.save(
-      new GameStat(game.getId(), game.getPlayerNames(), game.getPlayerScores()),
+      new GameStat(
+        game.getId(),
+        game.players[0].name, 
+        game.players[1].name, 
+        game.getPlayerScores()[0],
+        game.getPlayerScores()[1]
+      ),
     );
   }
 
@@ -153,19 +159,24 @@ export class GameService {
     return await this.gameRepository.count();
   }
 
-	async getSavedGamesLastId() {
+	async getSavedGamesLastId() { 
 		const query = this.gameRepository.createQueryBuilder("GameStat");
 		const result = await query.select("MAX(GameStat.gameId)", "max").getRawOne();
 		if (!result.max) return 0;
 		else return result.max;
 	}
 
-	async getSavedGamesByPlayer(player: string) {
-		//this.gameRepository.find({
-			//where: [
-				//{ player1: player },
-				//{ player2: player },
-			//]
-		//});	
+	async getSavedGamesByPlayer(player: string) 
+    : Promise<GameStat[] | undefined> {
+    const result = this.gameRepository.find({
+      where: [
+        { player1: player },
+        { player2: player },
+      ]
+    });
+    //const result = await this.gameRepository.findBy({
+        //players: ArrayContains([player]), 
+    //});
+    if (result) return result;
 	}
 }
