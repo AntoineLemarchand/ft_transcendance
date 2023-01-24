@@ -101,7 +101,6 @@ function Profile(props: {user: any}) {
 		}).then((result) => {
       if (result.status === 404) {navigate('/profile')}
 			result.text().then((text)=> {
-        console.log(text);
 				setUser(JSON.parse(text).userInfo);
 			});
 		})
