@@ -30,6 +30,7 @@ function Main(props: {component: any}) {
 	const ProcessLogout = () => {
     removeCookie('auth', {path: '/'});
     removeCookie('userInfo', {path: '/'});
+    context.socket?.close();
 		navigate('/');
 	}
 
