@@ -1,8 +1,8 @@
 import { Server, Socket } from 'socket.io';
 import { Injectable } from '@nestjs/common';
+import { OnGatewayInit } from '@nestjs/websockets';
 
-@Injectable()
-export class RoomHandler {
+export class RoomHandler implements OnGatewayInit {
   constructor(public server: Server) {}
 
   instanceMap = new Map<string, string[]>();
@@ -59,5 +59,9 @@ export class RoomHandler {
 
   isUserOnline(username: string) {
     return this.getDeviceIdsFor(username).length > 0;
+  }
+
+  afterInit(server: any): any {
+    this.server = server;
   }
 }
