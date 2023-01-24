@@ -4,6 +4,7 @@ import {
   Get,
   Post,
   Request,
+  Res,
   UseGuards,
   Param,
   HttpException,
@@ -46,6 +47,16 @@ export class UserController {
     if (result === undefined)
       throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
     return { userInfo: result };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('image/:username')
+  async getImage( @Param() params: any, @Res() res: any): Promise<void> {
+    const result = await this.userService.getUserInfo(params.username);
+    if (!result)
+      throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
+    res.contentType(result.imageFormat);
+    res.send(result.image);
   }
 
   @UseGuards(JwtAuthGuard)
