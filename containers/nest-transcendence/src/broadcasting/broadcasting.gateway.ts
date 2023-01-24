@@ -1,10 +1,10 @@
 import {
   OnGatewayConnection,
-  OnGatewayDisconnect,
+  OnGatewayDisconnect, OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer,
-} from '@nestjs/websockets';
+  WebSocketServer
+} from "@nestjs/websockets";
 import { Server, Socket } from 'socket.io';
 import { forwardRef, Inject, UseGuards } from '@nestjs/common';
 import { WsGuard } from '../auth/websocket.auth.guard';
@@ -24,7 +24,7 @@ import { GameService } from '../game/game.service';
   },
 })
 export class BroadcastingGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
+  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
   @WebSocketServer()
   server: Server;
@@ -37,9 +37,7 @@ export class BroadcastingGateway
     private userService: UserService,
     @Inject(forwardRef(() => GameService))
     private gameService: GameService,
-  ) {
-    this.roomHandler = new RoomHandler(this.server);
-  }
+  ) {}
 
   @UseGuards(WsGuard)
   @SubscribeMessage('messageToServer')
@@ -107,5 +105,9 @@ export class BroadcastingGateway
     } catch (e) {
       console.log('not properly encoded token');
     }
+  }
+
+  afterInit(server: any): any {
+    this.roomHandler = new RoomHandler(this.server);
   }
 }
