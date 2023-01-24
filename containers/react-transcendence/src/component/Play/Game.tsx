@@ -13,10 +13,10 @@ function Game(props: { firstMove: string }) {
   const [score, setScore] = useState({ player1: 0, player2: 0 });
 
   const ballStyle = {
-    width: '4%',
-    height: '4%',
-    left: (parseFloat(currentMove.collision.coordinates.x + 0.02) * 100) + "%",
-    bottom: (parseFloat(currentMove.collision.coordinates.y + 0.02) * 100) + "%",
+    width: '2rem',
+    height: '2rem',
+    left: 'calc(' + currentMove.collision.coordinates.x * 100 + "% - 1rem)",
+    bottom: 'calc(' + currentMove.collision.coordinates.y * 100 + "% - 1rem)",
     transition: currentMove.collision.time + "s linear",
   };
 
