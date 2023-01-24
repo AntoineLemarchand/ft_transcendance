@@ -4,6 +4,8 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 export class User {
   @Column({type: 'bytea'})
   public image: Buffer;
+  @Column('text')
+  public imageFormat: string | undefined;
   @Column('text', { array: true })
   public friends: string[] = [];
   @Column('text', { array: true })
@@ -18,13 +20,17 @@ export class User {
   })
   public password: string;
 
-  constructor(name: string, password: string, image?: Buffer) {
+  constructor(name: string, password: string, image?: Express.Multer.File) {
     this.password = password;
     this.name = name;
-    if (image)
-      this.image = image
-    else
+    if (image) {
+      this.image = image.buffer;
+      this.imageFormat = image.mimetype;
+    }
+    else {
       this.image = Buffer.from('');
+      this.imageFormat = '';
+    }
   }
 
   getName() {
