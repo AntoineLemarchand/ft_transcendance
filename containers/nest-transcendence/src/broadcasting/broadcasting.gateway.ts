@@ -1,10 +1,11 @@
 import {
   OnGatewayConnection,
-  OnGatewayDisconnect, OnGatewayInit,
+  OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer
-} from "@nestjs/websockets";
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { forwardRef, Inject, UseGuards } from '@nestjs/common';
 import { WsGuard } from '../auth/websocket.auth.guard';
@@ -37,7 +38,9 @@ export class BroadcastingGateway
     private userService: UserService,
     @Inject(forwardRef(() => GameService))
     private gameService: GameService,
-  ) {}
+  ) {
+    this.roomHandler = new RoomHandler(this.server);
+  }
 
   @UseGuards(WsGuard)
   @SubscribeMessage('messageToServer')
@@ -82,6 +85,7 @@ export class BroadcastingGateway
   }
 
   async handleDisconnect(client: Socket) {
+    throw new Error("disconnect calles");
     const username = this.getUsernameFromToken(client);
     const channelNames: string[] = (await (
       await this.userService.getUser(username)
@@ -109,5 +113,9 @@ export class BroadcastingGateway
 
   afterInit(server: any): any {
     this.roomHandler = new RoomHandler(this.server);
+  }
+
+  getRoomHandler() {
+    return this.roomHandler;
   }
 }

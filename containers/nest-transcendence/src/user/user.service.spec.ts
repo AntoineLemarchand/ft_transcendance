@@ -12,10 +12,35 @@ import { GameObject, GameStat } from '../game/game.entities';
 import { GameService } from '../game/game.service';
 import { UserModule } from './user.module';
 import { RoomHandler } from '../broadcasting/broadcasting.roomHandler';
+import { Socket, Server } from 'socket.io';
 
+//the mocks are required to test without opening a real Socket.io Gateway on every test
 jest.spyOn(Channel.prototype, 'addMessage');
-jest.spyOn(BroadcastingGateway.prototype, 'emitMessage');
 jest.mock('../broadcasting/broadcasting.gateway');
+jest.mock('socket.io', () => {
+  return {
+    Socket: jest.fn().mockImplementation(() => {
+      return {
+        join: jest.fn().mockImplementation((username: string) => {}),
+        leave: jest.fn().mockImplementation((deviceId: string) => {}),
+      };
+    }),
+    Server: jest.fn().mockImplementation(() => {
+      return {
+        sockets: {
+          sockets: new Map<string, Socket>([
+            // @ts-ignore
+            ['defaultDeviceId', new Socket()],
+            // @ts-ignore
+            ['deviceId0', new Socket()],
+            // @ts-ignore
+            ['deviceId1', new Socket()],
+          ]),
+        },
+      };
+    }),
+  };
+});
 
 let userService: UserService;
 let app: INestApplication;
@@ -44,9 +69,16 @@ beforeEach(async () => {
   app = module.createNestApplication();
   userService = app.get<UserService>(UserService);
   gameService = app.get<GameService>(GameService);
-  roomHandler = app.get<RoomHandler>(RoomHandler);
+  //since we mocked the Gateway but need the roomhandler we need this
+  jest
+    .spyOn(BroadcastingGateway.prototype, 'getRoomHandler')
+    .mockImplementation(() => {
+      return new RoomHandler(new Server());
+    });
+  roomHandler = gameService.broadcastingGateway.getRoomHandler();
   await app.init();
-  await userService.createUser(new User('Thomas', 'test'));
+  await userService.createUser(new User('online user', 'test'));
+  await userService.createUser(new User('offline user', 'test'));
 });
 
 describe('creating a user', () => {
@@ -101,9 +133,14 @@ describe('making friends', () => {
   it('should return an array of online and offline friends', async () => {
     await userService.createUser(new User('online user', 'password'));
     await userService.createUser(new User('offline user', 'password'));
-    roomHandler.addUserInstance('online user', 'deviceId');
     await userService.addFriend('executing user', 'online user');
     await userService.addFriend('executing user', 'offline user');
+    jest
+      .spyOn(RoomHandler.prototype, 'isUserOnline')
+      .mockImplementation((username: string) => {
+        if (username === 'online user') return true;
+        return false;
+      });
 
     const friends = await (await userService.getUserInfo('executing user'))!
       .friends;
@@ -130,14 +167,14 @@ describe('getting users by name', () => {
 
 describe('getting the user state', () => {
   it('should return offline for a user who has no connected deviceIds', function () {
-    const result = userService.getStatus('Thomas');
+    const result = userService.getStatus('offline user');
 
     expect(result).toStrictEqual('offline');
   });
 
   it('should return online for a user who has one or more connected deviceIds', function () {
-    roomHandler.addUserInstance('Thomas', 'deviceId');
-    const result = userService.getStatus('Thomas');
+    roomHandler.addUserInstance('online user', 'deviceId');
+    const result = userService.getStatus('online user');
 
     expect(result).toStrictEqual('online');
   });
@@ -148,7 +185,7 @@ describe('getting the user state', () => {
       .mockImplementation((username: string) => {
         return new GameObject(0, username, '');
       });
-    const result = userService.getStatus('Thomas');
+    const result = userService.getStatus('online user');
 
     expect(result).toStrictEqual('inGame');
   });

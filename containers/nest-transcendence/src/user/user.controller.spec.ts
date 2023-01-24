@@ -6,8 +6,36 @@ import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
 import { User } from '../typeorm';
 import { UserService } from './user.service';
 import { createTestModule } from '../test.module.utils';
+import { Server, Socket } from "socket.io";
+import { BroadcastingGateway } from "../broadcasting/broadcasting.gateway";
+import { RoomHandler } from "../broadcasting/broadcasting.roomHandler";
 
+//the mocks are required to test without opening a real Socket.io Gateway on every test
 jest.mock('../broadcasting/broadcasting.gateway');
+jest.mock('socket.io', () => {
+  return {
+    Socket: jest.fn().mockImplementation(() => {
+      return {
+        join: jest.fn().mockImplementation((username: string) => {}),
+        leave: jest.fn().mockImplementation((deviceId: string) => {}),
+      };
+    }),
+    Server: jest.fn().mockImplementation(() => {
+      return {
+        sockets: {
+          sockets: new Map<string, Socket>([
+            // @ts-ignore
+            ['defaultDeviceId', new Socket()],
+            // @ts-ignore
+            ['deviceId0', new Socket()],
+            // @ts-ignore
+            ['deviceId1', new Socket()],
+          ]),
+        },
+      };
+    }),
+  };
+});
 jest.mock('@nestjs/typeorm', () => {
   const original = jest.requireActual('@nestjs/typeorm');
   original.TypeOrmModule.forRoot = jest
@@ -19,6 +47,11 @@ jest.mock('@nestjs/typeorm', () => {
     ...original,
   };
 });
+jest
+  .spyOn(BroadcastingGateway.prototype, 'getRoomHandler')
+  .mockImplementation(() => {
+    return new RoomHandler(new Server());
+  });
 
 let app: INestApplication;
 let userService: UserService;
@@ -165,6 +198,18 @@ describe('Getting user info', () => {
     expect(result.body.usernames[1]).toEqual('Tom');
     expect(result.body.usernames[2]).toEqual('Camembert');
   });
+
+  it('should return 200 and an image', async () => {
+    const testImage: Buffer = Buffer.from('test image buffer');
+    await testUtils.signinUser(app, 'camembert', 'password', testImage);
+
+    const result = await request(app.getHttpServer())
+      .get('/user/image/camembert')
+      .set('Authorization', 'Bearer ' + jwt);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toStrictEqual(Buffer.from('test image buffer'));
+  })
 });
 
 describe('Login', () => {

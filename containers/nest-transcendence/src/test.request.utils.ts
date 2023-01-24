@@ -52,7 +52,14 @@ export const signinUser = async (
   callerModule: INestApplication,
   username: string,
   password: string,
+  image?: Buffer,
 ) => {
+  
+  if (image)
+    return request(callerModule.getHttpServer()).post('/auth/signin')
+      .field('username', username)
+      .field('password', password)
+      .attach("image", image, "test.png");
   return request(callerModule.getHttpServer()).post('/auth/signin').send({
     username: username,
     password: password,

@@ -97,4 +97,24 @@ describe('AuthController', () => {
     expect(result.body.userInfo).toBeDefined();
     expect(result.body.userInfo.channelNames[0]).toBe('welcome');
   });
+
+  it('should load an image on user signin with image file', async () => {
+    const testImage: Buffer = Buffer.from('test image buffer');
+
+    await testUtils.signinUser(app, 'Ginette', 'camemb3rt', testImage);
+    const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
+    const result = await testUtils.getUserData(app, jwt, 'Ginette');
+
+    expect(result.body.userInfo.image).toBeDefined();
+    expect(result.body.userInfo.imageFormat).toBe('image/png');
+  })
+
+  it('should load an empty buffer on user signin without image file', async () => {
+    await testUtils.signinUser(app, 'Ginette', 'camemb3rt');
+    const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
+    const result = await testUtils.getUserData(app, jwt, 'Ginette');
+
+    expect(result.body.userInfo.image).toBeDefined();
+    expect(result.body.userInfo.imageFormat).toBe('');
+  })
 });

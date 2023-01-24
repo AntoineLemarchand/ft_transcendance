@@ -19,7 +19,7 @@ export class GameService {
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
     @Inject(forwardRef(() => BroadcastingGateway))
-    private broadcastingGateway: BroadcastingGateway,
+    public broadcastingGateway: BroadcastingGateway,
     private currentGames: GameObjectRepository,
     @InjectRepository(GameStat)
     private readonly gameRepository: Repository<GameStat>,
@@ -72,11 +72,15 @@ export class GameService {
     while (game.getProgress() !== GameProgress.FINISHED) {
       game.executeStep();
       this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
-      await new Promise((resolve) =>
-        setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
-      );
+      await this.sleepUntilCollision(game);
     }
     await this.saveGameStat(game);
+  }
+
+  async sleepUntilCollision(game: GameObject) {
+    await new Promise((resolve) =>
+      setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact())
+    );
   }
 
   private async prohibitNonPlayerActions(

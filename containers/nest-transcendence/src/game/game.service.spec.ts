@@ -43,6 +43,9 @@ beforeEach(async () => {
   userService = module.get<UserService>(UserService);
   currentGames = module.get<GameObjectRepository>(GameObjectRepository);
   broadcastingGateway = module.get<BroadcastingGateway>(BroadcastingGateway);
+  jest
+    .spyOn(GameService.prototype, 'sleepUntilCollision')
+    .mockImplementation(async (game: GameObject) => {});
   await userService.createUser(new User('player1', 'admin'));
   await userService.createUser(new User('player42', 'test'));
   await userService.createUser(new User('outsider', 'password'));
@@ -50,7 +53,7 @@ beforeEach(async () => {
 
 async function finishAGame(p1: string, p2: string) {
   const gameObject = await gameService.initGame(p1, p2);
-  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 100000);
   await gameService.setReady(p2, gameObject.getId());
   await gameService.runGame(gameObject);
   // do not put before run game, else await will not work
@@ -193,7 +196,7 @@ describe('running a game', () => {
       .spyOn(broadcastingGateway, 'emitGameUpdate')
       .mockImplementation(jest.fn());
     const gameObject = new GameObject(0, 'p1', 'p2');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
     gameObject.players[0].score = 8;
 
     await gameService.runGame(gameObject);
@@ -206,7 +209,7 @@ describe('running a game', () => {
       .spyOn(broadcastingGateway, 'emitGameUpdate')
       .mockImplementation(jest.fn());
     const gameObject = new GameObject(0, 'p1', 'p2');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
     gameObject.players[0].score = 9;
 
     await gameService.runGame(gameObject);
@@ -216,7 +219,7 @@ describe('running a game', () => {
 
   it('should save game once it is finished', async () => {
     const gameObject = new GameObject(0, 'pépé', 'mémé');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
     gameObject.players[0].score = 9;
 
     await gameService.runGame(gameObject);
@@ -417,7 +420,9 @@ describe('spectating a game', () => {
 
   it('should request the gateway to remove the user into the game room when ending spectating', async function () {
     const gameObject = await gameService.initGame('player1', 'player42');
-    const spy = jest.spyOn(broadcastingGateway, 'removeUserFromRoom').mockReset();
+    const spy = jest
+      .spyOn(broadcastingGateway, 'removeUserFromRoom')
+      .mockReset();
 
     await gameService.endSpectate('outsider', gameObject.getId());
 

@@ -12,6 +12,7 @@ import {
 } from '../exceptions';
 import { RoomHandler } from '../broadcasting/broadcasting.roomHandler';
 import { GameService } from '../game/game.service';
+import { BroadcastingGateway } from "../broadcasting/broadcasting.gateway";
 
 @Injectable()
 export class UserService {
@@ -19,8 +20,8 @@ export class UserService {
     @Inject(forwardRef(() => ChannelService))
     private channelService: ChannelService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @Inject(forwardRef(() => RoomHandler))
-    private roomHandler: RoomHandler,
+    @Inject(forwardRef(() => BroadcastingGateway))
+    private broadcastingGateway: BroadcastingGateway,
     @Inject(forwardRef(() => GameService))
     private gameService: GameService,
   ) {}
@@ -149,7 +150,8 @@ export class UserService {
 
   getStatus(username: string) {
     if (this.gameService.getRunningGameForUser(username)) return 'inGame';
-    if (this.roomHandler.isUserOnline(username)) return 'online';
+    if (this.broadcastingGateway.getRoomHandler().isUserOnline(username))
+      return 'online';
     return 'offline';
   }
 }
