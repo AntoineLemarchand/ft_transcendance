@@ -83,12 +83,26 @@ describe('setting up a game', () => {
   });
 
   it('should put both players in a socket room', async function () {
-    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom');
+    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom').mockReset();
 
     const game = await gameService.initGame('player1', 'player42');
 
     expect(spy).toHaveBeenCalledWith('player1', game.getId().toString());
     expect(spy).toHaveBeenCalledWith('player42', game.getId().toString());
+  });
+
+  it('should return the existing game instead of creating a new one for a vs b and b vs a', async function () {
+    const game1 = await gameService.initGame('player1', 'player42');
+    const game2 = await gameService.initGame('player42', 'player1');
+
+    expect(game1.getId()).toBe(game2.getId());
+  });
+
+  it('should return a new game if players have finished the old game', async function () {
+    const game1 = await finishAGame('player1', 'player42');
+    const game2 = await gameService.initGame('player1', 'player42');
+
+    expect(game1.getId()).not.toBe(game2.getId());
   });
 });
 describe('starting a game', () => {

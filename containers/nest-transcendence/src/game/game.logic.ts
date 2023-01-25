@@ -117,8 +117,8 @@ export class PlayerBar {
           1000) *
           this.speed,
     };
-    if (result.y < 0) result.y = 0;
-    if (result.y > 1) result.y = 1;
+    if (result.y < this.barHeight / 2) result.y = this.barHeight / 2;
+    if (result.y > 1 - this.barHeight / 2) result.y = 1 - this.barHeight / 2;
     return result;
   }
 
