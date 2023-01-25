@@ -443,3 +443,76 @@ describe('spectating a game', () => {
     expect(spy).toHaveBeenCalledWith('outsider', gameObject.getId().toString());
   });
 });
+
+describe('matchmaking', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(gameService, 'initGame')
+      .mockImplementation(async (s1: string, s2: string) => {
+        return new GameObject(0, s1, s2);
+      });
+  });
+
+  it('should not emit a message to the waiting room when only one user in the queue', function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    gameService.joinMatchMaking('player1');
+
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should emit a message to the waiting room as soon as a second user tries to find a match', function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    gameService.joinMatchMaking('player1');
+    gameService.joinMatchMaking('player2');
+
+    expect(spy).toHaveBeenCalledWith('player1', 'player2');
+  });
+
+  it('should not emit a message to the waiting room when one user in the queue twice', function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    gameService.joinMatchMaking('player1');
+    gameService.joinMatchMaking('player1');
+
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should emit two messages when creating four games', function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    gameService.joinMatchMaking('player1');
+    gameService.joinMatchMaking('player2');
+    gameService.joinMatchMaking('player3');
+    gameService.joinMatchMaking('player4');
+
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+
+  it('should put a waiting user in the waiting room on requesting a match', function () {
+    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom').mockReset();
+    gameService.joinMatchMaking('player1');
+
+    expect(spy).toHaveBeenCalledWith('player1', '_waiting_room_');
+  });
+
+  it('should empty the waiting room once a game has created', function () {
+    const spy = jest
+      .spyOn(broadcastingGateway, 'removeUserFromRoom')
+      .mockReset();
+    gameService.joinMatchMaking('player1');
+    gameService.joinMatchMaking('player42');
+
+    expect(spy).toHaveBeenCalledWith('player1', '_waiting_room_');
+    expect(spy).toHaveBeenCalledWith('player42', '_waiting_room_');
+  });
+
+  it('should create a game', function () {
+    const spy = jest
+      .spyOn(gameService, 'initGame')
+      .mockImplementation(async (s1: string, s2: string) => {
+        return new GameObject(0, s1, s2);
+      });
+    gameService.joinMatchMaking('player1');
+    gameService.joinMatchMaking('player42');
+
+    expect(spy).toHaveBeenCalledWith('player1', 'player42');
+  });
+});

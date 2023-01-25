@@ -76,6 +76,12 @@ export class BroadcastingGateway
     this.server.in(roomName).emit('gameUpdateToClient', JSON.stringify(update));
   }
 
+  emitMatchMade(player1name: string, player2name: string) {
+    this.server
+      .in('_waiting_room_')
+      .emit('emitMatchMadeToClient', [player1name, player2name]);
+  }
+
   async handleConnection(client: Socket) {
     const username = this.getUsernameFromToken(client);
     const channelNames: string[] = (await (

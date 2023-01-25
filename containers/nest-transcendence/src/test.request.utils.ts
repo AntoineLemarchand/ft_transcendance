@@ -319,6 +319,15 @@ export async function initGame(
     });
 }
 
+export async function joinMatchMaking(
+  callerModule: INestApplication,
+  jwt: any,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/game/matchMaking')
+    .set('Authorization', 'Bearer ' + jwt);
+}
+
 export async function getAllRunning(callerModule: INestApplication, jwt: any) {
   return request(callerModule.getHttpServer())
     .get('/game/getRunning')

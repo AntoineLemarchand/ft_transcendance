@@ -59,4 +59,10 @@ export class GameController {
   async getPerUser(@Request() req: any) {
     return { games: this.gameService.getGamesForUser(req.user.name) };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('matchMaking')
+  async joinMatchMaking(@Request() req: any) {
+    await this.gameService.joinMatchMaking(req.user.name);
+  }
 }

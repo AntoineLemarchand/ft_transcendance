@@ -15,6 +15,7 @@ import { ErrUnAuthorized } from '../exceptions';
 
 @Injectable()
 export class GameService {
+  private matchMakingQueue: string[] = [];
   constructor(
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
@@ -204,5 +205,28 @@ export class GameService {
       executorName,
       gameId.toString(),
     );
+  }
+
+  joinMatchMaking(executorName: string) {
+    if (!this.matchMakingQueue.includes(executorName)) {
+      this.matchMakingQueue.push(executorName);
+      this.broadcastingGateway.putUserInRoom(executorName, '_waiting_room_');
+    }
+    if (this.matchMakingQueue.length === 2) {
+      this.initGame(this.matchMakingQueue[0], this.matchMakingQueue[1]);
+      this.broadcastingGateway.emitMatchMade(
+        this.matchMakingQueue[0],
+        this.matchMakingQueue[1],
+      );
+      this.broadcastingGateway.removeUserFromRoom(
+        this.matchMakingQueue[0],
+        '_waiting_room_',
+      );
+      this.broadcastingGateway.removeUserFromRoom(
+        this.matchMakingQueue[1],
+        '_waiting_room_',
+      );
+      this.matchMakingQueue = [];
+    }
   }
 }

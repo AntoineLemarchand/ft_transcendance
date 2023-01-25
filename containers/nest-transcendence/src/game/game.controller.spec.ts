@@ -11,6 +11,7 @@ import { GameObject } from './game.entities';
 import { getAllGamesForUser, getAllRunning } from '../test.request.utils';
 import { MyExceptionFilter } from '../exceptions.filter';
 import { ErrNotFound, ErrUnAuthorized } from '../exceptions';
+import { executionCtx } from "pg-mem/types/utils";
 
 jest.mock('../broadcasting/broadcasting.gateway');
 jest.mock('./game.service');
@@ -106,6 +107,23 @@ describe('initializing a game', () => {
     const result = await testUtils.initGame(app, jwt, 'Thomas');
 
     expect(result.body.gameObject.gameId).toBe(666);
+  });
+
+  it('should only allow match making to authenticated users', async () => {
+    const spy = jest.spyOn(gameService, 'joinMatchMaking');
+
+    const result = await testUtils.joinMatchMaking(app, 'invalid jwt');
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should call the logic for joining the match making system', async () => {
+    const spy = jest.spyOn(gameService, 'joinMatchMaking');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+
+    await testUtils.joinMatchMaking(app, jwt);
+
+    expect(spy).toHaveBeenCalledWith('admin');
   });
 });
 
