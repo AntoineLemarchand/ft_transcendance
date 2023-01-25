@@ -28,8 +28,10 @@ export class GameService {
 
   async initGame(player1name: string, player2name: string) {
     await this.areValidPlayers(player1name, player2name);
-    if (await this.getSavedGamesCount() != 0 
-        && this.currentGames.getCurrentId() == 0)
+    if (
+      (await this.getSavedGamesCount()) != 0 &&
+      this.currentGames.getCurrentId() == 0
+    )
       this.currentGames.setCurrentId(await this.getSavedGamesLastId());
     const alreadyCreatedGame = this.getNonFinishedGameObjectFor(
       player1name,
@@ -97,15 +99,17 @@ export class GameService {
     while (game.getProgress() !== GameProgress.FINISHED) {
       game.executeStep();
       this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
-      await this.sleepUntilCollision(game);
+      if (game.collision.isReset()) {
+        await this.sleepUntil(1000);
+      } else {
+        await this.sleepUntil(1000 * game.collision.getTimeUntilImpact());
+      }
     }
     await this.saveGameStat(game);
   }
 
-  async sleepUntilCollision(game: GameObject) {
-    await new Promise((resolve) =>
-      setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
-    );
+  async sleepUntil(timeInMs: number) {
+    await new Promise((resolve) => setTimeout(resolve, timeInMs));
   }
 
   private async prohibitNonPlayerActions(
@@ -166,10 +170,10 @@ export class GameService {
     await this.gameRepository.save(
       new GameStat(
         game.getId(),
-        game.getPlayerNames()[0], 
-        game.getPlayerNames()[1], 
+        game.getPlayerNames()[0],
+        game.getPlayerNames()[1],
         game.getPlayerScores()[0],
-        game.getPlayerScores()[1]
+        game.getPlayerScores()[1],
       ),
     );
   }
@@ -188,35 +192,32 @@ export class GameService {
     return await this.gameRepository.count();
   }
 
-	async getSavedGamesLastId() { 
-    const query = this.gameRepository.createQueryBuilder("GameStat");
-    const result = await query.select("MAX(GameStat.gameId)", "max").getRawOne();
-		if (!result.max) return 0;
-		else return result.max;
-	}
+  async getSavedGamesLastId() {
+    const query = this.gameRepository.createQueryBuilder('GameStat');
+    const result = await query
+      .select('MAX(GameStat.gameId)', 'max')
+      .getRawOne();
+    if (!result.max) return 0;
+    else return result.max;
+  }
 
-	async getSavedGamesByPlayer(player: string) 
-    : Promise<GameStat[] | undefined> {
+  async getSavedGamesByPlayer(player: string): Promise<GameStat[] | undefined> {
     const result = this.gameRepository.find({
-      where: [
-        { player1: player },
-        { player2: player },
-      ]
+      where: [{ player1: player }, { player2: player }],
     });
     if (result) return result;
-	}
+  }
 
-  async getWonGamesByPlayer(player: string)
-    : Promise<GameStat[] | undefined> {
+  async getWonGamesByPlayer(player: string): Promise<GameStat[] | undefined> {
     const result = this.gameRepository.find({
       where: [
         { player1: player, score1: 10 },
         { player2: player, score2: 10 },
-      ]
+      ],
     });
     if (result) return result;
   }
-    
+
   getRunningGameForUser(username: string) {
     for (const gameObject of this.currentGames.findAll()) {
       if (
