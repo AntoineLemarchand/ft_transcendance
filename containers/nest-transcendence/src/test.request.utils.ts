@@ -24,15 +24,6 @@ export const addFriend = async (
     });
 };
 
-export const getFriends = async (
-  callerModule: INestApplication,
-  jwt: string,
-) => {
-  return request(callerModule.getHttpServer())
-    .get('/user/friend')
-    .set('Authorization', 'Bearer ' + jwt);
-};
-
 export const removeFriend = async (
   callerModule: INestApplication,
   jwt: string,
@@ -61,7 +52,14 @@ export const signinUser = async (
   callerModule: INestApplication,
   username: string,
   password: string,
+  image?: Buffer,
 ) => {
+  
+  if (image)
+    return request(callerModule.getHttpServer()).post('/auth/signin')
+      .field('username', username)
+      .field('password', password)
+      .attach("image", image, "test.png");
   return request(callerModule.getHttpServer()).post('/auth/signin').send({
     username: username,
     password: password,
@@ -321,6 +319,15 @@ export async function initGame(
     });
 }
 
+export async function joinMatchMaking(
+  callerModule: INestApplication,
+  jwt: any,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/game/matchMaking')
+    .set('Authorization', 'Bearer ' + jwt);
+}
+
 export async function getAllRunning(callerModule: INestApplication, jwt: any) {
   return request(callerModule.getHttpServer())
     .get('/game/getRunning')
@@ -348,6 +355,33 @@ export async function setReadyForGame(
       gameId: gameId.toString(),
     });
 }
+
+export async function startSpectatingGame(
+  callerModule: INestApplication,
+  jwt: any,
+  gameId: number,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/game/spectate')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      gameId: gameId.toString(),
+    });
+}
+
+export async function endSpectatingGame(
+  callerModule: INestApplication,
+  jwt: any,
+  gameId: number,
+) {
+  return request(callerModule.getHttpServer())
+    .delete('/game/spectate')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      gameId: gameId.toString(),
+    });
+}
+
 
 export async function setNotReadyForGame(
   callerModule: INestApplication,

@@ -5,10 +5,9 @@ type GameStatusProps = {
     player1: number;
     player2: number;
   };
-  updateScore: (player: "player1" | "player2", value: number) => void;
 };
 
-function GameStatus({ score, updateScore }: GameStatusProps) {
+function GameStatus({ score }: GameStatusProps) {
   const gameStatus = {
     players: ["Jaydee", "some random dude"],
   };

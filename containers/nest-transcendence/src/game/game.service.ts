@@ -8,18 +8,19 @@ import {
   GameInput,
   GameObject,
   GameProgress,
-  Player,
   GameStat,
+  Player,
 } from './game.entities';
 import { ErrUnAuthorized } from '../exceptions';
 
 @Injectable()
 export class GameService {
+  private matchMakingQueue: string[] = [];
   constructor(
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
     @Inject(forwardRef(() => BroadcastingGateway))
-    private broadcastingGateway: BroadcastingGateway,
+    public broadcastingGateway: BroadcastingGateway,
     private currentGames: GameObjectRepository,
     @InjectRepository(GameStat)
     private readonly gameRepository: Repository<GameStat>,
@@ -30,9 +31,30 @@ export class GameService {
     if (await this.getSavedGamesCount() != 0 
         && this.currentGames.getCurrentId() == 0)
       this.currentGames.setCurrentId(await this.getSavedGamesLastId());
+    const alreadyCreatedGame = this.getNonFinishedGameObjectFor(
+      player1name,
+      player2name,
+    );
+    if (alreadyCreatedGame !== undefined) return alreadyCreatedGame;
     const result = this.currentGames.create(player1name, player2name);
     await this.createRoom(player1name, result.getId(), player2name);
     return result;
+  }
+
+  private getNonFinishedGameObjectFor(
+    player1name: string,
+    player2name: string,
+  ) {
+    for (const runningGames of this.currentGames.findAll()) {
+      if (
+        runningGames.players.find((player) => player.name === player1name) &&
+        runningGames.players.find((player) => player.name === player2name) &&
+        runningGames.getProgress() != GameProgress.FINISHED
+      ) {
+        return runningGames;
+      }
+    }
+    return undefined;
   }
 
   getRunningGames(): GameObject[] {
@@ -75,11 +97,15 @@ export class GameService {
     while (game.getProgress() !== GameProgress.FINISHED) {
       game.executeStep();
       this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
-      await new Promise((resolve) =>
-        setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
-      );
+      await this.sleepUntilCollision(game);
     }
     await this.saveGameStat(game);
+  }
+
+  async sleepUntilCollision(game: GameObject) {
+    await new Promise((resolve) =>
+      setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
+    );
   }
 
   private async prohibitNonPlayerActions(
@@ -189,5 +215,56 @@ export class GameService {
       ]
     });
     if (result) return result;
+  }
+    
+  getRunningGameForUser(username: string) {
+    for (const gameObject of this.currentGames.findAll()) {
+      if (
+        (gameObject.players[0].name === username ||
+          gameObject.players[1].name === username) &&
+        gameObject.getProgress() === GameProgress.RUNNING
+      )
+        return gameObject;
+    }
+    return undefined;
+  }
+
+  async beginSpectate(executorName: string, gameId: number) {
+    await this.currentGames.findOne(gameId);
+    await this.broadcastingGateway.putUserInRoom(
+      executorName,
+      gameId.toString(),
+    );
+  }
+
+  async endSpectate(executorName: string, gameId: number) {
+    await this.currentGames.findOne(gameId);
+    await this.broadcastingGateway.removeUserFromRoom(
+      executorName,
+      gameId.toString(),
+    );
+  }
+
+  joinMatchMaking(executorName: string) {
+    if (!this.matchMakingQueue.includes(executorName)) {
+      this.matchMakingQueue.push(executorName);
+      this.broadcastingGateway.putUserInRoom(executorName, '_waiting_room_');
+    }
+    if (this.matchMakingQueue.length === 2) {
+      this.initGame(this.matchMakingQueue[0], this.matchMakingQueue[1]);
+      this.broadcastingGateway.emitMatchMade(
+        this.matchMakingQueue[0],
+        this.matchMakingQueue[1],
+      );
+      this.broadcastingGateway.removeUserFromRoom(
+        this.matchMakingQueue[0],
+        '_waiting_room_',
+      );
+      this.broadcastingGateway.removeUserFromRoom(
+        this.matchMakingQueue[1],
+        '_waiting_room_',
+      );
+      this.matchMakingQueue = [];
+    }
   }
 }

@@ -1,6 +1,7 @@
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -24,7 +25,7 @@ import { GameService } from '../game/game.service';
   },
 })
 export class BroadcastingGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
+  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
   @WebSocketServer()
   server: Server;
@@ -37,7 +38,9 @@ export class BroadcastingGateway
     private userService: UserService,
     @Inject(forwardRef(() => GameService))
     private gameService: GameService,
-  ) {}
+  ) {
+    this.roomHandler = new RoomHandler(this.server);
+  }
 
   @UseGuards(WsGuard)
   @SubscribeMessage('messageToServer')
@@ -73,8 +76,13 @@ export class BroadcastingGateway
     this.server.in(roomName).emit('gameUpdateToClient', JSON.stringify(update));
   }
 
+  emitMatchMade(player1name: string, player2name: string) {
+    this.server
+      .in('_waiting_room_')
+      .emit('emitMatchMadeToClient', [player1name, player2name]);
+  }
+
   async handleConnection(client: Socket) {
-    if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);
     const username = this.getUsernameFromToken(client);
     const channelNames: string[] = (await (
       await this.userService.getUser(username)
@@ -91,8 +99,11 @@ export class BroadcastingGateway
   }
 
   async putUserInRoom(username: string, roomName: string) {
-    if (!this.roomHandler) this.roomHandler = new RoomHandler(this.server);
     await this.roomHandler.join(username, roomName);
+  }
+
+  async removeUserFromRoom(username: string, roomName: string) {
+    await this.roomHandler.leave(username, roomName);
   }
 
   private getUsernameFromToken(client: Socket) {
@@ -103,5 +114,13 @@ export class BroadcastingGateway
     } catch (e) {
       console.log('not properly encoded token');
     }
+  }
+
+  afterInit(server: any): any {
+    this.roomHandler = new RoomHandler(this.server);
+  }
+
+  getRoomHandler() {
+    return this.roomHandler;
   }
 }

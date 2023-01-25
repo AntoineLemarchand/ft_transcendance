@@ -76,6 +76,7 @@ export class GameObject {
   players: Player[];
   constructor(private gameId: number, player1: string, player2: string) {
     this.collision = new Collision({ x: 0.5, y: 0.5 }, deg2rad(45), 1);
+    this.collision.reset();
     this.progress = GameProgress.INITIALIZED;
     this.players = [
       new Player(player1, new PlayerBar({ x: 0, y: 0.5 })),
@@ -136,7 +137,7 @@ export class GameObject {
   executeStep() {
     const scorer = this.calcScorer();
     if (scorer) {
-      if (scorer.score === 10) {
+      if (scorer.score === 100) {
         this.progress = GameProgress.FINISHED;
       }
       this.collision.reset();

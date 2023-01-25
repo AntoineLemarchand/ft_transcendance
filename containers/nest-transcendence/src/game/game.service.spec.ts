@@ -11,6 +11,7 @@ import { GameInput, GameObject, GameProgress, GameStat } from './game.entities';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { Collision } from './game.logic';
+import { ErrNotFound } from '../exceptions';
 
 jest.mock('../broadcasting/broadcasting.gateway');
 
@@ -42,6 +43,9 @@ beforeEach(async () => {
   userService = module.get<UserService>(UserService);
   currentGames = module.get<GameObjectRepository>(GameObjectRepository);
   broadcastingGateway = module.get<BroadcastingGateway>(BroadcastingGateway);
+  jest
+    .spyOn(GameService.prototype, 'sleepUntilCollision')
+    .mockImplementation(async (game: GameObject) => {});
   await userService.createUser(new User('player1', 'admin'));
   await userService.createUser(new User('player42', 'test'));
   await userService.createUser(new User('outsider', 'password'));
@@ -49,7 +53,7 @@ beforeEach(async () => {
 
 async function finishAGame(p1: string, p2: string) {
   const gameObject = await gameService.initGame(p1, p2);
-  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 100000);
   await gameService.setReady(p2, gameObject.getId());
   await gameService.runGame(gameObject);
   // do not put before run game, else await will not work
@@ -79,12 +83,26 @@ describe('setting up a game', () => {
   });
 
   it('should put both players in a socket room', async function () {
-    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom');
+    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom').mockReset();
 
     const game = await gameService.initGame('player1', 'player42');
 
     expect(spy).toHaveBeenCalledWith('player1', game.getId().toString());
     expect(spy).toHaveBeenCalledWith('player42', game.getId().toString());
+  });
+
+  it('should return the existing game instead of creating a new one for a vs b and b vs a', async function () {
+    const game1 = await gameService.initGame('player1', 'player42');
+    const game2 = await gameService.initGame('player42', 'player1');
+
+    expect(game1.getId()).toBe(game2.getId());
+  });
+
+  it('should return a new game if players have finished the old game', async function () {
+    const game1 = await finishAGame('player1', 'player42');
+    const game2 = await gameService.initGame('player1', 'player42');
+
+    expect(game1.getId()).not.toBe(game2.getId());
   });
 });
 describe('starting a game', () => {
@@ -192,7 +210,7 @@ describe('running a game', () => {
       .spyOn(broadcastingGateway, 'emitGameUpdate')
       .mockImplementation(jest.fn());
     const gameObject = new GameObject(0, 'p1', 'p2');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
     gameObject.players[0].score = 8;
 
     await gameService.runGame(gameObject);
@@ -205,7 +223,7 @@ describe('running a game', () => {
       .spyOn(broadcastingGateway, 'emitGameUpdate')
       .mockImplementation(jest.fn());
     const gameObject = new GameObject(0, 'p1', 'p2');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
     gameObject.players[0].score = 9;
 
     await gameService.runGame(gameObject);
@@ -215,7 +233,7 @@ describe('running a game', () => {
 
   it('should save game once it is finished', async () => {
     const gameObject = new GameObject(0, 'pépé', 'mémé');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1000);
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
     gameObject.players[0].score = 9;
 
     await gameService.runGame(gameObject);
@@ -333,12 +351,7 @@ describe('updating gameObjects with user input', () => {
 
   it('should throw to update a non existing game', async function () {
     const gameObject = await gameService.initGame('player1', 'player42');
-    const gameInput = new GameInput(
-      'player1',
-      'startUp',
-      0,
-      666,
-    );
+    const gameInput = new GameInput('player1', 'startUp', 0, 666);
     await expect(
       async () => await gameService.processUserInput(gameInput),
     ).rejects.toThrow();
@@ -437,5 +450,137 @@ describe('game info', () => {
     const result = gameService.getGamesForUser('player1');
 
     expect(result.length).toBe(2);
+  });
+
+  it('should return undefined if user not in active game', async function () {
+    const result = gameService.getRunningGameForUser('player1');
+
+    expect(result).toBeUndefined();
+  });
+
+  it('should return active game for user', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady('player1', gameObject.getId());
+    await gameService.setReady('player42', gameObject.getId());
+
+    const result = gameService.getRunningGameForUser('player1');
+
+    expect(result).toBe(gameObject);
+  });
+
+  it('should not return non running game for user', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    await gameService.setReady('player1', gameObject.getId());
+
+    const result = gameService.getRunningGameForUser('player1');
+
+    expect(result).toBeUndefined();
+  });
+});
+
+describe('spectating a game', () => {
+  it('should throw on trying to begin spectating a non existing game', async function () {
+    await expect(async () =>
+      gameService.beginSpectate('outsider', 666),
+    ).rejects.toThrowError(ErrNotFound);
+  });
+
+  it('should request the gateway to place the user into the game room when beginning spectating', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom').mockReset();
+
+    await gameService.beginSpectate('outsider', gameObject.getId());
+
+    expect(spy).toHaveBeenCalledWith('outsider', gameObject.getId().toString());
+  });
+
+  it('should throw on trying to end spectating a non existing game', async function () {
+    await expect(async () =>
+      gameService.endSpectate('outsider', 666),
+    ).rejects.toThrowError(ErrNotFound);
+  });
+
+  it('should request the gateway to remove the user into the game room when ending spectating', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+    const spy = jest
+      .spyOn(broadcastingGateway, 'removeUserFromRoom')
+      .mockReset();
+
+    await gameService.endSpectate('outsider', gameObject.getId());
+
+    expect(spy).toHaveBeenCalledWith('outsider', gameObject.getId().toString());
+  });
+});
+
+describe('matchmaking', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(gameService, 'initGame')
+      .mockImplementation(async (s1: string, s2: string) => {
+        return new GameObject(0, s1, s2);
+      });
+  });
+
+  it('should not emit a message to the waiting room when only one user in the queue', function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    gameService.joinMatchMaking('player1');
+
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should emit a message to the waiting room as soon as a second user tries to find a match', function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    gameService.joinMatchMaking('player1');
+    gameService.joinMatchMaking('player2');
+
+    expect(spy).toHaveBeenCalledWith('player1', 'player2');
+  });
+
+  it('should not emit a message to the waiting room when one user in the queue twice', function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    gameService.joinMatchMaking('player1');
+    gameService.joinMatchMaking('player1');
+
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should emit two messages when creating four games', function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    gameService.joinMatchMaking('player1');
+    gameService.joinMatchMaking('player2');
+    gameService.joinMatchMaking('player3');
+    gameService.joinMatchMaking('player4');
+
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+
+  it('should put a waiting user in the waiting room on requesting a match', function () {
+    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom').mockReset();
+    gameService.joinMatchMaking('player1');
+
+    expect(spy).toHaveBeenCalledWith('player1', '_waiting_room_');
+  });
+
+  it('should empty the waiting room once a game has created', function () {
+    const spy = jest
+      .spyOn(broadcastingGateway, 'removeUserFromRoom')
+      .mockReset();
+    gameService.joinMatchMaking('player1');
+    gameService.joinMatchMaking('player42');
+
+    expect(spy).toHaveBeenCalledWith('player1', '_waiting_room_');
+    expect(spy).toHaveBeenCalledWith('player42', '_waiting_room_');
+  });
+
+  it('should create a game', function () {
+    const spy = jest
+      .spyOn(gameService, 'initGame')
+      .mockImplementation(async (s1: string, s2: string) => {
+        return new GameObject(0, s1, s2);
+      });
+    gameService.joinMatchMaking('player1');
+    gameService.joinMatchMaking('player42');
+
+    expect(spy).toHaveBeenCalledWith('player1', 'player42');
   });
 });

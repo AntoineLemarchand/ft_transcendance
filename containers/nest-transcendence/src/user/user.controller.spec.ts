@@ -1,18 +1,41 @@
-import { Test } from '@nestjs/testing';
 import { INestApplication, Module } from '@nestjs/common';
 import * as testUtils from '../test.request.utils';
-import { AppModule } from '../app.module';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
 import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
-import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../typeorm';
 import { UserService } from './user.service';
-import { ChannelService } from '../channel/channel.service';
 import { createTestModule } from '../test.module.utils';
+import { Server, Socket } from "socket.io";
+import { BroadcastingGateway } from "../broadcasting/broadcasting.gateway";
+import { RoomHandler } from "../broadcasting/broadcasting.roomHandler";
 
+//the mocks are required to test without opening a real Socket.io Gateway on every test
 jest.mock('../broadcasting/broadcasting.gateway');
+jest.mock('socket.io', () => {
+  return {
+    Socket: jest.fn().mockImplementation(() => {
+      return {
+        join: jest.fn().mockImplementation((username: string) => {}),
+        leave: jest.fn().mockImplementation((deviceId: string) => {}),
+      };
+    }),
+    Server: jest.fn().mockImplementation(() => {
+      return {
+        sockets: {
+          sockets: new Map<string, Socket>([
+            // @ts-ignore
+            ['defaultDeviceId', new Socket()],
+            // @ts-ignore
+            ['deviceId0', new Socket()],
+            // @ts-ignore
+            ['deviceId1', new Socket()],
+          ]),
+        },
+      };
+    }),
+  };
+});
 jest.mock('@nestjs/typeorm', () => {
   const original = jest.requireActual('@nestjs/typeorm');
   original.TypeOrmModule.forRoot = jest
@@ -24,6 +47,11 @@ jest.mock('@nestjs/typeorm', () => {
     ...original,
   };
 });
+jest
+  .spyOn(BroadcastingGateway.prototype, 'getRoomHandler')
+  .mockImplementation(() => {
+    return new RoomHandler(new Server());
+  });
 
 let app: INestApplication;
 let userService: UserService;
@@ -57,10 +85,11 @@ describe('Making friends', () => {
     await testUtils.signinUser(app, 'JayDee', 'yeah');
     await testUtils.addFriend(app, jwt, 'JayDee');
 
-    const result = await testUtils.addFriend(app, jwt, 'JayDee');
-    const friendsList = (await testUtils.getFriends(app, jwt)).body.friends;
+    const response = await testUtils.addFriend(app, jwt, 'JayDee');
+    const result = await testUtils.getUserData(app, jwt, 'Thomas');
+    const friendsList = result.body.userInfo.friends;
 
-    expect(result.status).toBe(401);
+    expect(response.status).toBe(401);
     expect(friendsList.length).toBe(1);
   });
 
@@ -73,14 +102,14 @@ describe('Making friends', () => {
   });
 
   it('should return 201 and a list of friends', async () => {
-    await testUtils.signinUser(app, 'JayDee', 'yeah');
-    await testUtils.addFriend(app, jwt, 'JayDee');
+    await testUtils.signinUser(app, 'new Friend', 'yeah');
+    await testUtils.addFriend(app, jwt, 'new Friend');
 
-    const result = await testUtils.getFriends(app, jwt);
+    const result = await testUtils.getUserData(app, jwt, 'Thomas');
 
     expect(result.status).toBe(200);
-    expect(result.body.friends).toBeDefined();
-    expect(result.body.friends.length).toBe(1);
+    expect(result.body.userInfo.friends).toBeDefined();
+    expect(result.body.userInfo.friends.length).toBe(1);
   });
 
   it('should return 404 when removing nonexistant friend', async () => {
@@ -97,7 +126,8 @@ describe('Making friends', () => {
     await testUtils.addFriend(app, jwt, 'JayDee');
 
     const result = await testUtils.removeFriend(app, jwt, 'JayDee');
-    const friendsList = (await testUtils.getFriends(app, jwt)).body.friends;
+    const friendsList = (await testUtils.getUserData(app, jwt, 'JayDee')).body
+      .userInfo.friends;
 
     expect(result.status).toBe(200);
     expect(friendsList.length).toBe(0);
@@ -106,14 +136,12 @@ describe('Making friends', () => {
 
 describe('Getting user info', () => {
   it('should return 404 on non existing user info', async () => {
-
     const result = await testUtils.getUserData(app, jwt, 'non existing user');
 
     expect(result.status).toBe(404);
   });
 
   it('should return 200 and user info on successful query', async () => {
-
     const result = await testUtils.getUserData(app, jwt, 'Thomas');
 
     expect(result.status).toBe(200);
@@ -122,7 +150,6 @@ describe('Getting user info', () => {
   });
 
   it('should take username from token if empty query', async () => {
-
     const result = await testUtils.getUserData(app, jwt, '');
 
     expect(result.status).toBe(200);
@@ -171,11 +198,22 @@ describe('Getting user info', () => {
     expect(result.body.usernames[1]).toEqual('Tom');
     expect(result.body.usernames[2]).toEqual('Camembert');
   });
+
+  it('should return 200 and an image', async () => {
+    const testImage: Buffer = Buffer.from('test image buffer');
+    await testUtils.signinUser(app, 'camembert', 'password', testImage);
+
+    const result = await request(app.getHttpServer())
+      .get('/user/image/camembert')
+      .set('Authorization', 'Bearer ' + jwt);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toStrictEqual(Buffer.from('test image buffer'));
+  })
 });
 
 describe('Login', () => {
   it('should be subscribed to the welcome channel on creation', async () => {
-
     const result = await testUtils.getUserData(app, jwt, 'Thomas');
 
     expect(result.status).toBe(200);
@@ -184,10 +222,6 @@ describe('Login', () => {
 });
 
 describe('Blocking users', () => {
-  //beforeEach(async () => {
-
-  //}
-
   it('should add user to the blockedUsers list', async () => {
     await testUtils.signinUser(app, 'Martin', 'yeye');
 

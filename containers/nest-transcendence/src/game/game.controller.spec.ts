@@ -11,6 +11,7 @@ import { GameObject, GameStat } from './game.entities';
 import { getAllGamesForUser, getAllRunning } from '../test.request.utils';
 import { MyExceptionFilter } from '../exceptions.filter';
 import { ErrNotFound, ErrUnAuthorized } from '../exceptions';
+import { executionCtx } from "pg-mem/types/utils";
 
 jest.mock('../broadcasting/broadcasting.gateway');
 jest.mock('./game.service');
@@ -106,6 +107,23 @@ describe('initializing a game', () => {
     const result = await testUtils.initGame(app, jwt, 'Thomas');
 
     expect(result.body.gameObject.gameId).toBe(666);
+  });
+
+  it('should only allow match making to authenticated users', async () => {
+    const spy = jest.spyOn(gameService, 'joinMatchMaking');
+
+    const result = await testUtils.joinMatchMaking(app, 'invalid jwt');
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should call the logic for joining the match making system', async () => {
+    const spy = jest.spyOn(gameService, 'joinMatchMaking');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+
+    await testUtils.joinMatchMaking(app, jwt);
+
+    expect(spy).toHaveBeenCalledWith('admin');
   });
 });
 
@@ -255,5 +273,73 @@ it('should call getWonGamesByPlayer func', async function () {
   await testUtils.getWonGamesByPlayer(app, jwt);
  
   expect(spy).toHaveBeenCalled();
+  });
 });
+
+describe('beginning spectating a game', () => {
+  it('should fail if user not logged in', async function () {
+    const result = await testUtils.startSpectatingGame(app, 'invalid jwt', 666);
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should catch not found errors', async function () {
+    const spy = jest
+      .spyOn(gameService, 'beginSpectate')
+      .mockReset()
+      .mockImplementation((username: string, gameId: number) => {
+        throw new ErrNotFound('');
+      });
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.startSpectatingGame(app, jwt, 666);
+
+    expect(result.status).toBe(404);
+  });
+
+  it('should return 201 on success', async function () {
+    const spy = jest
+      .spyOn(gameService, 'beginSpectate')
+      .mockReset()
+      .mockImplementation(
+        async (username: string, gameId: number): Promise<void> => {},
+      );
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.startSpectatingGame(app, jwt, 666);
+
+    expect(result.status).toBe(201);
+  });
+});
+
+describe('ending spectating a game', () => {
+  it('should fail if user not logged in', async function () {
+    const result = await testUtils.endSpectatingGame(app, 'invalid jwt', 666);
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should catch not found errors', async function () {
+    const spy = jest
+      .spyOn(gameService, 'endSpectate')
+      .mockReset()
+      .mockImplementation((username: string, gameId: number) => {
+        throw new ErrNotFound('');
+      });
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.endSpectatingGame(app, jwt, 666);
+
+    expect(result.status).toBe(404);
+  });
+
+  it('should return 201 on success', async function () {
+    const spy = jest
+      .spyOn(gameService, 'endSpectate')
+      .mockReset()
+      .mockImplementation(
+        async (username: string, gameId: number): Promise<void> => {},
+      );
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    const result = await testUtils.endSpectatingGame(app, jwt, 666);
+
+    expect(result.status).toBe(200);
+  });
 });

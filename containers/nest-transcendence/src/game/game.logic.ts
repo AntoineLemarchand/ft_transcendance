@@ -24,12 +24,17 @@ function randomIntFromInterval(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+function normalizeAngle(result: number) {
+  while (result < 0) result += 2 * Math.PI;
+  while (result >= 2 * Math.PI) result -= 2 * Math.PI;
+  return result;
+}
+
 export class MinimalPhysics {
   static calcNewAngle(incomingAngle: number, wallDirection: WallDirection) {
     let result = -incomingAngle + Math.PI;
     if (wallDirection == WallDirection.Horizontal) result += Math.PI;
-    if (result < 0) result += 2 * Math.PI;
-    if (result >= 2 * Math.PI) result -= 2 * Math.PI;
+    result = normalizeAngle(result);
     return result;
   }
 
@@ -107,10 +112,13 @@ export class PlayerBar {
       x: this.position.x,
       y:
         this.position.y +
-        this.movement.direction * (timeStamp - this.movement.startTimeStamp),
+        ((this.movement.direction *
+          (timeStamp - this.movement.startTimeStamp)) /
+          1000) *
+          this.speed,
     };
-    if (result.y < 0) result.y = 0;
-    if (result.y > 1) result.y = 1;
+    if (result.y < this.barHeight / 2) result.y = this.barHeight / 2;
+    if (result.y > 1 - this.barHeight / 2) result.y = 1 - this.barHeight / 2;
     return result;
   }
 
@@ -147,9 +155,15 @@ export class Collision {
       this.speed,
     );
     if (this.coordinates.y === 1 || this.coordinates.y === 0)
-      this.angle = MinimalPhysics.calcNewAngle(this.angle, WallDirection.Horizontal);
+      this.angle = MinimalPhysics.calcNewAngle(
+        this.angle,
+        WallDirection.Horizontal,
+      );
     if (this.coordinates.x === 1 || this.coordinates.x === 0)
-      this.angle = MinimalPhysics.calcNewAngle(this.angle, WallDirection.Vertical);
+      this.angle = MinimalPhysics.calcNewAngle(
+        this.angle,
+        WallDirection.Vertical,
+      );
   }
 
   getCoordinates() {
@@ -161,9 +175,12 @@ export class Collision {
   }
 
   reset() {
-    this.coordinates = {x: 0.5, y: 0.5};
+    this.coordinates = { x: 0.5, y: 0.5 };
     this.angle = deg2rad(randomIntFromInterval(15, 45));
     if (randomIntFromInterval(0, 1)) this.angle *= -1;
+    if (randomIntFromInterval(0, 1)) this.angle += Math.PI;
+    this.angle = normalizeAngle(this.angle);
+    this.time = 0;
   }
 
   isReset() {

@@ -60,7 +60,6 @@ export function PreMatchRoom() {
       context.socket!.on("gameUpdateToClient", messageListener)
     } else
       context.socket.on("gameUpdateToClient", messageListener)
-    console.log('ready to receive game update')
   }, [])
 
   if (gameStart != '') {
