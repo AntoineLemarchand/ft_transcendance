@@ -18,22 +18,22 @@ describe('starting the movement of a PlayerBar', () => {
     expect(positionAtT.y).toBeCloseTo(0.1);
   });
 
-  it('should move into negative y', () => {
+  it('should never let any part of the bar leave the screen on bottom', () => {
     const playerBar = new PlayerBar({ x: 0, y: 0 }, 1, 0.2);
 
     playerBar.startMoving(0, -1);
 
     const positionAtT = playerBar.getPositionAtT(1);
-    expect(positionAtT.y).toBeCloseTo(0);
+    expect(positionAtT.y).toBeCloseTo(0.1);
   });
 
-  it('should never move above y = 1', () => {
+  it('should never let any part of the bar leave the screen on top', () => {
     const playerBar = new PlayerBar({ x: 0, y: 1 }, 1, 0.2);
 
     playerBar.startMoving(0, 1);
 
     const positionAtT = playerBar.getPositionAtT(1);
-    expect(positionAtT.y).toBeCloseTo(1);
+    expect(positionAtT.y).toBeCloseTo(0.9);
   });
 
   it('should move the bar -0.5 when travelling five second with speed 0.1', () => {
