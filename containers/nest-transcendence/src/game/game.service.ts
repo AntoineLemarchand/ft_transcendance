@@ -1,17 +1,11 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { UserService } from '../user/user.service';
-import { GameObjectRepository } from './game.currentGames.repository';
-import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import {
-  GameInput,
-  GameObject,
-  GameProgress,
-  GameStat,
-  Player,
-} from './game.entities';
-import { ErrNotFound, ErrUnAuthorized } from '../exceptions';
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { UserService } from "../user/user.service";
+import { GameObjectRepository } from "./game.currentGames.repository";
+import { BroadcastingGateway } from "../broadcasting/broadcasting.gateway";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { GameInput, GameObject, GameProgress, GameStat, Player } from "./game.entities";
+import { ErrUnAuthorized } from "../exceptions";
 
 @Injectable()
 export class GameService {
@@ -27,9 +21,25 @@ export class GameService {
 
   async initGame(player1name: string, player2name: string) {
     await this.areValidPlayers(player1name, player2name);
+    const alreadyCreatedGame = this.getNonFinishedGameObjectFor(player1name, player2name);
+    if (alreadyCreatedGame !== undefined)
+      return alreadyCreatedGame;
     const result = this.currentGames.create(player1name, player2name);
     await this.createRoom(player1name, result.getId(), player2name);
     return result;
+  }
+
+  private getNonFinishedGameObjectFor(player1name: string, player2name: string) {
+    for (const runningGames of this.currentGames.findAll()) {
+      if (
+        runningGames.players.find((player) => player.name === player1name) &&
+        runningGames.players.find((player) => player.name === player2name) &&
+        runningGames.getProgress() != GameProgress.FINISHED
+      ) {
+        return runningGames;
+      }
+    }
+    return undefined;
   }
 
   getRunningGames(): GameObject[] {
@@ -79,7 +89,7 @@ export class GameService {
 
   async sleepUntilCollision(game: GameObject) {
     await new Promise((resolve) =>
-      setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact())
+      setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
     );
   }
 
