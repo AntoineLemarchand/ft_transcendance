@@ -41,7 +41,7 @@ export class GameStat {
   }
 
   getScores() {
-    return this.scores;
+    return [ this.score1, this.score2 ];
   }
 }
 
