@@ -49,7 +49,7 @@ services:
     restart: unless-stopped
     init: true
     volumes:
-      - $POSTGRES_DATAPATH:${PGDATA}
+      - /home/cls/data/var/lib/postgresql/data/
     networks:
       - frontend
       - backend

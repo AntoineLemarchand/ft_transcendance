@@ -1,22 +1,21 @@
 import { useEffect, useState, useContext } from "react";
 import { useCookies } from "react-cookie";
-import { SocketContext } from "../WebSocket";
 import "static/Play/Game.scss";
 import GameStatus from "./GameStatus";
+import io from "socket.io-client";
 
 function Game(props: { firstMove: string }) {
-  const context = useContext(SocketContext);
   const [currentMove, setCurrentMove] = useState(JSON.parse(props.firstMove));
-  const [cookies] = useCookies(["userInfo"]);
+  const [cookies, setCookie] = useCookies(["userInfo", "socket"]);
   const [leftPos, setLeftPos] = useState(0.5);
   const [rightPos, setRightPos] = useState(0.5);
   const [score, setScore] = useState({ player1: 0, player2: 0 });
 
   const ballStyle = {
-    width: '2rem',
-    height: '2rem',
-    left: 'calc(' + currentMove.collision.coordinates.x * 100 + "% - 1rem)",
-    bottom: 'calc(' + currentMove.collision.coordinates.y * 100 + "% - 1rem)",
+    width: "2rem",
+    height: "2rem",
+    left: "calc(" + currentMove.collision.coordinates.x * 100 + "% - 1rem)",
+    bottom: "calc(" + currentMove.collision.coordinates.y * 100 + "% - 1rem)",
     transition: currentMove.collision.time + "s linear",
   };
 
@@ -33,7 +32,7 @@ function Game(props: { firstMove: string }) {
   const keyDownHandler = (event: any) => {
     if (event.repeat) return;
     if (event.code === "ArrowUp") {
-      context.socket!.emit(
+      cookies["socket"].emit(
         "gameUpdateToServer",
         JSON.stringify({
           username: cookies["userInfo"].name,
@@ -43,7 +42,7 @@ function Game(props: { firstMove: string }) {
         })
       );
     } else if (event.code === "ArrowDown") {
-      context.socket!.emit(
+      cookies["socket"].emit(
         "gameUpdateToServer",
         JSON.stringify({
           username: cookies["userInfo"].name,
@@ -57,7 +56,7 @@ function Game(props: { firstMove: string }) {
 
   const keyUpHandler = (event: any) => {
     if (event.code === "ArrowUp") {
-      context.socket!.emit(
+      cookies["socket"].emit(
         "gameUpdateToServer",
         JSON.stringify({
           username: cookies["userInfo"].name,
@@ -67,7 +66,7 @@ function Game(props: { firstMove: string }) {
         })
       );
     } else if (event.code === "ArrowDown") {
-      context.socket!.emit(
+      cookies["socket"].emit(
         "gameUpdateToServer",
         JSON.stringify({
           username: cookies["userInfo"].name,
@@ -100,47 +99,51 @@ function Game(props: { firstMove: string }) {
         JSON.parse(payload).players[1].score
       );
     };
-    if (!context.socket) {
-      context.initSocket() &&
-        context.socket!.on("gameUpdateToClient", messageListener);
+    if (!cookies["socket"]) {
+      const newSocket = io("http://" + process.env.REACT_APP_SERVER_IP);
+      setCookie("socket", newSocket);
+      cookies["socket"].on("gameUpdateToClient", messageListener);
     } else {
-      context.socket.on("gameUpdateToClient", messageListener);
+      cookies["socket"].on("gameUpdateToClient", messageListener);
     }
     return () => {
-      context.socket &&
-        context.socket.off("gameUpdateToClient", messageListener);
+      cookies["socket"] &&
+        cookies["socket"].off("gameUpdateToClient", messageListener);
     };
-  }, [context.socket]);
+  }, [cookies["socket"]]);
 
   useEffect(() => {
-
     const updateBarPosition = (
       bar: {
-        barHeight: number,
-        position: {x: number, y: number}
-        movement: { direction: number, startTimeStamp: number },
-        speed: number,
+        barHeight: number;
+        position: { x: number; y: number };
+        movement: { direction: number; startTimeStamp: number };
+        speed: number;
       },
       position: number,
       setPosition: Function
     ) => {
-      if (position >= 1 - bar.barHeight &&
-        bar.movement.direction === 1)
+      if (position >= 1 - bar.barHeight && bar.movement.direction === 1)
         setPosition(1 - bar.barHeight);
-      else if (position <= 0 + bar.barHeight / 2 &&
-        bar.movement.direction === -1)
+      else if (
+        position <= 0 + bar.barHeight / 2 &&
+        bar.movement.direction === -1
+      )
         setPosition(0 + bar.barHeight / 2);
       else
-        setPosition(bar.position.y +
-          (Date.now() - bar.movement.startTimeStamp) / 1000 *
-          bar.movement.direction * bar.speed)
-    }
+        setPosition(
+          bar.position.y +
+            ((Date.now() - bar.movement.startTimeStamp) / 1000) *
+              bar.movement.direction *
+              bar.speed
+        );
+    };
     const interval = setInterval(() => {
       updateBarPosition(currentMove.players[0].bar, leftPos, setLeftPos);
       updateBarPosition(currentMove.players[1].bar, rightPos, setRightPos);
-    }, 5)
-    return (() => clearInterval(interval))
-  })
+    }, 5);
+    return () => clearInterval(interval);
+  });
 
   return (
     <div className="Game">

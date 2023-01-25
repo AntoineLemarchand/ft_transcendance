@@ -1,17 +1,18 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { SocketContext } from '../WebSocket'
 import "static/Play/WaitingRoom.scss";
-import Game from './Game'
+import Game from "./Game";
+import { useCookies } from "react-cookie";
+import io from "socket.io-client";
 
 export function PreMatchRoom() {
   const [userReady, setUserReady] = useState(false);
   const [opponentReady, setOpponentReady] = useState(false);
-  const [gameStart, setGameStart] = useState('');
+  const [gameStart, setGameStart] = useState("");
   const [Gamemode, setGamemode] = useState("Normal");
-	const params = useParams();
+  const params = useParams();
   const navigate = useNavigate();
-  const context = useContext(SocketContext);
+  const [cookies, setCookie] = useCookies(["auth", "userInfo", "socket"]);
 
   const GamemodeButtonStyle = (gamemode: string) => {
     return gamemode === Gamemode
@@ -36,34 +37,33 @@ export function PreMatchRoom() {
   };
 
   useEffect(() => {
-    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/game/setReady', {
-      credentials: 'include',
-      method: userReady ? 'POST' : 'DELETE',
+    fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/game/setReady", {
+      credentials: "include",
+      method: userReady ? "POST" : "DELETE",
       headers: {
-        'Content-type': 'application/json; charset=UTF-8',
+        "Content-type": "application/json; charset=UTF-8",
       },
       body: JSON.stringify({
-        'gameId': params.gid,
+        gameId: params.gid,
       }),
     }).then((response) => {
-      if (response.status === 500)
-        navigate('/game');
-    })
-  }, [userReady])
+      if (response.status === 500) navigate("/game");
+    });
+  }, [userReady]);
 
-  useEffect(()=> {
+  useEffect(() => {
     const messageListener = (payload: string) => {
       setGameStart(payload);
-    }
-    if (!context.socket) {
-      context.initSocket() &&
-      context.socket!.on("gameUpdateToClient", messageListener)
-    } else
-      context.socket.on("gameUpdateToClient", messageListener)
-  }, [])
+    };
+    if (!cookies["socket"]) {
+      const newSocket = io("http://" + process.env.REACT_APP_SERVER_IP);
+      setCookie("socket", newSocket);
+      cookies["socket"].on("gameUpdateToClient", messageListener);
+    } else cookies["socket"].on("gameUpdateToClient", messageListener);
+  }, []);
 
-  if (gameStart != '') {
-    return (<Game firstMove={gameStart}/>)
+  if (gameStart != "") {
+    return <Game firstMove={gameStart} />;
   }
   return (
     <div className="waitingRoom">
@@ -115,6 +115,4 @@ export function MatchMakingRoom() {
       </div>
     </div>
   );
-
 }
-
