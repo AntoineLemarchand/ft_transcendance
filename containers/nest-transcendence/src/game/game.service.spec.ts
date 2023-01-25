@@ -176,13 +176,13 @@ describe('starting a game', () => {
 
   it('should not unset a player readiness if not an active player and throw on trying to do so (3)', async () => {
     const gameObject = await finishAGame('player1', 'player42');
-    //expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
+    expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
 
-    //await gameService.unsetReady('player1', gameObject.getId());
-    //expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
+    await gameService.unsetReady('player1', gameObject.getId());
+    expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
 
-    //await gameService.setReady('player1', gameObject.getId());
-    //expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
+    await gameService.setReady('player1', gameObject.getId());
+    expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
   });
 });
 
@@ -223,7 +223,6 @@ describe('running a game', () => {
     expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
     expect(await gameService.getSavedGameById(gameObject.getId())).toBeDefined();
     expect(await gameService.getSavedGamesCount()).toBe(1);
-    expect(await gameService.getSavedGamesLastId()).toBe(0);
   });
 });
 
@@ -249,7 +248,18 @@ describe('saved games data', () => {
     expect(await gameService.getSavedGames()).toBeDefined();
     expect(await gameService.getSavedGamesCount()).toBe(3);
   });
-	
+	it('should return last finished game id', async () => {
+    const game1 = new GameObject(0, 'pépé', 'mémé');
+    const game2 = new GameObject(1, 'hehe', 'haha');
+    const game3 = new GameObject(2, 'huhu', 'hihi');
+
+    await gameService.saveGameStat(game1);
+    await gameService.saveGameStat(game2);
+    await gameService.saveGameStat(game3);
+  
+    expect(await gameService.getSavedGamesLastId()).toBe(2);
+  });
+
 	it('should return all the player\'s finished games', async () => {
     const game1 = new GameObject(0, 'pépé', 'mémé');
     const game2 = new GameObject(1, 'mémé', 'pépé');
@@ -280,6 +290,24 @@ describe('saved games data', () => {
     await gameService.saveGameStat(game3);
 
 		expect(await gameService.getWonGamesByPlayer('pépé')).toBeDefined();
+  });
+
+  it('should start games ids at 0 when no saved games', 
+      async () => {
+    const gameObject = await finishAGame('player1', 'player42');
+		expect(await gameObject.getId()).toBe(0);
+  });
+  
+  it('should increment on saved games ids when a new gameObject is created', 
+      async () => {
+    const game1 = new GameObject(1, 'pépé', 'mémé');
+    const game2 = new GameObject(2, 'mémé', 'pépé');
+       
+    await gameService.saveGameStat(game1);
+    await gameService.saveGameStat(game2);
+
+    const game3 = await finishAGame('player1', 'player42');
+		expect(await game3.getId()).toBe(3);
   });
 });
 

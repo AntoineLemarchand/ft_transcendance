@@ -7,8 +7,6 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class GameStat {
-  //@Column('text', { array: true })
-	//public players: string[];
   @Column('text')
   public player1: string;
   @Column('text')
@@ -27,9 +25,7 @@ export class GameStat {
     score1: number,
     score2: number
   ) {
-  //constructor(gameId: number, players: string[], scores: number[]) {
     this.gameId = gameId;
-		//this.players = players;
     this.player1 = player1;
     this.player2 = player2;
     this.score1 = score1;
