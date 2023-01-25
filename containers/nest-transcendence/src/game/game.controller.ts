@@ -59,4 +59,45 @@ export class GameController {
   async getPerUser(@Request() req: any) {
     return { games: this.gameService.getGamesForUser(req.user.name) };
   }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('getSavedGames')
+  async getSavedGames() {
+    const allSavedGames = await this.gameService.getSavedGames();
+    return { games: allSavedGames };
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('getSavedGameById')
+  async getSavedGameById() {
+    const savedGame = await this.gameService.getSavedGameById();
+    return { games: savedGame };
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('getSavedGamesCount')
+  async getSavedGamesCount() {
+    const savedGamesCount = await this.gameService.getSavedGamesCount();
+    return { games: savedGamesCount };
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('getSavedGamesByPlayer')
+  async getSavedGamesByPlayer() {
+    const savedGamesByPlayer = await this.gameService.getSavedGamesByPlayer();
+    return { games: savedGamesByPlayer };
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('getWonGamesByPlayer')
+  async getWonGamesByPlayer() {
+    const wonGamesByPlayer = await this.gameService.getWonGamesByPlayer();
+    return { games: wonGamesByPlayer };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('matchMaking')
+  async joinMatchMaking(@Request() req: any) {
+    await this.gameService.joinMatchMaking(req.user.name);
+  }
 }

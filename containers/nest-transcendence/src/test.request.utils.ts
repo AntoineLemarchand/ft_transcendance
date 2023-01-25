@@ -319,6 +319,15 @@ export async function initGame(
     });
 }
 
+export async function joinMatchMaking(
+  callerModule: INestApplication,
+  jwt: any,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/game/matchMaking')
+    .set('Authorization', 'Bearer ' + jwt);
+}
+
 export async function getAllRunning(callerModule: INestApplication, jwt: any) {
   return request(callerModule.getHttpServer())
     .get('/game/getRunning')
@@ -386,3 +395,48 @@ export async function setNotReadyForGame(
       gameId: gameId.toString(),
     });
 }
+
+export const getSavedGames = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getSavedGames')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getSavedGameById = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getSavedGameById')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getSavedGamesCount = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getSavedGamesCount')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getSavedGamesByPlayer = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getSavedGamesByPlayer')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getWonGamesByPlayer = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getWonGamesByPlayer')
+    .set('Authorization', 'Bearer ' + jwt);
+};

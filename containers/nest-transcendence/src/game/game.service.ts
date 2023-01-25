@@ -3,7 +3,7 @@ import { UserService } from '../user/user.service';
 import { GameObjectRepository } from './game.currentGames.repository';
 import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ArrayContains } from 'typeorm';
 import {
   GameInput,
   GameObject,
@@ -15,6 +15,7 @@ import { ErrUnAuthorized } from '../exceptions';
 
 @Injectable()
 export class GameService {
+  private matchMakingQueue: string[] = [];
   constructor(
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
@@ -27,6 +28,11 @@ export class GameService {
 
   async initGame(player1name: string, player2name: string) {
     await this.areValidPlayers(player1name, player2name);
+    if (
+      (await this.getSavedGamesCount()) != 0 &&
+      this.currentGames.getCurrentId() == 0
+    )
+      this.currentGames.setCurrentId(await this.getSavedGamesLastId());
     const alreadyCreatedGame = this.getNonFinishedGameObjectFor(
       player1name,
       player2name,
@@ -93,15 +99,17 @@ export class GameService {
     while (game.getProgress() !== GameProgress.FINISHED) {
       game.executeStep();
       this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
-      await this.sleepUntilCollision(game);
+      if (game.collision.isReset()) {
+        await this.sleepUntil(1000);
+      } else {
+        await this.sleepUntil(1000 * game.collision.getTimeUntilImpact());
+      }
     }
     await this.saveGameStat(game);
   }
 
-  async sleepUntilCollision(game: GameObject) {
-    await new Promise((resolve) =>
-      setTimeout(resolve, 1000 * game.collision.getTimeUntilImpact()),
-    );
+  async sleepUntil(timeInMs: number) {
+    await new Promise((resolve) => setTimeout(resolve, timeInMs));
   }
 
   private async prohibitNonPlayerActions(
@@ -160,22 +168,54 @@ export class GameService {
 
   async saveGameStat(game: GameObject) {
     await this.gameRepository.save(
-      new GameStat(game.getId(), game.getPlayerNames(), game.getPlayerScores()),
+      new GameStat(
+        game.getId(),
+        game.getPlayerNames()[0],
+        game.getPlayerNames()[1],
+        game.getPlayerScores()[0],
+        game.getPlayerScores()[1],
+      ),
     );
   }
 
-  async getGameById(id: number) {
+  async getSavedGameById(id: number) {
     const result = await this.gameRepository.findOneBy({ gameId: id });
     if (result) return result;
     else return Promise.reject(new Error('No such id'));
   }
 
-  async getGames(): Promise<GameStat[]> {
+  async getSavedGames(): Promise<GameStat[]> {
     return await this.gameRepository.find();
   }
 
-  async getGamesCount() {
+  async getSavedGamesCount() {
     return await this.gameRepository.count();
+  }
+
+  async getSavedGamesLastId() {
+    const query = this.gameRepository.createQueryBuilder('GameStat');
+    const result = await query
+      .select('MAX(GameStat.gameId)', 'max')
+      .getRawOne();
+    if (!result.max) return 0;
+    else return result.max;
+  }
+
+  async getSavedGamesByPlayer(player: string): Promise<GameStat[] | undefined> {
+    const result = this.gameRepository.find({
+      where: [{ player1: player }, { player2: player }],
+    });
+    if (result) return result;
+  }
+
+  async getWonGamesByPlayer(player: string): Promise<GameStat[] | undefined> {
+    const result = this.gameRepository.find({
+      where: [
+        { player1: player, score1: 10 },
+        { player2: player, score2: 10 },
+      ],
+    });
+    if (result) return result;
   }
 
   getRunningGameForUser(username: string) {
@@ -204,5 +244,28 @@ export class GameService {
       executorName,
       gameId.toString(),
     );
+  }
+
+  joinMatchMaking(executorName: string) {
+    if (!this.matchMakingQueue.includes(executorName)) {
+      this.matchMakingQueue.push(executorName);
+      this.broadcastingGateway.putUserInRoom(executorName, '_waiting_room_');
+    }
+    if (this.matchMakingQueue.length === 2) {
+      this.initGame(this.matchMakingQueue[0], this.matchMakingQueue[1]);
+      this.broadcastingGateway.emitMatchMade(
+        this.matchMakingQueue[0],
+        this.matchMakingQueue[1],
+      );
+      this.broadcastingGateway.removeUserFromRoom(
+        this.matchMakingQueue[0],
+        '_waiting_room_',
+      );
+      this.broadcastingGateway.removeUserFromRoom(
+        this.matchMakingQueue[1],
+        '_waiting_room_',
+      );
+      this.matchMakingQueue = [];
+    }
   }
 }
