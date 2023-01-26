@@ -13,10 +13,10 @@ function Game(props: { firstMove: string }) {
   const [score, setScore] = useState({ player1: 0, player2: 0 });
 
   const ballStyle = {
-    width: '2rem',
-    height: '2rem',
-    left: 'calc(' + currentMove.collision.coordinates.x * 100 + "% - 1rem)",
-    bottom: 'calc(' + currentMove.collision.coordinates.y * 100 + "% - 1rem)",
+    width: '1rem',
+    height: '1rem',
+    left: 'calc(' + currentMove.collision.coordinates.x * 100 + "% - .5rem)",
+    bottom: 'calc(' + currentMove.collision.coordinates.y * 100 + "% - .5rem)",
     transition: currentMove.collision.time + "s linear",
   };
 
@@ -95,6 +95,7 @@ function Game(props: { firstMove: string }) {
   useEffect(() => {
     const messageListener = (payload: string) => {
       setCurrentMove(JSON.parse(payload));
+      console.log(JSON.parse(payload).collision.coordinates);
       updateScore(
         JSON.parse(payload).players[0].score,
         JSON.parse(payload).players[1].score
@@ -126,7 +127,7 @@ function Game(props: { firstMove: string }) {
     ) => {
       if (position >= 1 - bar.barHeight &&
         bar.movement.direction === 1)
-        setPosition(1 - bar.barHeight);
+        setPosition(1 - bar.barHeight / 2);
       else if (position <= 0 + bar.barHeight / 2 &&
         bar.movement.direction === -1)
         setPosition(0 + bar.barHeight / 2);

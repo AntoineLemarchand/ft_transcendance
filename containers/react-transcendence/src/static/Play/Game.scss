@@ -11,6 +11,7 @@ $paddleWidth: 3%;
   .Board {
     height: 100%;
     width: 100%;
+    z-index: 10;
 
     .player {
       height: 20%;
@@ -34,6 +35,7 @@ $paddleWidth: 3%;
       height: 100%;
       margin: 0 auto 0 auto;
       position: relative;
+      border: 2px solid red;
 
       .separator {
         height: 100%;
