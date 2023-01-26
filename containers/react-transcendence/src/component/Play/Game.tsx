@@ -80,6 +80,9 @@ function Game(props: { firstMove: string }) {
   };
 
   useEffect(() => {
+  if (currentMove.players[0].name !== cookies['userInfo'].name &&
+    currentMove.players[1].name !== cookies['userInfo'].name)
+    return;
     window.addEventListener("keydown", keyDownHandler);
     window.addEventListener("keyup", keyUpHandler);
     return function cleanup() {
@@ -95,7 +98,6 @@ function Game(props: { firstMove: string }) {
   useEffect(() => {
     const messageListener = (payload: string) => {
       setCurrentMove(JSON.parse(payload));
-      console.log(JSON.parse(payload).collision.coordinates);
       updateScore(
         JSON.parse(payload).players[0].score,
         JSON.parse(payload).players[1].score
