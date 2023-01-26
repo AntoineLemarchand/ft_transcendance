@@ -2,6 +2,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Request,
   UseGuards,
@@ -58,5 +59,41 @@ export class GameController {
   @Get('getPerUser')
   async getPerUser(@Request() req: any) {
     return { games: this.gameService.getGamesForUser(req.user.name) };
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('getSavedGames')
+  async getSavedGames() {
+    const allSavedGames = await this.gameService.getSavedGames();
+    return { games: allSavedGames };
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('getSavedGamesCount')
+  async getSavedGamesCount() {
+    const savedGamesCount = await this.gameService.getSavedGamesCount();
+    return { games: savedGamesCount };
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('getSavedGamesByPlayer/:username')
+  async getSavedGamesByPlayer(@Param() params: any) {
+    const savedGamesByPlayer = await this.gameService
+      .getSavedGamesByPlayer(params.username);
+    return { games: savedGamesByPlayer };
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('getWonGamesByPlayer/:username')
+  async getWonGamesByPlayer(@Param() params: any) {
+    const wonGamesByPlayer = await this.gameService
+      .getWonGamesByPlayer(params.username);
+    return { games: wonGamesByPlayer };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('matchMaking')
+  async joinMatchMaking(@Request() req: any) {
+    await this.gameService.joinMatchMaking(req.user.name);
   }
 }

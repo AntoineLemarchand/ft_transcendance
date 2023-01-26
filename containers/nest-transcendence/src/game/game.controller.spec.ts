@@ -7,10 +7,11 @@ import { createTestModule } from '../test.module.utils';
 import { User } from '../user/user.entities';
 import { GameService } from './game.service';
 import { GameObjectRepository } from './game.currentGames.repository';
-import { GameObject } from './game.entities';
+import { GameObject, GameStat } from './game.entities';
 import { getAllGamesForUser, getAllRunning } from '../test.request.utils';
 import { MyExceptionFilter } from '../exceptions.filter';
 import { ErrNotFound, ErrUnAuthorized } from '../exceptions';
+import { executionCtx } from "pg-mem/types/utils";
 
 jest.mock('../broadcasting/broadcasting.gateway');
 jest.mock('./game.service');
@@ -106,6 +107,23 @@ describe('initializing a game', () => {
     const result = await testUtils.initGame(app, jwt, 'Thomas');
 
     expect(result.body.gameObject.gameId).toBe(666);
+  });
+
+  it('should only allow match making to authenticated users', async () => {
+    const spy = jest.spyOn(gameService, 'joinMatchMaking');
+
+    const result = await testUtils.joinMatchMaking(app, 'invalid jwt');
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should call the logic for joining the match making system', async () => {
+    const spy = jest.spyOn(gameService, 'joinMatchMaking');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+
+    await testUtils.joinMatchMaking(app, jwt);
+
+    expect(spy).toHaveBeenCalledWith('admin');
   });
 });
 
@@ -208,6 +226,44 @@ describe('fetching games for user', () => {
 
     expect(result.body.games).toBeDefined();
     expect(spy).toHaveBeenCalled();
+  });
+});
+
+describe('fetching saved games', () => {
+  it('should call getSavedGames func', async function () {
+    const spy = jest.spyOn(gameService, 'getSavedGames');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    
+    await testUtils.getSavedGames(app, jwt);
+   
+    expect(spy).toHaveBeenCalled();
+  });
+  
+  it('should call getSavedGamesCount func', async function () {
+    const spy = jest.spyOn(gameService, 'getSavedGamesCount');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    
+    await testUtils.getSavedGamesCount(app, jwt);
+   
+    expect(spy).toHaveBeenCalled();
+  });
+  
+  it('should call getSavedGamesByPlayer func', async function () {
+    const spy = jest.spyOn(gameService, 'getSavedGamesByPlayer');
+    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+    
+    await testUtils.getSavedGamesByPlayer(app, jwt, 'admin');
+   
+    expect(spy).toHaveBeenCalledWith('admin');
+  });
+  
+it('should call getWonGamesByPlayer func', async function () {
+  const spy = jest.spyOn(gameService, 'getWonGamesByPlayer');
+  const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+  
+  await testUtils.getWonGamesByPlayer(app, jwt, 'admin');
+ 
+  expect(spy).toHaveBeenCalledWith('admin');
   });
 });
 
