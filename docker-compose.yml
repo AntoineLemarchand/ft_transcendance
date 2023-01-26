@@ -6,6 +6,7 @@ networks:
 
 volumes:
   db-transcendence:
+    driver: local
     driver_opts:
       type: none
       device: ${POSTGRES_DATAPATH}
@@ -25,6 +26,7 @@ services:
       - frontend
     environment:
       SERVER_HOST: ${SERVER_URL}
+
     depends_on:
       - front
 
@@ -35,6 +37,8 @@ services:
     init: true
     environment:
       REACT_APP_SERVER_IP: ${SERVER_URL}
+      REACT_APP_FORTYTWO_CLIENT_ID: ${FORTYTWO_CLIENT_ID}
+      REACT_APP_FORTYTWO_REDIRECT_URI: ${FORTYTWO_REDIRECT_URI}
     networks:
       - frontend
     build:
@@ -49,7 +53,7 @@ services:
     restart: unless-stopped
     init: true
     volumes:
-      - $POSTGRES_DATAPATH:${PGDATA}
+      - db-transcendence:${PGDATA}
     networks:
       - frontend
       - backend

@@ -41,6 +41,13 @@ export class UserService {
     return test;
   }
 
+  getInfo(username: string) {
+    const User = this.getUser(username);
+    if (User === undefined)
+      throw new ErrNotFound('Could not find user');
+    return User;
+  }
+
   private async getFriendUserStatus(friends: string[]) {
     const result = friends.map((friendName) => {
       return {

@@ -12,14 +12,13 @@ import { Message } from '../channel/channel.entities';
 import { ChannelService } from '../channel/channel.service';
 import { RoomHandler } from './broadcasting.roomHandler';
 import { UserService } from '../user/user.service';
-import { environment } from '../utils/environmentParser';
 import { GameInput, GameObject } from '../game/game.entities';
 import { GameService } from '../game/game.service';
 
 //todo: is cors * a security concern in our case?
 @WebSocketGateway(8001, {
   cors: {
-    origin: ['http://' + environment.SERVER_URL, 'http://localhost'],
+    origin: ['http://' + process.env.SERVER_URL, 'http://localhost'],
     credentials: true,
   },
 })

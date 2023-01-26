@@ -10,6 +10,7 @@ import "static/Account/Prompt.scss";
 import { ReactComponent as SchoolLogo } from "static/logo.svg";
 
 function Login() {
+  console.log(process.env);
   const navigate = useNavigate();
   const [cookie, setCookie] = useCookies(["auth", "userInfo"]);
   const [username, setUsername] = useState("");
@@ -79,9 +80,16 @@ function Login() {
         <button className="signin" onClick={() => navigate("/signin")}>
           Sign in
         </button>
-        <button className="Oauth">
-          <SchoolLogo />
-        </button>
+        <a href={
+            'https://api.intra.42.fr/oauth/authorize?' +
+            'client_id=' + process.env.REACT_APP_FORTYTWO_CLIENT_ID +
+            // '&redirect_uri=https://www.google.com/'   +
+            // '&redirect_uri=http://' + process.env.REACT_APP_SERVER_IP + "/api/auth/oauth/callback"   +
+            '&redirect_uri=http://' + 'localhost' + "/api/auth/oauth/callback"   +
+            '&response_type=code'
+        }>
+          <button className="Oauth"><SchoolLogo/></button>
+        </a>
       </div>
     </div>
   );
