@@ -8,6 +8,7 @@ import 'static/Account/Prompt.scss'
 import { ReactComponent as SchoolLogo } from 'static/logo.svg'
 
 function Login() {
+  console.log(process.env.REACT_APP_FORTYTWO_CLIENT_ID);
 
   const navigate = useNavigate();
   const [cookie, setCookie] = useCookies(['auth', 'userInfo']);
