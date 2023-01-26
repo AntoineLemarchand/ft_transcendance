@@ -264,6 +264,26 @@ describe('calculating the point of collision', () => {
     expect(result.x).toBeCloseTo(0.75);
     expect(result.y).toBeCloseTo(0);
   });
+
+  it('should never go below zero (this is a bug)', () => {
+    const yDest = 0.12322229749486029;
+    const xDest = 1;
+    const origin = { x: 0.5, y: 0.5 };
+    const angle = Math.atan((yDest - origin.y) / (xDest - origin.x));
+    const speed = 1;
+    const collision = new Collision(origin, angle, speed);
+
+    collision.update();
+
+    let result = collision.getCoordinates();
+    expect(result.x).toBeCloseTo(xDest);
+    expect(result.y).toBeCloseTo(yDest);
+
+    collision.update();
+
+    result = collision.getCoordinates();
+    expect(result.y).toBeGreaterThanOrEqual(0);
+  });
 });
 
 describe('calculating the time until the next collision', () => {

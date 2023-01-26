@@ -14,7 +14,7 @@ import { Collision } from './game.logic';
 import { ErrNotFound } from '../exceptions';
 
 jest.spyOn(performance, "now")
-  .mockImplementationOnce(() => 1000)
+  .mockImplementationOnce(() => 1)
 jest.mock('../broadcasting/broadcasting.gateway');
 
 let gameService: GameService;
@@ -55,7 +55,7 @@ beforeEach(async () => {
 
 async function finishAGame(p1: string, p2: string) {
   const gameObject = await gameService.initGame(p1, p2);
-  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 100000);
+  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
   await gameService.setReady(p2, gameObject.getId());
   await gameService.runGame(gameObject);
   // do not put before run game, else await will not work
