@@ -77,10 +77,8 @@ export function PreMatchRoom(props: {socket: Socket}) {
   );
 }
 
-export function MatchMakingRoom() {
+export function MatchMakingRoom(props: { socket: Socket }) {
   const [dotAmount, setDotAmount] = useState("");
-  const [socket, setSocket] = useState<Socket | undefined>(undefined);
-  const [cookies] = useCookies(['auth']);
 
   useEffect(() => {
     setTimeout(() => {
@@ -90,26 +88,11 @@ export function MatchMakingRoom() {
   });
 
   useEffect(() => {
-      return (() => socket?.close());
-  }, [])
-
-  useEffect(() => {
     const messageListener = (payload: string) => {
       console.log(payload);
     }
-    if (!socket) {
-      const newSocket = io("http://" + process.env.REACT_APP_SERVER_IP, {
-        withCredentials: true,
-        query: { auth: cookies["auth"] },
-      });
-      setSocket(newSocket);
-    } else {
-      socket.on("emitMatchMadeToClient", messageListener)
-    }
-    return ( () => {
-      socket?.off("emitMatchMadeToClient", messageListener);
-    })
-  })
+    props.socket.on("emitMatchMadeToClient", messageListener)
+  }, [])
 
   useEffect(() => {
     fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/game/matchMaking', {
@@ -128,6 +111,5 @@ export function MatchMakingRoom() {
       </div>
     </div>
   );
-
 }
 

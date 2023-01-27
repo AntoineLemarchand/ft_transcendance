@@ -40,7 +40,7 @@ function App() {
       component: socket && <Main component={<Chat socket={socket}/>}/>
     }, {
       path:'/waitingroom',
-      component: <Main component={<MatchMakingRoom />}/>
+      component: socket && <Main component={<MatchMakingRoom socket={socket}/>}/>
     }, {
       path:'/game',
       component: <Main component={<Play />}/>
