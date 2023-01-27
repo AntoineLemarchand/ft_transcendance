@@ -71,6 +71,7 @@ function Chat() {
     });
     setSocket(newSocket);
     updateJoinedChannels();
+    return (() => socket?.close());
     // eslint-disable-next-line
   }, []);
 
@@ -84,7 +85,7 @@ function Chat() {
     if (currentChannel === undefined && joinedChannel.length > 0)
       setCurrentChannel(joinedChannel[0]);
     return () => {
-      socket && socket.off("messageToClient", messageListener);
+      socket?.off("messageToClient", messageListener);
     };
     // eslint-disable-next-line
   }, [joinedChannel]);

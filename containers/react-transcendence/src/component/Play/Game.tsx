@@ -1,11 +1,10 @@
 import { useEffect, useState, useContext } from "react";
 import { useCookies } from "react-cookie";
-import { SocketContext } from "../WebSocket";
+import { Socket } from "socket.io-client";
 import "static/Play/Game.scss";
 import GameStatus from "./GameStatus";
 
-function Game(props: { firstMove: string }) {
-  const context = useContext(SocketContext);
+function Game(props: { firstMove: string, socket: Socket}) {
   const [currentMove, setCurrentMove] = useState(JSON.parse(props.firstMove));
   const [cookies] = useCookies(["userInfo"]);
   const [leftPos, setLeftPos] = useState(0.5);
@@ -33,7 +32,7 @@ function Game(props: { firstMove: string }) {
   const keyDownHandler = (event: any) => {
     if (event.repeat) return;
     if (event.code === "ArrowUp") {
-      context.socket!.emit(
+      props.socket.emit(
         "gameUpdateToServer",
         JSON.stringify({
           username: cookies["userInfo"].name,
@@ -43,7 +42,7 @@ function Game(props: { firstMove: string }) {
         })
       );
     } else if (event.code === "ArrowDown") {
-      context.socket!.emit(
+      props.socket.emit(
         "gameUpdateToServer",
         JSON.stringify({
           username: cookies["userInfo"].name,
@@ -57,7 +56,7 @@ function Game(props: { firstMove: string }) {
 
   const keyUpHandler = (event: any) => {
     if (event.code === "ArrowUp") {
-      context.socket!.emit(
+      props.socket.emit(
         "gameUpdateToServer",
         JSON.stringify({
           username: cookies["userInfo"].name,
@@ -67,7 +66,7 @@ function Game(props: { firstMove: string }) {
         })
       );
     } else if (event.code === "ArrowDown") {
-      context.socket!.emit(
+      props.socket.emit(
         "gameUpdateToServer",
         JSON.stringify({
           username: cookies["userInfo"].name,
@@ -103,17 +102,8 @@ function Game(props: { firstMove: string }) {
         JSON.parse(payload).players[1].score
       );
     };
-    if (!context.socket) {
-      context.initSocket() &&
-        context.socket!.on("gameUpdateToClient", messageListener);
-    } else {
-      context.socket.on("gameUpdateToClient", messageListener);
-    }
-    return () => {
-      context.socket &&
-        context.socket.off("gameUpdateToClient", messageListener);
-    };
-  }, [context.socket]);
+    props.socket.on("gameUpdateToClient", messageListener);
+  }, []);
 
   useEffect(() => {
 

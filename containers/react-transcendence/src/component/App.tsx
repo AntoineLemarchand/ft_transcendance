@@ -1,6 +1,7 @@
-import * as React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { useCookies } from 'react-cookie'
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+import { Socket, io } from 'socket.io-client';
 
 import Main from './Main'
 import NotFound from './NotFound'
@@ -15,12 +16,11 @@ import Spectate from './Play/Spectate'
 import Chat from './Chat/Chat'
 import Profile from './Profile/Profile'
 
-import { SocketProvider } from './WebSocket';
-
 import '../static/App.scss'
 
 function App() {
-  const [cookie] = useCookies(['userInfo']);
+  const [cookies] = useCookies(['auth', 'userInfo']);
+  const [socket, setSocket] = useState<Socket | undefined>(undefined);
 
   const routes = [
     {
@@ -46,28 +46,39 @@ function App() {
       component: <Main component={<Play />}/>
     }, {
       path:'/game/:gid',
-      component: <Main component={<PreMatchRoom />}/>
+      component: socket && <Main component={<PreMatchRoom socket={socket}/>}/>
     }, {
       path:'/profile',
-      component: <Main component={<Profile user={cookie['userInfo']}/>}/>
+      component: <Main component={<Profile user={cookies['userInfo']}/>}/>
     }, {
       path:'/profile/:uid',
-      component: <Main component={<Profile user={cookie['userInfo']}/>}/>
+      component: <Main component={<Profile user={cookies['userInfo']}/>}/>
     }, {
       path:'/*',
       component: <NotFound />
     },
   ]
 
-  React.useEffect(()=> {
+  useEffect(()=> {
     document.title='Transcendance'
+    return (() => socket?.close())
   }, [])
+
+  useEffect(() => {
+    if (!socket && cookies['auth']) {
+      const newSocket = io("http://" + process.env.REACT_APP_SERVER_IP, {
+        withCredentials: true,
+        query: { auth: cookies["auth"] },
+      });
+      setSocket(newSocket);
+    }
+  })
+
 
 	return (
 	<div className="App">
 		<BrowserRouter>
 		<Header/>
-    <SocketProvider>
 		<Routes>
       {
         routes.map((route: {path: string, component: JSX.Element}, idx: number) => {
@@ -80,7 +91,6 @@ function App() {
         })
       }
 		</Routes>
-    </SocketProvider>
 		</BrowserRouter>
 	</div>
 	)

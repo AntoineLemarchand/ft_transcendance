@@ -22,7 +22,6 @@ function Spectate() {
 	}
 
   const updateGames = () => {
-    console.log('games: ')
     fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/game/getRunning', {
         credentials: 'include',
         method: 'GET',
@@ -32,7 +31,6 @@ function Spectate() {
         }
     }).then((result) => {
       result.text().then(text => {
-        console.log(JSON.parse(text));
         setRunningGames(JSON.parse(text).games)
       })
     })

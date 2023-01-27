@@ -2,7 +2,6 @@ import { useEffect, useContext } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useCookies } from 'react-cookie';
 import { SocketContext } from './WebSocket'
-import { io } from 'socket.io-client'
 
 import 'static/Main.scss'
 
@@ -25,19 +24,16 @@ function Main(props: {component: any}) {
 	const location = useLocation();
 	const tab = location.pathname.split('/')[1];
   const [cookie,, removeCookie] = useCookies(['auth', 'userInfo']);
-  const context = useContext(SocketContext);
 
 	const ProcessLogout = () => {
     removeCookie('auth', {path: '/'});
     removeCookie('userInfo', {path: '/'});
-    context.socket?.close();
 		navigate('/');
 	}
 
   useEffect(() => {
     if (cookie['auth'] === undefined || cookie['userInfo'] === undefined)
       navigate('/');
-    context.initSocket()
   }, []);
 
 
