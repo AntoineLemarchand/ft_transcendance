@@ -27,7 +27,7 @@ export class AuthService {
     const user = await this.userService.getUser(username);
 
     if (user !== undefined) {
-      if (user.getPassword() === password) return user;
+      if (user.comparePassword(password)) return user;
       throw new ErrUnAuthorized('Wrong password');
     }
     throw new ErrUnAuthorized('Could not find user');
