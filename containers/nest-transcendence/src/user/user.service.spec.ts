@@ -179,7 +179,7 @@ describe('getting the user state', () => {
     expect(result).toStrictEqual('online');
   });
 
-  it('should return inGame for a user who is in a game', function () {
+  it('should return in game for a user who is in a game', function () {
     jest
       .spyOn(gameService, 'getRunningGameForUser')
       .mockImplementation((username: string) => {
@@ -187,6 +187,6 @@ describe('getting the user state', () => {
       });
     const result = userService.getStatus('online user');
 
-    expect(result).toStrictEqual('inGame');
+    expect(result).toStrictEqual('in game');
   });
 });

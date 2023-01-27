@@ -149,7 +149,7 @@ export class UserService {
   }
 
   getStatus(username: string) {
-    if (this.gameService.getRunningGameForUser(username)) return 'inGame';
+    if (this.gameService.getRunningGameForUser(username)) return 'in game';
     if (this.broadcastingGateway.getRoomHandler().isUserOnline(username))
       return 'online';
     return 'offline';
