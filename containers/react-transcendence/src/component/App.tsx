@@ -37,7 +37,7 @@ function App() {
       component: <Main component={<Spectate />}/>
     }, {
       path:'/chat',
-      component: <Main component={<Chat />}/>
+      component: socket && <Main component={<Chat socket={socket}/>}/>
     }, {
       path:'/waitingroom',
       component: <Main component={<MatchMakingRoom />}/>

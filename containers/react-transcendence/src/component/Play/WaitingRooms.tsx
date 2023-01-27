@@ -44,7 +44,7 @@ export function PreMatchRoom(props: {socket: Socket}) {
       setGameStart(payload);
     }
     props.socket.on("gameUpdateToClient", messageListener)
-    return (() => {props.socket.off("gameUpdateToClient", messageListener)})
+    //return (() => {props.socket.off("gameUpdateToClient", messageListener)})
   }, [])
 
   if (gameStart != '') {
