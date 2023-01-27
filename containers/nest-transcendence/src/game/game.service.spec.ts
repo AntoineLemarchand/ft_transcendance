@@ -13,6 +13,12 @@ import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { Collision } from './game.logic';
 import { ErrNotFound } from '../exceptions';
 
+Object.defineProperty(performance, "now", {
+  value: jest.fn(),
+  configurable: true,
+  writable: true
+});
+
 jest.spyOn(performance, "now")
   .mockImplementationOnce(() => 1)
 jest.mock('../broadcasting/broadcasting.gateway');
