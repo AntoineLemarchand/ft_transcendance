@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { Bcrypt } from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class User {
@@ -102,18 +102,17 @@ export class User {
     }
   }
 
-	hashPassword(plaintextPassword: string) {
-		const Bcrypt = require("bcrypt");
+	private hashPassword(plaintextPassword: string) {
+		const bcrypt = require('bcrypt');
 		const saltRounds = 10;
 
 		if (plaintextPassword === undefined) return;
-		this.password = Bcrypt.hashSync(plaintextPassword, saltRounds);
+		this.password = bcrypt.hashSync(plaintextPassword, saltRounds);
 	}
 
 	comparePassword(plaintextPassword: string) {
-		const Bcrypt = require("bcrypt");
-
+		const bcrypt = require('bcrypt');
 		if (plaintextPassword === undefined) return;
-		return Bcrypt.compareSync(plaintextPassword, this.password);
+		return bcrypt.compareSync(plaintextPassword, this.password);
 	}
 }
