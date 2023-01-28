@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:14.17.1-alpine
 
 WORKDIR /app
 
@@ -9,11 +9,15 @@ COPY containers/react-transcendence/package-lock.json ./
 RUN npm install && npm install -g serve
 
 COPY containers/react-transcendence/ /app
-COPY .env /app
+# RUN 'echo salut > .env'
 
-# PROD BUILD
-RUN npm run build
-CMD ["serve", "-s", "build"]
+
+ENTRYPOINT  ["sh", "entrypoint.sh"]
+
+# CMD ["env | grep REACT_APP > .env"]
+# # PROD BUILD
+# RUN npm run build
+# CMD ["serve", "-s", "build"]
 
 # DEV BUILD
 # CMD ["npm","run","start"]
