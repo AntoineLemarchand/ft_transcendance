@@ -79,16 +79,33 @@ describe('Sending a message', () => {
 
 describe('Joining a channel', () => {
   it('should add the channelName to the user', async () => {
-    await channelService.joinChannel('Thomas', 'welcom', 'channelPassword');
+    await channelService.joinChannel('Thomas', 'welcom', '');
 
     const user = (await userService.getUser('Thomas')) as User;
-    expect(user.getChannelNames().includes('welcom')).toBeTruthy();
+		expect(user.getChannelNames().includes('welcom')).toBeTruthy();
   });
 
-  it('should add the deviceID of the user to all channelNames ', async () => {
-    await channelService.joinChannel('Thomas', 'ab', 'channelPassword');
+	it('should hash password', async() => {
+		const channelName = 'hello';
+		const channelPlaintextPass = 'hell0';
 
-    expect(broadcasting.putUserInRoom).toHaveBeenCalledWith('Thomas', 'ab');
+		await channelService.joinChannel('Thomas', channelName, channelPlaintextPass);
+		const channel = await channelService.getChannelByName(channelName);
+		expect(channel.getPassword()).toEqual(
+			expect.not.stringContaining(channelPlaintextPass)
+		);
+	});
+
+	it('should not be possible to join a channel with the wrong password', async() => {
+    await expect(() =>
+			channelService.joinChannel('Thomas', 'welcom', 'channelPassword'),
+		).rejects.toThrow();
+	});
+
+  it('should add the deviceID of the user to all channelNames ', async () => {
+    await channelService.joinChannel('Thomas', 'welcom', '');
+
+    expect(broadcasting.putUserInRoom).toHaveBeenCalledWith('Thomas', 'welcom');
   });
 
   it('should not be possible to use underscores in names of multi user channels', async () => {
@@ -293,8 +310,8 @@ describe('Administrating a channel', () => {
     await channelService.setPassword('admin', 'newPassword', 'welcome');
 
     expect(
-      (await channelService.getChannelByName('welcome')).getPassword(),
-    ).toBe('newPassword');
+      (await channelService.getChannelByName('welcome')).comparePassword('newPassword'),
+    ).toBeTruthy();
   });
 
   it('should throw if trying mute to a member without being an admin', async () => {
