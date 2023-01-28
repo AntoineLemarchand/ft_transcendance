@@ -217,6 +217,15 @@ export class GameService {
     });
     if (result) return result;
   }
+  async getWonGamesCountByPlayer(player: string) {
+    const [ result, count ]  = await this.gameRepository.findAndCount({
+      where: [
+        { player1: player, score1: 10 },
+        { player2: player, score2: 10 },
+      ],
+    });
+    return count;
+  }
 
   getRunningGameForUser(username: string) {
     for (const gameObject of this.currentGames.findAll()) {
