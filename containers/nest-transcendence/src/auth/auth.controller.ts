@@ -51,14 +51,11 @@ export class AuthController {
     @Request() req: Express.Request,
     @Res() res: ExpressResponse,
   ) {
-    console.log('intra42');
     const { access_token: token } = await this.authService.login(req.user as Identity);
     const userInfo = this.authService.getUserInfo(req.user as Identity);
     res.cookie('auth', token);
     res.cookie('userInfo', userInfo);
-    console.log('connected');
-
-    res.redirect('http://127.0.0.1');
+    res.redirect('http://' + process.env.SERVER_URL + ':' + process.env.SERVER_PORT + '/home');
     return token;
   }
 }

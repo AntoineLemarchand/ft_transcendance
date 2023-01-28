@@ -6,7 +6,6 @@ networks:
 
 volumes:
   db-transcendence:
-    driver: local
     driver_opts:
       type: none
       device: ${POSTGRES_DATAPATH}
@@ -19,7 +18,7 @@ services:
     image: nginx:1.23
     restart: unless-stopped
     ports:
-      - '80:80'
+      - '${SERVER_PORT}:80'
     volumes:
       - ./containers/nginx-transcendence/nginx.conf:/etc/nginx/nginx.conf
     networks:
@@ -37,8 +36,8 @@ services:
     init: true
     environment:
       REACT_APP_SERVER_IP: ${SERVER_URL}
+      REACT_APP_SERVER_PORT: ${SERVER_PORT}
       REACT_APP_FORTYTWO_CLIENT_ID: ${FORTYTWO_CLIENT_ID}
-      REACT_APP_FORTYTWO_REDIRECT_URI: ${FORTYTWO_REDIRECT_URI}
     networks:
       - frontend
     build:
