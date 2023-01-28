@@ -82,9 +82,6 @@ function ChatName(props: {
       ToggleUserMenu();
     });
   };
-  //req.body.mutedUsername,
-  //req.body.muteForMinutes,
-  //req.body.channelName,
 
   const MuteUser = () => {
     fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/channel/mute", {

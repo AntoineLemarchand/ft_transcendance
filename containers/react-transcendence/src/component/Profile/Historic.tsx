@@ -1,69 +1,56 @@
-import React from 'react';
+import {useState, useEffect} from 'react';
 
 import 'static/Profile/Historic.scss';
 
-const matches = [
-{ opponent: "op1", gain: 5, loss: 3},
-{ opponent: "op2oooooooooooong",winned: false, gain: 8, loss: 500},
-{ opponent: "op3", gain: 5, loss: 5},
-{ opponent: "op4", gain: 5, loss: 3},
-{ opponent: "op5", gain: 5, loss: 30},
-{ opponent: "op6", gain: 5, loss: 3},
-{ opponent: "op7", gain: 5, loss: 3},
-{ opponent: "op8", gain: 5, loss: 355},
-{ opponent: "op9", gain: 5, loss: 3},
-{ opponent: "op10", gain: 5, loss: 312},
-{ opponent: "op1", gain: 5, loss: 3},
-{ opponent: "op2oooooooooooong",winned: false, gain: 8, loss: 500},
-{ opponent: "op3", gain: 5, loss: 3},
-{ opponent: "op4", gain: 5, loss: 3},
-{ opponent: "op5", gain: 5, loss: 30},
-{ opponent: "op6", gain: 5, loss: 3},
-{ opponent: "op7", gain: 5, loss: 3},
-{ opponent: "op8", gain: 5, loss: 355},
-{ opponent: "op9", gain: 5, loss: 3},
-{ opponent: "op10", gain: 5, loss: 312},
-{ opponent: "op1", gain: 5, loss: 3},
-{ opponent: "op2oooooooooooong",winned: false, gain: 8, loss: 500},
-{ opponent: "op3", gain: 5, loss: 3},
-{ opponent: "op4", gain: 5, loss: 3},
-{ opponent: "op5", gain: 5, loss: 30},
-{ opponent: "op6", gain: 5, loss: 3},
-{ opponent: "op7", gain: 5, loss: 3},
-{ opponent: "op8", gain: 5, loss: 355},
-{ opponent: "op9", gain: 5, loss: 3},
-{ opponent: "op10", gain: 5, loss: 312},
-{ opponent: "op1", gain: 5, loss: 3},
-{ opponent: "op2oooooooooooong",winned: false, gain: 8, loss: 500},
-{ opponent: "op3", gain: 5, loss: 3},
-{ opponent: "op4", gain: 5, loss: 3},
-{ opponent: "op5", gain: 5, loss: 30},
-{ opponent: "op6", gain: 5, loss: 3},
-{ opponent: "op7", gain: 5, loss: 3},
-{ opponent: "op8", gain: 5, loss: 355},
-{ opponent: "op9", gain: 5, loss: 3},
-{ opponent: "op10", gain: 5, loss: 312},
-];
+function Historic(props: {isSelected: boolean, username: string}) {
+  const [playedGames, setPlayedGames] = useState<{
+    gameId: number,
+    player1: string,
+    score1: number,
+    player2: string,
+    score2: number,
+  }[]>([]);
 
-
-function Historic(props: {isSelected: boolean}) {
-	const ChannelStatus = (match: any): React.CSSProperties => {
-		if (match.gain > match.loss)
+	const ChannelStatus = (currentScore: number, otherScore: number):
+    React.CSSProperties => {
+		if (currentScore > otherScore)
 			return {background: '#b8bb26'};
-		else if (match.gain < match.loss)
+		else if (currentScore < otherScore)
 			return {background: '#cc241d'};
 		else
 			return {background: '#b16286'};
 	}
 
+  useEffect(() => {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP +
+      '/api/game/getSavedGamesByPlayer/' + props.username, {
+        credentials: 'include',
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        }
+        }).then(response => {
+          response.text().then(text => {
+            console.log(JSON.parse(text));
+            setPlayedGames(JSON.parse(text).games);
+          })
+        })
+  }, [])
+
+  const isPlayerOne = (game: any) => {
+    return game.player1 === props.username;
+  }
+
 	return (
 		<div className="Historic" style={{display: props.isSelected ? "":"none"}}>
 			<header>
-			<p>games played: {matches.length}</p>
-			<p>Won: {matches.filter(item=>item.gain > item.loss).length}</p>
-			<p>Lost: {matches.filter(item=>item.gain < item.loss).length}</p>
+        <p>games played: {playedGames.length}</p>
+        <p>Won: {playedGames.filter(item=>(isPlayerOne(item) && item.score1) > item.score2).length}</p>
+        <p>Lost: {playedGames.filter(item=>(isPlayerOne(item) && item.score2) < item.score1).length}</p>
 			</header>
 			<div className="content">
+
 				<div className="head">
           <p/>
           <p>Opponent</p>
@@ -72,12 +59,14 @@ function Historic(props: {isSelected: boolean}) {
 				</div>
 				<ul className="body">
 				{
-				matches.map((match, idx) =>
+				playedGames.reverse().map((game, idx) =>
 						<li className="row" key={idx}>
-              <span style={ChannelStatus(match)}/>
-							<p>{match.opponent}</p>
-							<p>{match.gain}</p>
-							<p>{match.loss}</p>
+              <span style={isPlayerOne(game) ?
+                ChannelStatus(game.score1, game.score2) :
+                ChannelStatus(game.score2, game.score1)}/>
+							<p>{isPlayerOne(game) ? game.player2 : game.player1}</p>
+							<p>{isPlayerOne(game) ? game.score1 : game.score2}</p>
+							<p>{isPlayerOne(game) ? game.score2 : game.score1}</p>
 						</li>
 						)
 				}
