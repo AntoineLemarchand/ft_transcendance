@@ -21,12 +21,12 @@ function Game(props: { firstMove: string }) {
 
   const LeftPaddleStyle = {
     bottom: leftPos * 100 + "%",
-    height: currentMove.players[0].bar.barHeight * 100 + "%",
+    height: 'calc(' + currentMove.players[0].bar.barHeight * 100 + "% - 1rem)",
   };
 
   const RightPaddleStyle = {
     bottom: rightPos * 100 + "%",
-    height: currentMove.players[1].bar.barHeight * 100 + "%",
+    height: 'calc(' + currentMove.players[1].bar.barHeight * 100 + "% - 1rem)",
   };
 
   const keyDownHandler = (event: any) => {
