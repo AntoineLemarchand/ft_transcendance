@@ -27,12 +27,14 @@ services:
       SERVER_HOST: ${SERVER_URL}
     depends_on:
       - front
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost/"]
 
   front:
     container_name: "react"
     image: "react:transcendence"
     build: ./front
-    command: /entrypoint.sh serve -s build
+    command: /entrypoint.sh npm run start
     restart: unless-stopped
     init: true
     environment:
@@ -67,7 +69,7 @@ services:
     depends_on:
       - db
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:3000"]
+      test: ["CMD-SHELL", "curl http://localhost:3000"]
 
   db:
     container_name: "postgres-transcendence"
@@ -78,5 +80,6 @@ services:
         - .env
     networks:
       - backend
-    # healthcheck:
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${DB_NAME}"]
 
