@@ -433,3 +433,13 @@ export const getWonGamesByPlayer = async (
     .get('/game/getWonGamesByPlayer/' + username)
     .set('Authorization', 'Bearer ' + jwt);
 };
+
+export const getWonGamesCountByPlayer = async (
+  callerModule: INestApplication,
+  jwt: string,
+  username: string
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getWonGamesCountByPlayer/' + username)
+    .set('Authorization', 'Bearer ' + jwt);
+};
