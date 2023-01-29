@@ -11,10 +11,6 @@ RUN npm install && npm install -g serve
 COPY containers/react-transcendence/ /app
 COPY .env /app
 
-# PROD BUILD
 RUN npm run build
 CMD ["serve", "-s", "build"]
-
-# DEV BUILD
-# CMD ["npm","run","start"]
 

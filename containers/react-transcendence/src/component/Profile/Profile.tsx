@@ -131,11 +131,13 @@ function Profile(props: {user: any}) {
 						style={TabStyle(1)}
 						>Historic</button>
 				</div>
-				<div className="content">
-					<Friends isSelected={tabIndex === 0}
-          friends={user === undefined ? [] : user.friends}/>
-					<Historic isSelected={tabIndex === 1}/>
-				</div>
+        {
+          user && 
+          <div className="content">
+            <Friends isSelected={tabIndex === 0} friends={user.friends}/>
+            <Historic isSelected={tabIndex === 1} username={user.name}/>
+          </div>
+        }
 		</div>
 	)}
 

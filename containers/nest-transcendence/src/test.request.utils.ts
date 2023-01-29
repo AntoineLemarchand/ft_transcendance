@@ -405,15 +405,6 @@ export const getSavedGames = async (
     .set('Authorization', 'Bearer ' + jwt);
 };
 
-export const getSavedGameById = async (
-  callerModule: INestApplication,
-  jwt: string,
-) => {
-  return request(callerModule.getHttpServer())
-    .get('/game/getSavedGameById')
-    .set('Authorization', 'Bearer ' + jwt);
-};
-
 export const getSavedGamesCount = async (
   callerModule: INestApplication,
   jwt: string,
@@ -426,17 +417,19 @@ export const getSavedGamesCount = async (
 export const getSavedGamesByPlayer = async (
   callerModule: INestApplication,
   jwt: string,
+  username: string
 ) => {
   return request(callerModule.getHttpServer())
-    .get('/game/getSavedGamesByPlayer')
+    .get('/game/getSavedGamesByPlayer/' + username)
     .set('Authorization', 'Bearer ' + jwt);
 };
 
 export const getWonGamesByPlayer = async (
   callerModule: INestApplication,
   jwt: string,
+  username: string
 ) => {
   return request(callerModule.getHttpServer())
-    .get('/game/getWonGamesByPlayer')
+    .get('/game/getWonGamesByPlayer/' + username)
     .set('Authorization', 'Bearer ' + jwt);
 };

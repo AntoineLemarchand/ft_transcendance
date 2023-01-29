@@ -55,12 +55,8 @@ export function PreMatchRoom() {
     const messageListener = (payload: string) => {
       setGameStart(payload);
     }
-    if (!context.socket) {
-      context.initSocket() &&
-      context.socket!.on("gameUpdateToClient", messageListener)
-    } else
-      context.socket.on("gameUpdateToClient", messageListener)
-  }, [])
+    context!.socket.on("gameUpdateToClient", messageListener)
+  })
 
   if (gameStart != '') {
     return (<Game firstMove={gameStart}/>)

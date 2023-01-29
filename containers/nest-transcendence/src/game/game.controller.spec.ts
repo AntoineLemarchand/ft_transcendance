@@ -239,15 +239,6 @@ describe('fetching saved games', () => {
     expect(spy).toHaveBeenCalled();
   });
   
-  it('should call getSavedGameById func', async function () {
-    const spy = jest.spyOn(gameService, 'getSavedGameById');
-    const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
-    
-    await testUtils.getSavedGameById(app, jwt);
-   
-    expect(spy).toHaveBeenCalled();
-  });
-
   it('should call getSavedGamesCount func', async function () {
     const spy = jest.spyOn(gameService, 'getSavedGamesCount');
     const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
@@ -261,18 +252,18 @@ describe('fetching saved games', () => {
     const spy = jest.spyOn(gameService, 'getSavedGamesByPlayer');
     const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
     
-    await testUtils.getSavedGamesByPlayer(app, jwt);
+    await testUtils.getSavedGamesByPlayer(app, jwt, 'admin');
    
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith('admin');
   });
   
 it('should call getWonGamesByPlayer func', async function () {
   const spy = jest.spyOn(gameService, 'getWonGamesByPlayer');
   const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
   
-  await testUtils.getWonGamesByPlayer(app, jwt);
+  await testUtils.getWonGamesByPlayer(app, jwt, 'admin');
  
-  expect(spy).toHaveBeenCalled();
+  expect(spy).toHaveBeenCalledWith('admin');
   });
 });
 

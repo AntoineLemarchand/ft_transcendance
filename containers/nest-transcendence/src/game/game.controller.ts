@@ -2,6 +2,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Request,
   UseGuards,
@@ -68,13 +69,6 @@ export class GameController {
   }
   
   @UseGuards(JwtAuthGuard)
-  @Get('getSavedGameById')
-  async getSavedGameById() {
-    const savedGame = await this.gameService.getSavedGameById();
-    return { games: savedGame };
-  }
-  
-  @UseGuards(JwtAuthGuard)
   @Get('getSavedGamesCount')
   async getSavedGamesCount() {
     const savedGamesCount = await this.gameService.getSavedGamesCount();
@@ -82,16 +76,18 @@ export class GameController {
   }
   
   @UseGuards(JwtAuthGuard)
-  @Get('getSavedGamesByPlayer')
-  async getSavedGamesByPlayer() {
-    const savedGamesByPlayer = await this.gameService.getSavedGamesByPlayer();
+  @Get('getSavedGamesByPlayer/:username')
+  async getSavedGamesByPlayer(@Param() params: any) {
+    const savedGamesByPlayer = await this.gameService
+      .getSavedGamesByPlayer(params.username);
     return { games: savedGamesByPlayer };
   }
   
   @UseGuards(JwtAuthGuard)
-  @Get('getWonGamesByPlayer')
-  async getWonGamesByPlayer() {
-    const wonGamesByPlayer = await this.gameService.getWonGamesByPlayer();
+  @Get('getWonGamesByPlayer/:username')
+  async getWonGamesByPlayer(@Param() params: any) {
+    const wonGamesByPlayer = await this.gameService
+      .getWonGamesByPlayer(params.username);
     return { games: wonGamesByPlayer };
   }
 

@@ -24,6 +24,7 @@ export class GameObjectRepository {
 
   findOne(GameId: number) {
     const Game = this.currentGames.get(GameId);
+    console.log(GameId)
     if (!Game) return Promise.reject(new ErrNotFound('No such Game'));
     return Game;
   }
