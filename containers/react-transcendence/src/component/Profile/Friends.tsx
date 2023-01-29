@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'
-import 'static/Profile/Friends.scss'
+import { Link } from 'react-router-dom';
+import 'static/Profile/Friends.scss';
+import UserImage from './UserImage';
 
 function FriendCard(props: {username: string, status: string, key: number}) {
-    const [imageURL, setImageURL] = useState('');
     const statusColor = (status: string) => {
       if (status === 'in game')
         return {background: '#b16286',}
@@ -13,25 +12,9 @@ function FriendCard(props: {username: string, status: string, key: number}) {
         return {background: '#cc241d',}
     }
 
-    useEffect(() => {
-        fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/user/image/" + props.username, {
-          credentials: "include",
-          method: "GET",
-        }).then(response => {
-          response.blob().then( (blob: Blob) => {
-            const fileReader = new FileReader();
-            fileReader.onload = (event) => {
-                setImageURL(event.target!.result as string);
-            }
-            fileReader.readAsDataURL(blob);
-          })
-        })
-    }, [])
-
-
     return (
       <Link to={'/profile/' + props.username} className="friend" key={props.key}>
-        <img src={imageURL} alt="avatar"/>
+        <UserImage username={props.username}/>
         <p>{props.username}</p>
         <div className="status">
           <p>{props.status}</p>

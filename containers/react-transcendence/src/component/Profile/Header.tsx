@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "../../utils/User";
+import UserImage from "./UserImage";
 
 import {
   FaLockOpen,
@@ -151,31 +151,10 @@ function ProfileHeader(props: {
   shownUser: User;
   inviteMenu: Function;
 }) {
-
-  const [imageSrc, setImageSrc] = useState('');
-
-  useEffect(() => {
-    fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/user/image/" + props.shownUser.name, {
-      credentials: "include",
-      method: "GET",
-    }).then(response => {
-      response.blob().then( (blob: Blob) => {
-        const fileReader = new FileReader();
-        fileReader.onload = (event) => {
-          setImageSrc(event.target!.result as string);
-        }
-        fileReader.readAsDataURL(blob);
-      })
-    })
-  }, [])
-
   return (
     <header>
       <div className="profileHeader">
-        <img
-          src={imageSrc}
-          alt="Avatar (the image not the movie)"
-        />
+        <UserImage username={props.shownUser.name}/>
       </div>
       <h1>{props.shownUser.name}</h1>
       {

@@ -10,7 +10,6 @@ function Game(props: { firstMove: string }) {
   const [cookies] = useCookies(["userInfo"]);
   const [leftPos, setLeftPos] = useState(0.5);
   const [rightPos, setRightPos] = useState(0.5);
-  const [score, setScore] = useState({ player1: 0, player2: 0 });
 
   const ballStyle = {
     width: '1rem',
@@ -91,17 +90,9 @@ function Game(props: { firstMove: string }) {
     };
   }, []);
 
-  const updateScore = (scoreP1: number, scoreP2: number) => {
-    setScore({ player1: scoreP1, player2: scoreP2 });
-  };
-
   useEffect(() => {
     const messageListener = (payload: string) => {
       setCurrentMove(JSON.parse(payload));
-      updateScore(
-        JSON.parse(payload).players[0].score,
-        JSON.parse(payload).players[1].score
-      );
     };
     if (!context.socket) {
       context.initSocket() &&
@@ -155,7 +146,7 @@ function Game(props: { firstMove: string }) {
         </div>
         <span className="player right" style={RightPaddleStyle} />
       </div>
-      <GameStatus score={score} />
+      <GameStatus game={currentMove} />
     </div>
   );
 }

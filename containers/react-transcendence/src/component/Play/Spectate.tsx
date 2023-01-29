@@ -1,11 +1,8 @@
-import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaRedo } from 'react-icons/fa';
 
 import 'static/Play/Spectate.scss'
-
-import Game from './Game'
 
 function Spectate() {
   const [runningGames, setRunningGames] = useState<any[]>([]);
@@ -22,7 +19,6 @@ function Spectate() {
 	}
 
   const updateGames = () => {
-    console.log('games: ')
     fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/game/getRunning', {
         credentials: 'include',
         method: 'GET',
@@ -32,7 +28,6 @@ function Spectate() {
         }
     }).then((result) => {
       result.text().then(text => {
-        console.log(JSON.parse(text));
         setRunningGames(JSON.parse(text).games)
       })
     })

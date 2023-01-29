@@ -1,22 +1,7 @@
 import "static/Play/GameStatus.scss";
+import UserImage from '../Profile/UserImage'
 
-type GameStatusProps = {
-  score: {
-    player1: number;
-    player2: number;
-  };
-};
-
-function GameStatus({ score }: GameStatusProps) {
-  const gameStatus = {
-    players: ["Jaydee", "some random dude"],
-  };
-
-  const PlaceholderPic1 =
-    "https://cdn.intra.42.fr/users/e67b5f138e3ee505e5180dba55a55ac5/dpaccagn.jpg";
-  const PlaceholderPic2 =
-    "https://cdn.intra.42.fr/users/26f8442a6176644e8c7fa706d568d790/alemarch.jpg";
-
+function GameStatus(props: { game: any }) {
   const scoreStyle = (scoreP1: number, scoreP2: number) => {
     if (scoreP1 > scoreP2) {
       return { background: "#b8bb26" };
@@ -30,25 +15,19 @@ function GameStatus({ score }: GameStatusProps) {
   return (
     <div className="GameStatus">
       <div className="player player1">
-        <img
-          className="picture"
-          src={PlaceholderPic1}
-          alt={gameStatus.players[0]}
-        />
-        <p className="name">{gameStatus.players[0]}</p>
-        <div className="score" style={scoreStyle(score.player1, score.player2)}>
-          {score.player1}
+        <UserImage username={props.game.players[0].name}/>
+        <p className="name">{props.game.players[0].name}</p>
+        <div className="score" style={
+          scoreStyle(props.game.players[0].score, props.game.players[1].score)}>
+          {props.game.players[0].score}
         </div>
       </div>
       <div className="player player2">
-        <img
-          className="picture"
-          src={PlaceholderPic2}
-          alt={gameStatus.players[1]}
-        />
-        <p className="name">{gameStatus.players[1]}</p>
-        <div className="score" style={scoreStyle(score.player2, score.player1)}>
-          {score.player2}
+        <UserImage username={props.game.players[1].name}/>
+        <p className="name">{props.game.players[1].name}</p>
+        <div className="score" style={
+          scoreStyle(props.game.players[1].score, props.game.players[0].score)}>
+          {props.game.players[1].score}
         </div>
       </div>
     </div>

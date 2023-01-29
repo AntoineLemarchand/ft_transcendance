@@ -58,7 +58,6 @@ function Lobby() {
                   className="Invite"
                   onClick={() => navigate("/game/" + invite.gameId)}
                 >
-                  <img src='' alt="avatar" />
                   <p>
                   {invite.players[0].name + ' VS ' + invite.players[1].name}
                   </p>
