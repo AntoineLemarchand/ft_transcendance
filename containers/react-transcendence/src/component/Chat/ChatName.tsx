@@ -48,7 +48,7 @@ function ChatName(props: {
         "Content-type": "application/json; charset=UTF-8",
       },
       body: JSON.stringify({
-        bannedUserName: props.sender,
+        bannedUsername: props.sender,
         channelName: props.channel.channelName,
       }),
     }).then((result) => {
