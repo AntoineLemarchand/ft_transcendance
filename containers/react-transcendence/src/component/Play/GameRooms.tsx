@@ -42,13 +42,14 @@ export function PreMatchRoom(props: {socket: Socket}) {
 
   useEffect(() => {
     const messageListener = (payload: string) => {
-      setGameStart(payload);
+      if (JSON.parse(payload).gameId == params.gid)
+        setGameStart(payload);
     }
     props.socket.on("gameUpdateToClient", messageListener)
-    //return (() => {props.socket.off("gameUpdateToClient", messageListener)})
+    return (() => {props.socket.off("gameUpdateToClient", messageListener)})
   }, [])
 
-  if (gameStart != '') {
+  if (gameStart !== '') {
     return (<Game firstMove={gameStart} socket={props.socket}/>)
   }
   return (
