@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Socket } from "socket.io-client";
-import "static/Play/Game.scss";
+import "static/Play/GameAlt.scss";
 import GameStatus from "./GameStatus";
 
 function Game(props: { firstMove: string; socket: Socket }) {
