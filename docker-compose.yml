@@ -35,6 +35,8 @@ services:
     init: true
     environment:
       REACT_APP_SERVER_IP: ${SERVER_URL}
+      REACT_APP_SERVER_PORT: ${SERVER_PORT}
+      REACT_APP_FORTYTWO_CLIENT_ID: ${FORTYTWO_CLIENT_ID}
     networks:
       - frontend
     build:

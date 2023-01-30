@@ -74,9 +74,16 @@ function Login() {
         <button className="signin" onClick={() => navigate("/signin")}>
           Sign in
         </button>
+        <a href={
+            'https://api.intra.42.fr/oauth/authorize?' +
+            'client_id=' + process.env.REACT_APP_FORTYTWO_CLIENT_ID +
+            '&redirect_uri=http://' + process.env.REACT_APP_SERVER_IP + ':' + process.env.REACT_APP_SERVER_PORT + '/api/auth/oauth/callback'  +
+            '&response_type=code'
+        }>
         <button className="Oauth">
           <SchoolLogo />
         </button>
+        </a>
       </div>
     </div>
   );

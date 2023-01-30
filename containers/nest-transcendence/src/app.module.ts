@@ -1,6 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { GameModule } from './game/game.module';
 import { AuthModule } from './auth/auth.module';
@@ -12,6 +13,7 @@ import DataSource from './typeorm/typeOrm.config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     forwardRef(() => UserModule),
     forwardRef(() => AuthModule),
     forwardRef(() => ChannelModule),

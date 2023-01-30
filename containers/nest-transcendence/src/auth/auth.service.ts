@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/user.entities';
 import { CreateUserDTO } from '../app.controller';
 import { ErrForbidden, ErrUnAuthorized } from '../exceptions';
+import axios from 'axios'
 
 export class Identity {
   constructor(public name: string, public id: number) {}
@@ -49,11 +50,21 @@ export class AuthService {
       userCandidate.username,
       userCandidate.password,
     );
-    if (userCandidate.image) {
-      newUser.image = userCandidate.image.buffer;
-      newUser.imageFormat = userCandidate.image.mimetype;
-    }
+    if (userCandidate.image) newUser.image = userCandidate.image.buffer;
     await this.userService.createUser(newUser);
     return this.login(new Identity(userCandidate.username, 1));
+  }
+
+  async fetchUser(accessToken: string): Promise<any> {
+    const { data: searchResponse } = await axios.get('https://api.intra.42.fr/v2/me', {
+      headers: {
+        'Authorization': `Bearer ${ accessToken }`,
+      }
+    });
+    return searchResponse;
+  }
+
+  async getUserInfo(user: Identity): Promise<any> {
+    return this.userService.getUser(user.name);
   }
 }
