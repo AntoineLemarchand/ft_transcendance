@@ -11,7 +11,7 @@ import SignIn from './Account/SignIn'
 
 import Home from './Home/Home'
 import Play from './Play/Play'
-import { MatchMakingRoom, PreMatchRoom } from './Play/WaitingRooms'
+import { MatchMakingRoom, PreMatchRoom, ResultRoom } from './Play/GameRooms'
 import Spectate from './Play/Spectate'
 import Chat from './Chat/Chat'
 import Profile from './Profile/Profile'
@@ -47,6 +47,9 @@ function App() {
     }, {
       path:'/game/:gid',
       component: socket && <Main component={<PreMatchRoom socket={socket}/>}/>
+    }, {
+      path:'/results/:gid',
+      component: <Main component={<ResultRoom />}/>
     }, {
       path:'/profile',
       component: <Main component={<Profile user={cookies['userInfo']}/>}/>

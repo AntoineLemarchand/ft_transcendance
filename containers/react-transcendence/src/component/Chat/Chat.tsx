@@ -155,7 +155,7 @@ function Chat(props: {socket: Socket}) {
         joinedChannel={joinedChannel}
         SetNewConvMenu={SetNewConvMenu}
         SetSearchMenu={SetSearchMenu}
-        userName={cookie["userInfo"] && cookie["userInfo"].name}
+        username={cookie["userInfo"] && cookie["userInfo"].name}
       />
       <ul className="channelContent">
         <div className="chatArea">{displayChannelContent(currentChannel)}</div>
