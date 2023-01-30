@@ -11,7 +11,13 @@ RUN npm upgrade
 COPY containers/nest-transcendence/ /app/
 
 # PROD BUILD
-CMD [ "npm", "run", "start:dev" ]
+#CMD [ "npm", "run", "start:dev" ]
+#ENTRYPOINT "sleep -1"
 
 # DEV BUILD
 # CMD [ "npm", "run", start"]
+
+#RUN "/bin/bash npm run typeorm:run-migrations"
+RUN npm run typeorm:run-migrations
+
+CMD [ "npm", "run", "start:dev"]
