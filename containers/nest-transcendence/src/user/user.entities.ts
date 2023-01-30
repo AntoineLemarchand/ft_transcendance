@@ -47,6 +47,11 @@ export class User {
     return this.friends;
   }
 
+  setImage(image: Express.Multer.File) {
+    this.image = image.buffer;
+    this.imageFormat = image.mimetype;
+  }
+
   addFriend(friendname: string) {
     this.friends.forEach((name: string) => {
       if (name === friendname) throw new Error('already a friend');

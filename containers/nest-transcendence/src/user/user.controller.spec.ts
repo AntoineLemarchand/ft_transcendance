@@ -210,6 +210,21 @@ describe('Getting user info', () => {
     expect(result.status).toBe(200);
     expect(result.body).toStrictEqual(Buffer.from('test image buffer'));
   })
+
+  it('should return 200 and set another image', async () => {
+    const testImage: Buffer = Buffer.from('test image buffer');
+
+    await request(app.getHttpServer())
+      .post('/user/image')
+      .attach("image", testImage, "test.png")
+      .set('Authorization', 'Bearer ' + jwt);
+    const result = await request(app.getHttpServer())
+      .get('/user/image/Thomas')
+      .set('Authorization', 'Bearer ' + jwt);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toStrictEqual(Buffer.from('test image buffer'));
+  })
 });
 
 describe('Login', () => {

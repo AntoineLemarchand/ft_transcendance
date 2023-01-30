@@ -9,9 +9,12 @@ import {
   Param,
   HttpException,
   HttpStatus,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express'
 
 @Controller()
 export class UserController {
@@ -57,6 +60,15 @@ export class UserController {
       throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
     res.contentType(result.imageFormat);
     res.send(result.image);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('image')
+  @UseInterceptors(FileInterceptor('image'))
+  async setImage(
+    @Request() req: any,
+    @UploadedFile() image: Express.Multer.File,) {
+    const result = await this.userService.setImage(req.user.name, image);
   }
 
   @UseGuards(JwtAuthGuard)
