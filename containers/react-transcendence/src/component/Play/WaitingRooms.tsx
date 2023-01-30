@@ -79,6 +79,7 @@ export function PreMatchRoom(props: {socket: Socket}) {
 
 export function MatchMakingRoom(props: { socket: Socket }) {
   const [dotAmount, setDotAmount] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setTimeout(() => {
@@ -89,9 +90,13 @@ export function MatchMakingRoom(props: { socket: Socket }) {
 
   useEffect(() => {
     const messageListener = (payload: string) => {
-      console.log(payload);
+      console.log(payload)
+      navigate('/game/' + payload);
     }
     props.socket.on("emitMatchMadeToClient", messageListener)
+    return ( () => {
+      props.socket.off("emitMatchMadeToClient", messageListener)
+    })
   }, [])
 
   useEffect(() => {
