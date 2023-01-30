@@ -4,21 +4,22 @@ import { LocalStrategy } from './auth.local.strategy';
 import { UserModule } from '../user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { environment } from '../utils/environmentParser';
 import { JwtStrategy } from './auth.jwt.strategy';
 import { AuthController } from './auth.controller';
+// import { User } from '../user/user.entities';
 import { ChannelModule } from '../channel/channel.module';
-import {BroadcastingModule} from '../broadcasting/broadcasting.module';
-import {GameModule} from '../game/game.module';
+import { Oauth2Strategy } from './auth.oauth2.strategy';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, Oauth2Strategy],
   imports: [
+    ConfigModule.forRoot(),
     forwardRef(() => UserModule),
     PassportModule,
     forwardRef(() => ChannelModule),
     JwtModule.register({
-      secret: environment.JWT_SECRET_PASSWORD,
+      secret: process.env.JWT_SECRET_PASSWORD,
       signOptions: { expiresIn: '60s' },
     }),
   ],

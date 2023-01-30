@@ -66,7 +66,7 @@ export class Channel {
     type = 'standardChannel',
   ) {
     this.type = type;
-		this.setPassword(password);
+    this.setPassword(password);
     this.channelName = channelName;
     this.messages = [];
     this.admins = [creatorUsername];
@@ -121,8 +121,8 @@ export class Channel {
   }
 
   setPassword(newPassword: string) {
-		this.hashPassword(newPassword);
-	}
+    this.hashPassword(newPassword);
+  }
 
   muteUser(username: string, forMinutes: number) {
     this.mutedUsers = MapReplacement.set(
@@ -137,16 +137,20 @@ export class Channel {
       (MapReplacement.get(this.mutedUsers, username) as number) > Date.now()
     );
   }
-	
-	private hashPassword(plaintextPassword: string) {
-		const bcrypt = require('bcrypt');
-		const saltRounds = 10;
 
-		this.password = bcrypt.hashSync(plaintextPassword, saltRounds);
-	}
+  private hashPassword(plaintextPassword: string) {
+    const bcrypt = require('bcrypt');
+    const saltRounds = 10;
 
-	comparePassword(plaintextPassword: string) {
-		const bcrypt = require('bcrypt');
-		return bcrypt.compareSync(plaintextPassword, this.password);
-	}
+    this.password = bcrypt.hashSync(plaintextPassword, saltRounds);
+  }
+
+  comparePassword(plaintextPassword: string) {
+    const bcrypt = require('bcrypt');
+    return bcrypt.compareSync(plaintextPassword, this.password);
+  }
+
+  isOwner(username: string) {
+    return username === this.admins[0];
+  }
 }

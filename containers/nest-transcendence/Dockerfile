@@ -9,6 +9,9 @@ RUN npm install
 RUN npm upgrade
 
 COPY containers/nest-transcendence/ /app/
-COPY .env /app/local.env
 
-CMD ["npm", "start"]
+# PROD BUILD
+CMD [ "npm", "run", "start:dev" ]
+
+# DEV BUILD
+# CMD [ "npm", "run", start"]

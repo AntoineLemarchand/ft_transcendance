@@ -69,6 +69,7 @@ async function finishAGame(p1: string, p2: string) {
 }
 
 describe('setting up a game', () => {
+
   it('should fail to initiate when given a player twice', async () => {
     await expect(
       async () => await gameService.initGame('player1', 'player1'),
@@ -112,6 +113,7 @@ describe('setting up a game', () => {
     expect(game1.getId()).not.toBe(game2.getId());
   });
 });
+
 describe('starting a game', () => {
   it('should fail if the executing user is not one of the players', async () => {
     const gameObject = await gameService.initGame('player1', 'player42');
@@ -247,7 +249,7 @@ describe('running a game', () => {
 
     expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
     expect(
-      await gameService.getSavedGameById(gameObject.getId()),
+      (await gameService.getInfoObject(gameObject.getId())).gameStat,
     ).toBeDefined();
     expect(await gameService.getSavedGamesCount()).toBe(1);
   });
@@ -499,6 +501,14 @@ describe('game info', () => {
 
     expect(result).toBeUndefined();
   });
+
+  it('should return GameObject but no GameStat', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+
+    const result = await gameService.getInfoObject(gameObject.getId());
+
+    expect(result.gameObject).toBe(gameObject);
+  });
 });
 
 describe('spectating a game', () => {
@@ -544,14 +554,14 @@ describe('matchmaking', () => {
       });
   });
 
-  it('should not emit a message to the waiting room when only one user in the queue', async function() {
+  it('should not emit a message to the waiting room when only one user in the queue', async function () {
     const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
     await gameService.joinMatchMaking('player1');
 
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should emit a message to the waiting room as soon as a second user tries to find a match', async function() {
+  it('should emit a message to the waiting room as soon as a second user tries to find a match', async function () {
     const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
     jest
       .spyOn(gameService, 'initGame')
@@ -561,10 +571,10 @@ describe('matchmaking', () => {
     await gameService.joinMatchMaking('player1');
     await gameService.joinMatchMaking('player2');
 
-    expect(spy).toHaveBeenCalledWith('666');
+    expect(spy).toHaveBeenCalledWith(666);
   });
 
-  it('should not emit a message to the waiting room when one user in the queue twice', async function() {
+  it('should not emit a message to the waiting room when one user in the queue twice', async function () {
     const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
     await gameService.joinMatchMaking('player1');
     await gameService.joinMatchMaking('player1');
@@ -572,7 +582,7 @@ describe('matchmaking', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should emit two messages when creating four games', async function() {
+  it('should emit two messages when creating four games', async function () {
     const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
     await gameService.joinMatchMaking('player1');
     await gameService.joinMatchMaking('player2');
@@ -582,14 +592,14 @@ describe('matchmaking', () => {
     expect(spy).toHaveBeenCalledTimes(2);
   });
 
-  it('should put a waiting user in the waiting room on requesting a match', async function() {
+  it('should put a waiting user in the waiting room on requesting a match', async function () {
     const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom').mockReset();
     await gameService.joinMatchMaking('player1');
 
     expect(spy).toHaveBeenCalledWith('player1', '_waiting_room_');
   });
 
-  it('should empty the waiting room once a game has created', async function() {
+  it('should empty the waiting room once a game has created', async function () {
     const spy = jest
       .spyOn(broadcastingGateway, 'removeUserFromRoom')
       .mockReset();
