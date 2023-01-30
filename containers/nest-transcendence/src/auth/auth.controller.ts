@@ -27,7 +27,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: ExpressResponse,
   ): Promise<{ access_token: string }> {
     const token = this.authService.login(req.user as Identity);
-    res.cookie('token', { access_token: token });
+    res.cookie('token', { access_token: token, sameSite: 'strict' });
     return token;
   }
 

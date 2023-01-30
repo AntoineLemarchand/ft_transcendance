@@ -154,4 +154,10 @@ export class UserService {
       return 'online';
     return 'offline';
   }
+
+  async setImage(username: string, image: Express.Multer.File) {
+    const user = (await this.getUser(username)) as User;
+    user.setImage(image);
+    this.userRepository.save(user);
+  }
 }

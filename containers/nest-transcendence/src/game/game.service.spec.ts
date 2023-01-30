@@ -50,9 +50,7 @@ beforeEach(async () => {
   userService = module.get<UserService>(UserService);
   currentGames = module.get<GameObjectRepository>(GameObjectRepository);
   broadcastingGateway = module.get<BroadcastingGateway>(BroadcastingGateway);
-  jest
-    .spyOn(GameService.prototype, 'sleepUntil')
-    .mockImplementation(async (game: GameObject) => {});
+  jest.spyOn(GameService.prototype, 'sleepUntil').mockImplementation(jest.fn());
   await userService.createUser(new User('player1', 'admin'));
   await userService.createUser(new User('player42', 'test'));
   await userService.createUser(new User('outsider', 'password'));
@@ -69,7 +67,6 @@ async function finishAGame(p1: string, p2: string) {
 }
 
 describe('setting up a game', () => {
-
   it('should fail to initiate when given a player twice', async () => {
     await expect(
       async () => await gameService.initGame('player1', 'player1'),
