@@ -1,0 +1,60 @@
+#1 [nest:transcendence internal] load build definition from Dockerfile
+#1 transferring dockerfile: 134B done
+#1 DONE 0.0s
+
+#2 [react:transcendence internal] load build definition from Dockerfile
+#2 transferring dockerfile: 134B done
+#2 DONE 0.0s
+
+#3 [nest:transcendence internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [react:transcendence internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [react:transcendence internal] load metadata for docker.io/library/node:alpine
+#5 DONE 0.3s
+
+#6 [nest:transcendence internal] load build context
+#6 transferring context: 136B done
+#6 DONE 0.0s
+
+#7 [nest:transcendence 5/6] COPY ./entrypoint.sh /entrypoint.sh
+#7 CACHED
+
+#8 [nest:transcendence 4/6] RUN npm i -g @nestjs/cli
+#8 CACHED
+
+#9 [nest:transcendence 6/6] RUN chmod +x /entrypoint.sh
+#9 CACHED
+
+#10 [react:transcendence 1/5] FROM docker.io/library/node:alpine@sha256:4619ec6c9a43ab4edfa12cf96745319c3ca43aff9dd630ab20e684dd3632318e
+#10 DONE 0.0s
+
+#11 [react:transcendence internal] load build context
+#11 transferring context: 136B done
+#11 DONE 0.0s
+
+#12 [react:transcendence 2/5] WORKDIR /app
+#12 CACHED
+
+#13 [react:transcendence 3/5] RUN apk add curl
+#13 CACHED
+
+#14 [react:transcendence 4/5] COPY ./entrypoint.sh /entrypoint.sh
+#14 CACHED
+
+#15 [react:transcendence 5/5] RUN chmod +x /entrypoint.sh
+#15 CACHED
+
+#16 [nest:transcendence] exporting to image
+#16 exporting layers done
+#16 writing image sha256:df3c2db15819fbd0f79b7ecb1dd34f940dea10618c9f7b0cbd39dcd6a8aea194 done
+#16 naming to docker.io/library/react:transcendence done
+#16 writing image sha256:6681f0b24192ab8a21ef98cc6b6e065d01be2d86f87c9fc8e20621062b90c2a2 done
+#16 naming to docker.io/library/nest:transcendence done
+#16 DONE 0.0s
+Attaching to nest, nginx, postgres-transcendence, react
+Gracefully stopping... (press Ctrl+C again to force)

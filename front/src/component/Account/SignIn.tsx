@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 import 'static/Account/Prompt.scss'
 
+import { ReactComponent as SchoolLogo } from "static/logo.svg";
+
 function SignIn() {
 	const navigate = useNavigate();
   const [username, setUsername] = useState('')
@@ -15,9 +17,9 @@ function SignIn() {
     setUsername(event.target.value)
   }
 
-  const UpdatePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value)
-  }
+  // const UpdatePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setPassword(event.target.value)
+  // }
 
   const UpdateConfirmation = (event: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmation(event.target.value)
@@ -33,9 +35,6 @@ function SignIn() {
   if (username === '') {
     alert('Please provide a username');
     return;
-  } else if (password !== confirmation) {
-    alert('Passwords do not match');
-    return;
   } else if (selectedImage !== undefined && !selectedImage.type.includes('image')) {
     alert('Please upload an image file');
     return;
@@ -43,15 +42,21 @@ function SignIn() {
 
   let body = new FormData();
   body.append('username', username);
-  body.append('password', password);
+  console.log('bodybo');
+//   for (var pair of body.entries()) {
+//     console.log(pair[0]+ ', ' + pair[1]);
+// }
+  // console.log(body);
+  // body.append('password', password);
   if (selectedImage)
     body.append('image', selectedImage)
 
-  fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/signin', {
+  fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/signinFortyTwo', {
     method: 'POST',
     body: body,
   })
   .then(response => {
+    console.log('status ' + response.status);
     if (response.status === 201) {
       navigate('/');
     } else {
@@ -62,12 +67,8 @@ function SignIn() {
 
 	return (
 		<div className="Prompt">
-			<input type="text" placeholder="Username"
+      <input type="text" placeholder="Username"
         onChange={UpdateUsername}/>
-			<input type="password" placeholder="Password"
-        onChange={UpdatePassword}/>
-			<input type="password" placeholder="Confirm Password"
-        onChange={UpdateConfirmation}/>
       <div className="avatar">
         <img src={selectedImage !== undefined ? URL.createObjectURL(selectedImage) : ''} alt="Avatar: " />
         <input type="file" accept="image/*"
@@ -75,7 +76,7 @@ function SignIn() {
         />
       </div>
       <div className="buttonBox">
-        <button className="signin" onClick={ProcessSignIn}>Sign in</button>
+        <button className="signin" onClick={ProcessSignIn}><SchoolLogo /></button>
       </div>
 		</div>
 	)
