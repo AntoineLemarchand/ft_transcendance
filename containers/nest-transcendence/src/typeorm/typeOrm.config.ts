@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import entities, { Channel, User, GameStat } from './index';
-import { initDataBase1673427329295 } from './migrations/1673427329295-initDataBase';
+import { initDataBase1675094029999 } from './migrations/1675094029999-initDataBase';
 
 export default new DataSource({
   type: 'postgres',
@@ -9,7 +9,7 @@ export default new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  synchronize: true,
+  synchronize: false,
   entities: [User, Channel, GameStat],
-  migrations: [initDataBase1673427329295],
+  migrations: [initDataBase1675094029999],
 });
