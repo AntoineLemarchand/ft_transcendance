@@ -51,18 +51,18 @@ function SignIn() {
   if (selectedImage)
     body.append('image', selectedImage)
 
-  fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/signinFortyTwo', {
+  fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/signinFortyTwoUsername', {
     method: 'POST',
     body: body,
-  })
-  .then(response => {
-    console.log('status ' + response.status);
-    if (response.status === 201) {
-      navigate('/');
-    } else {
-      alert('Username already taken');
-    }
-  })
+  });
+  // .then(response => {
+  //   console.log('status ' + response.status);
+  //   if (response.status === 201) {
+  //     navigate('/');
+  //   } else {
+  //     alert('Username already taken');
+  //   }
+  // })
 }
 
 	return (

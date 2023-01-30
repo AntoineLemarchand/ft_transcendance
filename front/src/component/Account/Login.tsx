@@ -81,7 +81,6 @@ function Login() {
             '&response_type=code'
         }>
         <button className="Oauth">
-        <button className="signin" onClick={ProcessSignIn}><SchoolLogo /></button>
         </button>
         </a>
       </div>
