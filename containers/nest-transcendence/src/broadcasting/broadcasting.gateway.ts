@@ -76,10 +76,8 @@ export class BroadcastingGateway
     this.server.in(roomName).emit('gameUpdateToClient', JSON.stringify(update));
   }
 
-  emitMatchMade(player1name: string, player2name: string) {
-    this.server
-      .in('_waiting_room_')
-      .emit('emitMatchMadeToClient', [player1name, player2name]);
+  emitMatchMade(gameId: number) {
+    this.server.in('_waiting_room_').emit('emitMatchMadeToClient', gameId.toString());
   }
 
   async handleConnection(client: Socket) {
@@ -88,8 +86,7 @@ export class BroadcastingGateway
       await this.userService.getUser(username)
     )?.getChannelNames()) as string[];
     const runningGame = this.gameService.getRunningGameForUser(username);
-    if (runningGame)
-      roomNames.push(runningGame.getId().toString());
+    if (runningGame) roomNames.push(runningGame.getId().toString());
     this.roomHandler.addUserInstance(username, client.id, roomNames);
   }
 
@@ -99,8 +96,7 @@ export class BroadcastingGateway
       await this.userService.getUser(username)
     )?.getChannelNames()) as string[];
     const runningGame = this.gameService.getRunningGameForUser(username);
-    if (runningGame)
-      roomNames.push(runningGame.getId().toString());
+    if (runningGame) roomNames.push(runningGame.getId().toString());
     this.roomHandler.removeUserInstance(username, client.id, roomNames);
   }
 

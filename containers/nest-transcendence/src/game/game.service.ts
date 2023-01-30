@@ -218,7 +218,7 @@ export class GameService {
     if (result) return result;
   }
   async getWonGamesCountByPlayer(player: string) {
-    const [ result, count ]  = await this.gameRepository.findAndCount({
+    const [result, count] = await this.gameRepository.findAndCount({
       where: [
         { player1: player, score1: 10 },
         { player2: player, score2: 10 },
@@ -255,17 +255,17 @@ export class GameService {
     );
   }
 
-  joinMatchMaking(executorName: string) {
+  async joinMatchMaking(executorName: string) {
     if (!this.matchMakingQueue.includes(executorName)) {
       this.matchMakingQueue.push(executorName);
       this.broadcastingGateway.putUserInRoom(executorName, '_waiting_room_');
     }
     if (this.matchMakingQueue.length === 2) {
-      this.initGame(this.matchMakingQueue[0], this.matchMakingQueue[1]);
-      this.broadcastingGateway.emitMatchMade(
+      const game = await this.initGame(
         this.matchMakingQueue[0],
         this.matchMakingQueue[1],
       );
+      this.broadcastingGateway.emitMatchMade(game.getId() );
       this.broadcastingGateway.removeUserFromRoom(
         this.matchMakingQueue[0],
         '_waiting_room_',
