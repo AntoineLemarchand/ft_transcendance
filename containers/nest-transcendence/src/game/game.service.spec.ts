@@ -561,7 +561,7 @@ describe('matchmaking', () => {
     await gameService.joinMatchMaking('player1');
     await gameService.joinMatchMaking('player2');
 
-    expect(spy).toHaveBeenCalledWith('666');
+    expect(spy).toHaveBeenCalledWith(666);
   });
 
   it('should not emit a message to the waiting room when one user in the queue twice', async function() {

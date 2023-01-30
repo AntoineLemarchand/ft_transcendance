@@ -154,6 +154,8 @@ export class ChannelService {
       executorName,
       'This user is not an admin',
     );
+    if (channel.isOwner(bannedUsername))
+      throw new ErrForbidden("An owner cannot be banned");
     channel.banUser(bannedUsername);
     await this.userService.removeChannelName(bannedUsername, channelName);
   }

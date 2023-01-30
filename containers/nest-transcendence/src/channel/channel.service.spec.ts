@@ -82,25 +82,29 @@ describe('Joining a channel', () => {
     await channelService.joinChannel('Thomas', 'welcom', '');
 
     const user = (await userService.getUser('Thomas')) as User;
-		expect(user.getChannelNames().includes('welcom')).toBeTruthy();
+    expect(user.getChannelNames().includes('welcom')).toBeTruthy();
   });
 
-	it('should hash password', async() => {
-		const channelName = 'hello';
-		const channelPlaintextPass = 'hell0';
+  it('should hash password', async () => {
+    const channelName = 'hello';
+    const channelPlaintextPass = 'hell0';
 
-		await channelService.joinChannel('Thomas', channelName, channelPlaintextPass);
-		const channel = await channelService.getChannelByName(channelName);
-		expect(channel.getPassword()).toEqual(
-			expect.not.stringContaining(channelPlaintextPass)
-		);
-	});
+    await channelService.joinChannel(
+      'Thomas',
+      channelName,
+      channelPlaintextPass,
+    );
+    const channel = await channelService.getChannelByName(channelName);
+    expect(channel.getPassword()).toEqual(
+      expect.not.stringContaining(channelPlaintextPass),
+    );
+  });
 
-	it('should not be possible to join a channel with the wrong password', async() => {
+  it('should not be possible to join a channel with the wrong password', async () => {
     await expect(() =>
-			channelService.joinChannel('Thomas', 'welcom', 'channelPassword'),
-		).rejects.toThrow();
-	});
+      channelService.joinChannel('Thomas', 'welcom', 'channelPassword'),
+    ).rejects.toThrow();
+  });
 
   it('should add the deviceID of the user to all channelNames ', async () => {
     await channelService.joinChannel('Thomas', 'welcom', '');
@@ -127,7 +131,6 @@ describe('Joining a channel', () => {
       ),
     ).rejects.toThrow();
   });
-
 
   it('should throw if attempting to join an existing private channel', async () => {
     await userService.createUser(new User('outsider', 'password'));
@@ -219,7 +222,7 @@ describe('Administrating a channel', () => {
   });
 
   it('should prohibit a user to join a channel if he is on the ban list', async () => {
-    await userService.createUser(new User('bannedUsername', ''));
+    await userService.createUser(new User('bannedUsername', 'channelPassword'));
     await channelService.banUserFromChannel(
       'Thomas',
       'bannedUsername',
@@ -227,7 +230,25 @@ describe('Administrating a channel', () => {
     );
 
     await expect(() =>
-      channelService.joinChannel('bannedUsername', 'channelName', ''),
+      channelService.joinChannel(
+        'bannedUsername',
+        'channelName',
+        'channelPassword',
+      ),
+    ).rejects.toThrow();
+  });
+
+  it('should not be possible to ban an owner', async () => {
+    await userService.createUser(new User('newAdmin', ''));
+    await channelService.joinChannel(
+      'newAdmin',
+      'channelName',
+      'channelPassword',
+    );
+    await channelService.makeAdmin('Thomas', 'newAdmin', 'channelName');
+
+    await expect(() =>
+      channelService.banUserFromChannel('newAdmin', 'Thomas', 'channelName'),
     ).rejects.toThrow();
   });
 
@@ -310,7 +331,9 @@ describe('Administrating a channel', () => {
     await channelService.setPassword('admin', 'newPassword', 'welcome');
 
     expect(
-      (await channelService.getChannelByName('welcome')).comparePassword('newPassword'),
+      (await channelService.getChannelByName('welcome')).comparePassword(
+        'newPassword',
+      ),
     ).toBeTruthy();
   });
 

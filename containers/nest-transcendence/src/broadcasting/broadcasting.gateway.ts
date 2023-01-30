@@ -77,7 +77,9 @@ export class BroadcastingGateway
   }
 
   emitMatchMade(gameId: number) {
-    this.server.in('_waiting_room_').emit('emitMatchMadeToClient', gameId.toString());
+    this.server
+      .in('_waiting_room_')
+      .emit('emitMatchMadeToClient', gameId.toString());
   }
 
   async handleConnection(client: Socket) {

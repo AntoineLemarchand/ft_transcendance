@@ -265,7 +265,7 @@ export class GameService {
         this.matchMakingQueue[0],
         this.matchMakingQueue[1],
       );
-      this.broadcastingGateway.emitMatchMade(game.getId() );
+      this.broadcastingGateway.emitMatchMade(game.getId());
       this.broadcastingGateway.removeUserFromRoom(
         this.matchMakingQueue[0],
         '_waiting_room_',
