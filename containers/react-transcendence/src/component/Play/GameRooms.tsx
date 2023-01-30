@@ -74,9 +74,13 @@ export function PreMatchRoom(props: { socket: Socket }) {
     }
     props.socket.on("gameUpdateToClient", messageListener)
     return (() => {props.socket.off("gameUpdateToClient", messageListener)})
+    return (() => {props.socket.off("gameUpdateToClient", messageListener)})
   }, [])
 
   if (gameStart !== '') {
+    return (<Game firstMove={gameStart} socket={props.socket}/>)
+  }
+  return (
     <div className="waitingRoom">
       {!isGameRunning ? (
         <div className="Prompt">
