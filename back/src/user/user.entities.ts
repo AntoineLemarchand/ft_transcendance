@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class User {
@@ -21,7 +22,8 @@ export class User {
   public password: string;
 
   constructor(name: string, password: string, image?: Express.Multer.File) {
-    this.password = password;
+		this.password = password;
+		this.hashPassword(password);
     this.name = name;
     if (image) {
       this.image = image.buffer;
@@ -86,7 +88,6 @@ export class User {
 
   blockUser(username: string) {
     this.blockedUsers.forEach((name: string) => {
-      // error thrown not necessary?
       if (name === username) throw new Error('already blocked');
     });
     this.blockedUsers.push(username);
@@ -100,4 +101,18 @@ export class User {
       }
     }
   }
+
+	private hashPassword(plaintextPassword: string) {
+		const bcrypt = require('bcrypt');
+		const saltRounds = 10;
+
+		if (plaintextPassword === undefined) return;
+		this.password = bcrypt.hashSync(plaintextPassword, saltRounds);
+	}
+
+	comparePassword(plaintextPassword: string) {
+		const bcrypt = require('bcrypt');
+		if (plaintextPassword === undefined) return;
+		return bcrypt.compareSync(plaintextPassword, this.password);
+	}
 }

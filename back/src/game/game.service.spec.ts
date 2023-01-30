@@ -13,6 +13,13 @@ import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
 import { Collision } from './game.logic';
 import { ErrNotFound } from '../exceptions';
 
+Object.defineProperty(performance, 'now', {
+  value: jest.fn(),
+  configurable: true,
+  writable: true,
+});
+
+jest.spyOn(performance, 'now').mockImplementationOnce(() => 1);
 jest.mock('../broadcasting/broadcasting.gateway');
 
 let gameService: GameService;
@@ -44,7 +51,7 @@ beforeEach(async () => {
   currentGames = module.get<GameObjectRepository>(GameObjectRepository);
   broadcastingGateway = module.get<BroadcastingGateway>(BroadcastingGateway);
   jest
-    .spyOn(GameService.prototype, 'sleepUntilCollision')
+    .spyOn(GameService.prototype, 'sleepUntil')
     .mockImplementation(async (game: GameObject) => {});
   await userService.createUser(new User('player1', 'admin'));
   await userService.createUser(new User('player42', 'test'));
@@ -53,7 +60,7 @@ beforeEach(async () => {
 
 async function finishAGame(p1: string, p2: string) {
   const gameObject = await gameService.initGame(p1, p2);
-  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 100000);
+  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
   await gameService.setReady(p2, gameObject.getId());
   await gameService.runGame(gameObject);
   // do not put before run game, else await will not work
@@ -62,6 +69,7 @@ async function finishAGame(p1: string, p2: string) {
 }
 
 describe('setting up a game', () => {
+
   it('should fail to initiate when given a player twice', async () => {
     await expect(
       async () => await gameService.initGame('player1', 'player1'),
@@ -83,14 +91,29 @@ describe('setting up a game', () => {
   });
 
   it('should put both players in a socket room', async function () {
-    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom');
+    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom').mockReset();
 
     const game = await gameService.initGame('player1', 'player42');
 
     expect(spy).toHaveBeenCalledWith('player1', game.getId().toString());
     expect(spy).toHaveBeenCalledWith('player42', game.getId().toString());
   });
+
+  it('should return the existing game instead of creating a new one for a vs b and b vs a', async function () {
+    const game1 = await gameService.initGame('player1', 'player42');
+    const game2 = await gameService.initGame('player42', 'player1');
+
+    expect(game1.getId()).toBe(game2.getId());
+  });
+
+  it('should return a new game if players have finished the old game', async function () {
+    const game1 = await finishAGame('player1', 'player42');
+    const game2 = await gameService.initGame('player1', 'player42');
+
+    expect(game1.getId()).not.toBe(game2.getId());
+  });
 });
+
 describe('starting a game', () => {
   it('should fail if the executing user is not one of the players', async () => {
     const gameObject = await gameService.initGame('player1', 'player42');
@@ -161,14 +184,14 @@ describe('starting a game', () => {
     expect(gameObject.players[0].ready).toBeFalsy();
   });
 
-  it('should not unset a player readiness once the game has started and throw on trying to do so', async () => {
+  it('should not unset a player readiness once the game has started and throw on trying to do so (1)', async () => {
     jest.spyOn(gameService, 'runGame').mockImplementation(jest.fn());
     const gameObject = await finishAGame('player1', 'player42');
 
     expect(gameObject.players[0].ready).toBeTruthy();
   });
 
-  it('should not unset a player readiness if not an active player and throw on trying to do so', async () => {
+  it('should not unset a player readiness if not an active player and throw on trying to do so (2)', async () => {
     const gameObject = await gameService.initGame('player1', 'player42');
     await gameService.setReady('player1', gameObject.getId());
 
@@ -178,7 +201,7 @@ describe('starting a game', () => {
     expect(gameObject.players[0].ready).toBeTruthy();
   });
 
-  it('should not unset a player readiness if not an active player and throw on trying to do so', async () => {
+  it('should not unset a player readiness if not an active player and throw on trying to do so (3)', async () => {
     const gameObject = await finishAGame('player1', 'player42');
     expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
 
@@ -225,8 +248,17 @@ describe('running a game', () => {
     await gameService.runGame(gameObject);
 
     expect(gameObject.getProgress()).toBe(GameProgress.FINISHED);
-    expect(await gameService.getGameById(gameObject.getId())).toBeDefined();
-    expect(await gameService.getGamesCount()).toBe(1);
+    expect(
+      (await gameService.getInfoObject(gameObject.getId())).gameStat,
+    ).toBeDefined();
+    expect(await gameService.getSavedGamesCount()).toBe(1);
+  });
+});
+
+describe('saved games data', () => {
+  it('should not be undefined when game stat repository is empty', async () => {
+    expect(await gameService.getSavedGamesCount()).toBe(0);
+    expect(await gameService.getSavedGamesLastId()).toBe(0);
   });
 
   it('should return all the finished games', async () => {
@@ -235,15 +267,90 @@ describe('running a game', () => {
     const game3 = new GameObject(2, 'huhu', 'hihi');
 
     game1.players[0].score = 10;
-    game2.players[1].score = 90;
-    game3.players[0].score = 90;
+    game2.players[1].score = 10;
+    game3.players[0].score = 10;
 
     await gameService.saveGameStat(game1);
     await gameService.saveGameStat(game2);
     await gameService.saveGameStat(game3);
 
-    expect(await gameService.getGames()).toBeDefined();
-    expect(await gameService.getGamesCount()).toBe(3);
+    expect(await gameService.getSavedGames()).toBeDefined();
+    expect(await gameService.getSavedGamesCount()).toBe(3);
+  });
+  it('should return last finished game id', async () => {
+    const game1 = new GameObject(0, 'pépé', 'mémé');
+    const game2 = new GameObject(1, 'hehe', 'haha');
+    const game3 = new GameObject(2, 'huhu', 'hihi');
+
+    await gameService.saveGameStat(game1);
+    await gameService.saveGameStat(game2);
+    await gameService.saveGameStat(game3);
+
+    expect(await gameService.getSavedGamesLastId()).toBe(2);
+  });
+
+  it("should return all the player's finished games", async () => {
+    const game1 = new GameObject(0, 'pépé', 'mémé');
+    const game2 = new GameObject(1, 'mémé', 'pépé');
+    const game3 = new GameObject(2, 'huhu', 'hihi');
+
+    game1.players[0].score = 10;
+    game2.players[1].score = 10;
+    game3.players[0].score = 10;
+
+    await gameService.saveGameStat(game1);
+    await gameService.saveGameStat(game2);
+    await gameService.saveGameStat(game3);
+
+    expect(await gameService.getSavedGamesByPlayer('pépé')).toBeDefined();
+  });
+
+  it("should return all the player's won games", async () => {
+    const game1 = new GameObject(0, 'pépé', 'mémé');
+    const game2 = new GameObject(1, 'mémé', 'pépé');
+    const game3 = new GameObject(2, 'mémé', 'pépé');
+
+    game1.players[0].score = 10;
+    game2.players[1].score = 10;
+    game3.players[0].score = 10;
+
+    await gameService.saveGameStat(game1);
+    await gameService.saveGameStat(game2);
+    await gameService.saveGameStat(game3);
+
+    expect(await gameService.getWonGamesByPlayer('pépé')).toBeDefined();
+  });
+
+  it("should return the player's won games count", async () => {
+    const game1 = new GameObject(0, 'pépé', 'mémé');
+    const game2 = new GameObject(1, 'mémé', 'pépé');
+    const game3 = new GameObject(2, 'mémé', 'pépé');
+
+    game1.players[0].score = 10;
+    game2.players[1].score = 10;
+    game3.players[0].score = 10;
+
+    await gameService.saveGameStat(game1);
+    await gameService.saveGameStat(game2);
+    await gameService.saveGameStat(game3);
+
+    expect(await gameService.getWonGamesCountByPlayer('pépé')).toBe(2);
+  });
+
+  it('should start games ids at 0 when no saved games', async () => {
+    const gameObject = await finishAGame('player1', 'player42');
+    expect(await gameObject.getId()).toBe(0);
+  });
+
+  it('should increment on saved games ids when a new gameObject is created', async () => {
+    const game1 = new GameObject(1, 'pépé', 'mémé');
+    const game2 = new GameObject(2, 'mémé', 'pépé');
+
+    await gameService.saveGameStat(game1);
+    await gameService.saveGameStat(game2);
+
+    const game3 = await finishAGame('player1', 'player42');
+    expect(await game3.getId()).toBe(3);
   });
 });
 
@@ -394,6 +501,14 @@ describe('game info', () => {
 
     expect(result).toBeUndefined();
   });
+
+  it('should return GameObject but no GameStat', async function () {
+    const gameObject = await gameService.initGame('player1', 'player42');
+
+    const result = await gameService.getInfoObject(gameObject.getId());
+
+    expect(result.gameObject).toBe(gameObject);
+  });
 });
 
 describe('spectating a game', () => {
@@ -427,5 +542,83 @@ describe('spectating a game', () => {
     await gameService.endSpectate('outsider', gameObject.getId());
 
     expect(spy).toHaveBeenCalledWith('outsider', gameObject.getId().toString());
+  });
+});
+
+describe('matchmaking', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(gameService, 'initGame')
+      .mockImplementation(async (s1: string, s2: string) => {
+        return new GameObject(0, s1, s2);
+      });
+  });
+
+  it('should not emit a message to the waiting room when only one user in the queue', async function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    await gameService.joinMatchMaking('player1');
+
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should emit a message to the waiting room as soon as a second user tries to find a match', async function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    jest
+      .spyOn(gameService, 'initGame')
+      .mockImplementation(async (player1name: string, player2name: string) => {
+        return new GameObject(666, 'player1', 'player2');
+      });
+    await gameService.joinMatchMaking('player1');
+    await gameService.joinMatchMaking('player2');
+
+    expect(spy).toHaveBeenCalledWith(666);
+  });
+
+  it('should not emit a message to the waiting room when one user in the queue twice', async function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    await gameService.joinMatchMaking('player1');
+    await gameService.joinMatchMaking('player1');
+
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should emit two messages when creating four games', async function () {
+    const spy = jest.spyOn(broadcastingGateway, 'emitMatchMade');
+    await gameService.joinMatchMaking('player1');
+    await gameService.joinMatchMaking('player2');
+    await gameService.joinMatchMaking('player3');
+    await gameService.joinMatchMaking('player4');
+
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+
+  it('should put a waiting user in the waiting room on requesting a match', async function () {
+    const spy = jest.spyOn(broadcastingGateway, 'putUserInRoom').mockReset();
+    await gameService.joinMatchMaking('player1');
+
+    expect(spy).toHaveBeenCalledWith('player1', '_waiting_room_');
+  });
+
+  it('should empty the waiting room once a game has created', async function () {
+    const spy = jest
+      .spyOn(broadcastingGateway, 'removeUserFromRoom')
+      .mockReset();
+    await gameService.joinMatchMaking('player1');
+    await gameService.joinMatchMaking('player42');
+
+    expect(spy).toHaveBeenCalledWith('player1', '_waiting_room_');
+    expect(spy).toHaveBeenCalledWith('player42', '_waiting_room_');
+  });
+
+  it('should create a game', async function () {
+    const spy = jest
+      .spyOn(gameService, 'initGame')
+      .mockImplementation(async (s1: string, s2: string) => {
+        return new GameObject(0, s1, s2);
+      });
+    await gameService.joinMatchMaking('player1');
+    await gameService.joinMatchMaking('player42');
+
+    expect(spy).toHaveBeenCalledWith('player1', 'player42');
   });
 });

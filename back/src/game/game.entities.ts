@@ -7,18 +7,29 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class GameStat {
+  @Column('text')
+  public player1: string;
+  @Column('text')
+  public player2: string;
   @Column('int')
-  @Column('text', { array: true })
-  public players: string[];
-  @Column('int', { array: true })
-  public scores: number[];
+  public score1: number;
+  @Column('int')
+  public score2: number;
   @PrimaryColumn()
   public gameId: number;
 
-  constructor(gameId: number, players: string[], scores: number[]) {
+  constructor(
+    gameId: number,
+    player1: string,
+    player2: string,
+    score1: number,
+    score2: number,
+  ) {
     this.gameId = gameId;
-    this.players = players;
-    this.scores = scores;
+    this.player1 = player1;
+    this.player2 = player2;
+    this.score1 = score1;
+    this.score2 = score2;
   }
 
   getGameId() {
@@ -26,11 +37,11 @@ export class GameStat {
   }
 
   getPlayers() {
-    return this.players;
+    return [this.player1, this.player2];
   }
 
   getScores() {
-    return this.scores;
+    return [this.score1, this.score2];
   }
 }
 
@@ -64,7 +75,7 @@ export class GameObject {
   collision: Collision;
   players: Player[];
   constructor(private gameId: number, player1: string, player2: string) {
-    this.collision = new Collision({ x: 0.5, y: 0.5 }, deg2rad(45), 1);
+    this.collision = new Collision({ x: 0.5, y: 0.5 }, 90, 0.5);
     this.collision.reset();
     this.progress = GameProgress.INITIALIZED;
     this.players = [

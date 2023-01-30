@@ -59,7 +59,7 @@ describe('executing steps', () => {
     expect(gameObject.players[0].score).toBe(1);
   });
 
-  it('should set a game to terminated when the score reaches ten', function () {
+  it('should set a game to terminated when the score reaches hundred', function () {
     const gameObject = new GameObject(0, 'p1', 'p2');
     gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
     gameObject.players[0].score = 9;

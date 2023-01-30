@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 export class Message {
   sender: string;
@@ -65,7 +66,7 @@ export class Channel {
     type = 'standardChannel',
   ) {
     this.type = type;
-    this.password = password;
+    this.setPassword(password);
     this.channelName = channelName;
     this.messages = [];
     this.admins = [creatorUsername];
@@ -120,7 +121,7 @@ export class Channel {
   }
 
   setPassword(newPassword: string) {
-    this.password = newPassword;
+    this.hashPassword(newPassword);
   }
 
   muteUser(username: string, forMinutes: number) {
@@ -135,5 +136,21 @@ export class Channel {
     return (
       (MapReplacement.get(this.mutedUsers, username) as number) > Date.now()
     );
+  }
+
+  private hashPassword(plaintextPassword: string) {
+    const bcrypt = require('bcrypt');
+    const saltRounds = 10;
+
+    this.password = bcrypt.hashSync(plaintextPassword, saltRounds);
+  }
+
+  comparePassword(plaintextPassword: string) {
+    const bcrypt = require('bcrypt');
+    return bcrypt.compareSync(plaintextPassword, this.password);
+  }
+
+  isOwner(username: string) {
+    return username === this.admins[0];
   }
 }

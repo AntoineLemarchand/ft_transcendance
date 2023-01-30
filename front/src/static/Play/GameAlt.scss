@@ -12,6 +12,9 @@ $paddleWidth: 3%;
     height: 100%;
     width: 100%;
     z-index: 10;
+    background-image: url("../../../public/bg-shrek.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
 
     .player {
       height: 20%;
@@ -21,12 +24,12 @@ $paddleWidth: 3%;
       transition: 0.2s linear;
 
       &.left {
-        background: color("textPrimary");
+        background: color("greenPrimary");
         left: 0;
       }
 
       &.right {
-        background: color("greyPrimary");
+        background: color("whitePrimary");
         right: 0;
       }
     }
@@ -52,10 +55,9 @@ $paddleWidth: 3%;
         display: block;
         position: absolute;
         box-sizing: border-box;
-        background: color("greyPrimary");
+        background: color("redPrimary");
         border-radius: 50%;
       }
     }
   }
-
 }

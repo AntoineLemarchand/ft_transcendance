@@ -75,21 +75,30 @@ export class BroadcastingGateway
     this.server.in(roomName).emit('gameUpdateToClient', JSON.stringify(update));
   }
 
+  emitMatchMade(gameId: number) {
+    this.server
+      .in('_waiting_room_')
+      .emit('emitMatchMadeToClient', gameId.toString());
+  }
+
   async handleConnection(client: Socket) {
     const username = this.getUsernameFromToken(client);
-    const channelNames: string[] = (await (
+    const roomNames: string[] = (await (
       await this.userService.getUser(username)
     )?.getChannelNames()) as string[];
-    this.roomHandler.addUserInstance(username, client.id, channelNames);
+    const runningGame = this.gameService.getRunningGameForUser(username);
+    if (runningGame) roomNames.push(runningGame.getId().toString());
+    this.roomHandler.addUserInstance(username, client.id, roomNames);
   }
 
   async handleDisconnect(client: Socket) {
-    throw new Error("disconnect calles");
     const username = this.getUsernameFromToken(client);
-    const channelNames: string[] = (await (
+    const roomNames: string[] = (await (
       await this.userService.getUser(username)
     )?.getChannelNames()) as string[];
-    this.roomHandler.removeUserInstance(username, client.id, channelNames);
+    const runningGame = this.gameService.getRunningGameForUser(username);
+    if (runningGame) roomNames.push(runningGame.getId().toString());
+    this.roomHandler.removeUserInstance(username, client.id, roomNames);
   }
 
   async putUserInRoom(username: string, roomName: string) {

@@ -319,6 +319,15 @@ export async function initGame(
     });
 }
 
+export async function joinMatchMaking(
+  callerModule: INestApplication,
+  jwt: any,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/game/matchMaking')
+    .set('Authorization', 'Bearer ' + jwt);
+}
+
 export async function getAllRunning(callerModule: INestApplication, jwt: any) {
   return request(callerModule.getHttpServer())
     .get('/game/getRunning')
@@ -386,3 +395,61 @@ export async function setNotReadyForGame(
       gameId: gameId.toString(),
     });
 }
+
+export const getSavedGames = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getSavedGames')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getGameById = async (
+  callerModule: INestApplication,
+  jwt: string,
+  gameId: number,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getById/' + gameId)
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getSavedGamesCount = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getSavedGamesCount')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getSavedGamesByPlayer = async (
+  callerModule: INestApplication,
+  jwt: string,
+  username: string
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getSavedGamesByPlayer/' + username)
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getWonGamesByPlayer = async (
+  callerModule: INestApplication,
+  jwt: string,
+  username: string
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getWonGamesByPlayer/' + username)
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
+export const getWonGamesCountByPlayer = async (
+  callerModule: INestApplication,
+  jwt: string,
+  username: string
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getWonGamesCountByPlayer/' + username)
+    .set('Authorization', 'Bearer ' + jwt);
+};

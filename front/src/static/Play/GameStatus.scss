@@ -17,7 +17,7 @@ $statusHeight: 5rem;
 
     &:last-child {flex-direction: row-reverse;}
 
-    .picture {height: $statusHeight;}
+    .userImage {height: $statusHeight;}
 
     .name {color: color('textPrimary')}
 

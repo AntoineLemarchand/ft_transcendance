@@ -1,16 +1,14 @@
-import { useEffect, useState, useContext } from 'react';
-import { useCookies } from 'react-cookie';
-import { Socket } from 'socket.io-client';
-import { useNavigate } from 'react-router-dom';
-import 'static/Play/Game.scss';
-import GameStatus from './GameStatus';
+import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
+import { Socket } from "socket.io-client";
+import "static/Play/GameAlt.scss";
+import GameStatus from "./GameStatus";
 
 function Game(props: { firstMove: string; socket: Socket }) {
   const [currentMove, setCurrentMove] = useState(JSON.parse(props.firstMove));
-  const [cookies] = useCookies(['userInfo']);
+  const [cookies] = useCookies(["userInfo"]);
   const [leftPos, setLeftPos] = useState(0.5);
   const [rightPos, setRightPos] = useState(0.5);
-  const navigate = useNavigate();
 
   const ballStyle = {
     width: "1rem",
@@ -32,22 +30,22 @@ function Game(props: { firstMove: string; socket: Socket }) {
 
   const keyDownHandler = (event: any) => {
     if (event.repeat) return;
-    if (event.code === 'ArrowUp') {
+    if (event.code === "ArrowUp") {
       props.socket.emit(
-        'gameUpdateToServer',
+        "gameUpdateToServer",
         JSON.stringify({
-          username: cookies['userInfo'].name,
-          action: 'startUp',
+          username: cookies["userInfo"].name,
+          action: "startUp",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
         })
       );
-    } else if (event.code === 'ArrowDown') {
+    } else if (event.code === "ArrowDown") {
       props.socket.emit(
-        'gameUpdateToServer',
+        "gameUpdateToServer",
         JSON.stringify({
-          username: cookies['userInfo'].name,
-          action: 'startDown',
+          username: cookies["userInfo"].name,
+          action: "startDown",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
         })
@@ -56,22 +54,22 @@ function Game(props: { firstMove: string; socket: Socket }) {
   };
 
   const keyUpHandler = (event: any) => {
-    if (event.code === 'ArrowUp') {
+    if (event.code === "ArrowUp") {
       props.socket.emit(
-        'gameUpdateToServer',
+        "gameUpdateToServer",
         JSON.stringify({
-          username: cookies['userInfo'].name,
-          action: 'endUp',
+          username: cookies["userInfo"].name,
+          action: "endUp",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
         })
       );
-    } else if (event.code === 'ArrowDown') {
+    } else if (event.code === "ArrowDown") {
       props.socket.emit(
-        'gameUpdateToServer',
+        "gameUpdateToServer",
         JSON.stringify({
-          username: cookies['userInfo'].name,
-          action: 'endDown',
+          username: cookies["userInfo"].name,
+          action: "endDown",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
         })
@@ -88,24 +86,16 @@ function Game(props: { firstMove: string; socket: Socket }) {
     window.addEventListener("keydown", keyDownHandler);
     window.addEventListener("keyup", keyUpHandler);
     return function cleanup() {
-      window.removeEventListener('keydown', keyDownHandler);
-      window.removeEventListener('keyup', keyUpHandler);
+      window.removeEventListener("keydown", keyDownHandler);
+      window.removeEventListener("keyup", keyUpHandler);
     };
   }, []);
 
   useEffect(() => {
     const messageListener = (payload: string) => {
-      const gameStatus = JSON.parse(payload);
-      if (gameStatus.gameId !== JSON.parse(props.firstMove).gameId)
-        return;
-      if (gameStatus.progress === 2)
-        navigate('/results/' + gameStatus.gameId);
-      setCurrentMove(gameStatus)
-    }
-    props.socket.on('gameUpdateToClient', messageListener);
-    return (() => {
-      props.socket.off('gameUpdateToClient', messageListener);
-    })
+      setCurrentMove(JSON.parse(payload));
+    };
+    props.socket.on("gameUpdateToClient", messageListener);
   }, []);
 
   useEffect(() => {

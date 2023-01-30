@@ -6,7 +6,6 @@ import { Strategy } from 'passport-oauth2';
 @Injectable()
 export class Oauth2Strategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
-    console.log('http://' + process.env.SERVER_URL + ':' + process.env.SERVER_PORT + '/api/auth/oauth/callback');
     super({
       authorizationURL: 'https://api.intra.42.fr/oauth/authorize',
       tokenURL: 'https://api.intra.42.fr/oauth/token',

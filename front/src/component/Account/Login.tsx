@@ -3,8 +3,6 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
-import { SocketContext } from "../WebSocket";
-
 import "static/Account/Prompt.scss";
 
 import { ReactComponent as SchoolLogo } from "static/logo.svg";
@@ -14,7 +12,6 @@ function Login() {
   const [cookie, setCookie] = useCookies(["auth", "userInfo"]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const context = useContext(SocketContext);
 
   useEffect(() => {
     if (cookie["auth"] !== undefined) navigate("/home");
@@ -35,9 +32,8 @@ function Login() {
         const token = await response.text().then((body) => {
           return JSON.parse(body).access_token;
         });
-        setCookie("auth", token, { path: "/" });
-        context.setAuth(token);
-        setCookie("userInfo", "", { path: "/" });
+        setCookie("auth", token, { path: "/", sameSite: 'strict' });
+        setCookie("userInfo", "", { path: "/", sameSite: 'strict' });
         fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/user/info", {
           credentials: "include",
           method: "GET",
@@ -49,8 +45,7 @@ function Login() {
           result.text().then((text) => {
             let cookie = JSON.parse(text).userInfo;
             cookie.image = [];
-            setCookie("userInfo", cookie, { path: "/" });
-            context.setUserInfo(cookie);
+            setCookie("userInfo", cookie, { path: "/", sameSite: 'strict' });
           });
         });
         navigate("/home");
@@ -82,7 +77,7 @@ function Login() {
         <a href={
             'https://api.intra.42.fr/oauth/authorize?' +
             'client_id=' + process.env.REACT_APP_FORTYTWO_CLIENT_ID +
-            '&redirect_uri=http://' + process.env.REACT_APP_SERVER_IP + ':' + process.env.REACT_APP_SERVER_PORT + '/api/auth/oauth/callback'  +
+            '&redirect_uri=http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/oauth/callback'  +
             '&response_type=code'
         }>
         <button className="Oauth">

@@ -1,5 +1,5 @@
 export class User{
-	name: string;
+  name: string;
 	friends: {name: string, status: string}[];
     constructor() {
         this.name = ''

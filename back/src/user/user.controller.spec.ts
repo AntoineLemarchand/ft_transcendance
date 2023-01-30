@@ -198,6 +198,18 @@ describe('Getting user info', () => {
     expect(result.body.usernames[1]).toEqual('Tom');
     expect(result.body.usernames[2]).toEqual('Camembert');
   });
+
+  it('should return 200 and an image', async () => {
+    const testImage: Buffer = Buffer.from('test image buffer');
+    await testUtils.signinUser(app, 'camembert', 'password', testImage);
+
+    const result = await request(app.getHttpServer())
+      .get('/user/image/camembert')
+      .set('Authorization', 'Bearer ' + jwt);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toStrictEqual(Buffer.from('test image buffer'));
+  })
 });
 
 describe('Login', () => {

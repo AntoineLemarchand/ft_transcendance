@@ -71,12 +71,19 @@ export class MinimalPhysics {
       });
     }
     if (result.length === 1) return result[0];
+    if (MinimalPhysics.isCoordinateOutsideBoundaries(result[0]))
+      return result[1];
+    if (MinimalPhysics.isCoordinateOutsideBoundaries(result[1]))
+      return result[0];
     if (
       Math.pow(result[0].x, 2) + Math.pow(result[0].y, 2) <=
       Math.pow(result[1].x, 2) + Math.pow(result[1].y, 2)
     )
       return result[0];
     return result[1];
+  }
+  private static isCoordinateOutsideBoundaries(input: { x: number; y: number }){
+    return input.y > 1 || input.x > 1 || input.y < 0 || input.x < 0;
   }
 
   static getTimeOfCollision(
@@ -117,8 +124,8 @@ export class PlayerBar {
           1000) *
           this.speed,
     };
-    if (result.y < 0) result.y = 0;
-    if (result.y > 1) result.y = 1;
+    if (result.y < this.barHeight / 2) result.y = this.barHeight / 2;
+    if (result.y > 1 - this.barHeight / 2) result.y = 1 - this.barHeight / 2;
     return result;
   }
 
