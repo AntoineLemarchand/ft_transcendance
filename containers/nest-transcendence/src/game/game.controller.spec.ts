@@ -265,6 +265,15 @@ it('should call getWonGamesByPlayer func', async function () {
  
   expect(spy).toHaveBeenCalledWith('admin');
   });
+
+it('should call getWonGamesCountByPlayer func', async function () {
+  const spy = jest.spyOn(gameService, 'getWonGamesCountByPlayer');
+  const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
+  
+  await testUtils.getWonGamesCountByPlayer(app, jwt, 'admin');
+ 
+  expect(spy).toHaveBeenCalledWith('admin');
+  });
 });
 
 describe('beginning spectating a game', () => {

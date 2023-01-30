@@ -13,6 +13,7 @@ import { GameService } from '../game/game.service';
 import { UserModule } from './user.module';
 import { RoomHandler } from '../broadcasting/broadcasting.roomHandler';
 import { Socket, Server } from 'socket.io';
+import { Bcrypt } from 'bcrypt';
 
 //the mocks are required to test without opening a real Socket.io Gateway on every test
 jest.spyOn(Channel.prototype, 'addMessage');
@@ -90,6 +91,24 @@ describe('creating a user', () => {
     const countAfter = (await userService.getAllUsernames()).length;
     expect(countAfter).toEqual(countBefore + 1);
   });
+	it('should hash password', async() => {
+		const username = 'hello';
+		const password = 'hell0';
+
+		await userService.createUser(new User(username, password));
+		const user = await userService.getUser(username);
+		expect(user.password).toEqual(
+			expect.not.stringContaining(password)
+		);
+	});
+	it('should return true on comparing hashed and plaintext password', async() => {
+		const username = 'hello';
+		const password = 'hell0';
+
+		await userService.createUser(new User(username, password));
+		const user = await userService.getUser(username);
+		expect(user.comparePassword(password)).toBeTruthy();
+	});
 });
 
 describe('deleting a user', () => {
@@ -179,7 +198,7 @@ describe('getting the user state', () => {
     expect(result).toStrictEqual('online');
   });
 
-  it('should return inGame for a user who is in a game', function () {
+  it('should return in game for a user who is in a game', function () {
     jest
       .spyOn(gameService, 'getRunningGameForUser')
       .mockImplementation((username: string) => {
@@ -187,6 +206,6 @@ describe('getting the user state', () => {
       });
     const result = userService.getStatus('online user');
 
-    expect(result).toStrictEqual('inGame');
+    expect(result).toStrictEqual('in game');
   });
 });

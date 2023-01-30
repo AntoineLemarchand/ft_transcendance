@@ -125,10 +125,10 @@ export class ChannelService {
         );
       if (channel.isUserBanned(targetUsername))
         throw new ErrUnAuthorized('the user is banned');
-      if (
-        (await channel.getPassword()) &&
-        (await channel.getPassword()) != channelPassword
-      )
+			if (
+				(await channel.getPassword()) &&
+				(await channel.comparePassword(channelPassword) == false)
+			)
         throw new ErrUnAuthorized('wrong password');
     }
   }

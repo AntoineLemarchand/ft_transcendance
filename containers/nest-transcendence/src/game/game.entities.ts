@@ -11,9 +11,9 @@ export class GameStat {
   public player1: string;
   @Column('text')
   public player2: string;
-	@Column('int')
+  @Column('int')
   public score1: number;
-	@Column('int')
+  @Column('int')
   public score2: number;
   @PrimaryColumn()
   public gameId: number;
@@ -23,7 +23,7 @@ export class GameStat {
     player1: string,
     player2: string,
     score1: number,
-    score2: number
+    score2: number,
   ) {
     this.gameId = gameId;
     this.player1 = player1;
@@ -37,11 +37,11 @@ export class GameStat {
   }
 
   getPlayers() {
-    return [ this.player1, this.player2 ];
+    return [this.player1, this.player2];
   }
 
   getScores() {
-    return [ this.score1, this.score2 ];
+    return [this.score1, this.score2];
   }
 }
 

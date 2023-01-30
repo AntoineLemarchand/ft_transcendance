@@ -92,6 +92,14 @@ export class GameController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('getWonGamesCountByPlayer/:username')
+  async getWonGamesCountByPlayer(@Param() params: any) {
+    const wonGamesCountByPlayer = await this.gameService
+      .getWonGamesCountByPlayer(params.username);
+    return { games: wonGamesCountByPlayer };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('matchMaking')
   async joinMatchMaking(@Request() req: any) {
     await this.gameService.joinMatchMaking(req.user.name);

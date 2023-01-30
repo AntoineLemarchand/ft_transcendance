@@ -9,9 +9,9 @@ import * as Menus from "./ChatMenus";
 import ChannelMenu from "./ChannelMenu";
 import { Channel, Message, putMessageInChannels } from "../../utils/Message";
 import { useCookies } from "react-cookie";
-import { Socket, io } from "socket.io-client";
+import { Socket } from "socket.io-client";
 
-function Chat() {
+function Chat(props: {socket: Socket}) {
   const [NewConvMenu, SetNewConvMenu] = useState(false);
   const [SearchMenu, SetSearchMenu] = useState(false);
   const [channelToModify, setChannelToModify] = useState("");
@@ -21,10 +21,9 @@ function Chat() {
   const [blockedUsers, setBlockedUsers] = useState<string[]>([]);
 
   const [cookie] = useCookies(["auth", "userInfo"]);
-  const [socket, setSocket] = useState<Socket | undefined>(undefined);
 
   const send = (sender: string, content: string, channel: string) => {
-    socket!.emit(
+    props.socket.emit(
       "messageToServer",
       JSON.stringify({ sender: sender, content: content, channel: channel })
     );
@@ -65,11 +64,6 @@ function Chat() {
   };
 
   useEffect(() => {
-    const newSocket = io("http://" + process.env.REACT_APP_SERVER_IP, {
-      withCredentials: true,
-      query: { auth: cookie["auth"] },
-    });
-    setSocket(newSocket);
     updateJoinedChannels();
     // eslint-disable-next-line
   }, []);
@@ -80,11 +74,11 @@ function Chat() {
       const allChannels = putMessageInChannels(message, joinedChannel);
       setJoinedChannel(allChannels);
     };
-    socket?.on("messageToClient", messageListener);
+    props.socket.on("messageToClient", messageListener);
     if (currentChannel === undefined && joinedChannel.length > 0)
       setCurrentChannel(joinedChannel[0]);
     return () => {
-      socket && socket.off("messageToClient", messageListener);
+      props.socket.off("messageToClient", messageListener);
     };
     // eslint-disable-next-line
   }, [joinedChannel]);
