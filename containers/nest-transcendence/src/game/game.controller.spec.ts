@@ -248,9 +248,9 @@ describe('fetching saved games', () => {
   it('should return a GameObject if not finished', async function () {
     const spy = jest.spyOn(gameService, 'getInfoObject');
     const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
-    const result = await testUtils.getGameById(app, jwt, 0);
+    await testUtils.getGameById(app, jwt, 0);
 
-    expect(spy).toHaveBeenCalledWith('0');
+    expect(spy).toHaveBeenCalledWith(0);
   });
 
   it('should call getSavedGamesCount func', async function () {
