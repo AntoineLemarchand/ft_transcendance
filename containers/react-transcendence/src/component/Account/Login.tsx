@@ -77,7 +77,7 @@ function Login() {
         <a href={
             'https://api.intra.42.fr/oauth/authorize?' +
             'client_id=' + process.env.REACT_APP_FORTYTWO_CLIENT_ID +
-            '&redirect_uri=http://' + process.env.REACT_APP_SERVER_IP + ':' + process.env.REACT_APP_SERVER_PORT + '/api/auth/oauth/callback'  +
+            '&redirect_uri=http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/oauth/callback'  +
             '&response_type=code'
         }>
         <button className="Oauth">

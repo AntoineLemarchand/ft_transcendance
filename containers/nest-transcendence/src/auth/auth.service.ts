@@ -50,7 +50,11 @@ export class AuthService {
       userCandidate.username,
       userCandidate.password,
     );
-    if (userCandidate.image) newUser.image = userCandidate.image.buffer;
+    if (userCandidate.image) {
+      newUser.image = userCandidate.image.buffer;
+      newUser.imageFormat = userCandidate.image.mimetype;
+    }
+
     await this.userService.createUser(newUser);
     return this.login(new Identity(userCandidate.username, 1));
   }
