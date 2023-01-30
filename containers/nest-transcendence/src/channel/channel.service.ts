@@ -181,10 +181,25 @@ export class ChannelService {
     executorName: string,
     invitedUsername: string,
   ) {
-    const channelName = executorName + '_' + invitedUsername;
-    await this.joinChannel(executorName, channelName, '', 'directMessage');
-    await this.inviteToChannel(executorName, invitedUsername, channelName);
-    await this.makeAdmin(executorName, invitedUsername, channelName);
+    const channelName = this.generateDirectMessageChannelName(
+      executorName,
+      invitedUsername,
+    );
+    try {
+      await this.joinChannel(executorName, channelName, '', 'directMessage');
+      await this.inviteToChannel(executorName, invitedUsername, channelName);
+      await this.makeAdmin(executorName, invitedUsername, channelName);
+    } catch (e) {}
+  }
+
+  private generateDirectMessageChannelName(
+    executorName: string,
+    invitedUsername: string,
+  ) {
+    let channelName = executorName + '_' + invitedUsername;
+    if (executorName > invitedUsername)
+      channelName = invitedUsername + '_' + executorName;
+    return channelName;
   }
 
   async makeAdmin(
