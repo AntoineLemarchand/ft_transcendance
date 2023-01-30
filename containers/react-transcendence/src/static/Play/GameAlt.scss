@@ -1,0 +1,63 @@
+@import "static/gruvbox";
+
+$paddleWidth: 3%;
+
+.Game {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: auto 5rem;
+
+  .Board {
+    height: 100%;
+    width: 100%;
+    z-index: 10;
+    background-image: url("../../../public/bg-shrek.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    .player {
+      height: 20%;
+      width: $paddleWidth;
+      display: block;
+      position: absolute;
+      transition: 0.2s linear;
+
+      &.left {
+        background: color("greenPrimary");
+        left: 0;
+      }
+
+      &.right {
+        background: color("whitePrimary");
+        right: 0;
+      }
+    }
+    .Field {
+      width: calc(100% - 2 * $paddleWidth);
+      height: 100%;
+      margin: 0 auto 0 auto;
+      position: relative;
+      border: 2px solid red;
+
+      .separator {
+        height: 100%;
+        width: 0;
+        margin: auto;
+        position: absolute;
+        display: block;
+        left: 0;
+        right: 0;
+        border: dashed 0.1rem color("textSecondary");
+      }
+
+      .ball {
+        display: block;
+        position: absolute;
+        box-sizing: border-box;
+        background: color("redPrimary");
+        border-radius: 50%;
+      }
+    }
+  }
+}
