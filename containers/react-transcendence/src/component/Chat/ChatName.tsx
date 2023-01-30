@@ -14,7 +14,6 @@ function ChatName(props: {
   updateContent: Function;
 }) {
   const [menuToggle, setMenuToggle] = useState(false);
-  const [muteTime, setMuteTime] = useState(false);
 
   const ToggleUserMenu = () => {
     setMenuToggle(!menuToggle);
@@ -99,7 +98,7 @@ function ChatName(props: {
       if (result.status === 401) {
         alert(props.sender + " cannot be muted");
       } else {
-        alert(props.sender + " has been muted for " + muteTime + "minutes");
+        alert(props.sender + " has been muted for 30 minutes");
       }
       ToggleUserMenu();
     });
@@ -134,7 +133,7 @@ function ChatName(props: {
 
   const adminOption = [
     { name: "Make Admin", onClick: MakeAdmin },
-    { name: "Mute 30min", onClick: MuteUser },
+    { name: "Mute 30 min", onClick: MuteUser },
     { name: "Ban", onClick: BanUser },
   ];
 
