@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import { Socket } from "socket.io-client";
 import "static/Play/GameRooms.scss";
 import Game from "./Game";
@@ -162,31 +161,54 @@ export function MatchMakingRoom(props: { socket: Socket }) {
 
 export function ResultRoom() {
   const params = useParams();
+  const [gameStats, setGameStats] = useState<{
+    player1: string,
+    score1: string,
+    player2: string,
+    score2: string
+    } | undefined>(undefined)
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(
-      "http://" + process.env.REACT_APP_SERVER_IP + "/api/game/matchMaking",
+      "http://" + process.env.REACT_APP_SERVER_IP + "/api/game/getById/" +
+        params.gid,
       {
         credentials: "include",
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-type": "application/json; charset=UTF-8",
         },
       }
-    );
+    ).then(result => {
+      result.text().then(text => {
+        const status = (JSON.parse(text));
+        if (!status.gameInfo || !status.gameInfo.gameObject)
+          navigate('/home')
+        console.log(status);
+        setGameStats({
+          player1: status.gameInfo.gameObject.players[0].name,
+          score1: status.gameInfo.gameObject.players[0].score,
+          player2: status.gameInfo.gameObject.players[1].name,
+          score2: status.gameInfo.gameObject.players[1].score,
+          })
+      });
+    });
   }, []);
 
   return (
-    <div class="resultRoom">
+    <div className="resultRoom">
+    { gameStats &&
       <div className="Prompt">
         <h1>Game finished</h1>
         <div className="stats">
-          <UserImage username="a" />
-          <p>10</p>
-          <p>0</p>
-          <UserImage username="a" />
+          <UserImage username={gameStats.player1} />
+          <p>{gameStats.score1}</p>
+          <p>{gameStats.score2}</p>
+          <UserImage username={gameStats.player2} />
         </div>
       </div>
+    }
     </div>
   );
 }

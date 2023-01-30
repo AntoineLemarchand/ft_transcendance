@@ -29,3 +29,28 @@
     .PlayerStatus button{width: 80%;}
   }
 }
+
+.resultRoom {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .Prompt {
+    color: color('textPrimary');
+    text-align: center;
+    .stats {
+      display: grid;
+      grid-template-columns: 30% auto auto 30%;
+
+      img {
+        width: 3rem;
+        height: 3rem;
+      }
+
+      p:nth-child(2) {
+        text-align: left;
+      }
+    }
+  }
+}
