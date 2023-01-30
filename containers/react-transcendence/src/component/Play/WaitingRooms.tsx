@@ -3,13 +3,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Socket } from "socket.io-client";
 import "static/Play/WaitingRoom.scss";
 import Game from "./Game";
+import ReactGIF from "react-gif-player";
 
 export function PreMatchRoom(props: { socket: Socket }) {
   const [userReady, setUserReady] = useState(false);
   const [gameStart, setGameStart] = useState("");
+  const [isGameRunning, setIsGameRunning] = useState(false);
   const [currentGamemode, setCurrentGamemode] = useState("Normal");
   const params = useParams();
   const navigate = useNavigate();
+
 
   const GamemodeButtonStyle = (gamemode: string) => {
     return gamemode === currentGamemode
@@ -43,38 +46,46 @@ export function PreMatchRoom(props: { socket: Socket }) {
       setGameStart(payload);
     };
     props.socket.on("gameUpdateToClient", messageListener);
-    //return (() => {props.socket.off("gameUpdateToClient", messageListener)})
   }, []);
 
   if (gameStart != "") {
     return <Game firstMove={gameStart} socket={props.socket} />;
   }
+
   return (
     <div className="waitingRoom">
-      <div className="Prompt">
-        <div className="Gamemode">
-          <button
-            onClick={() => setCurrentGamemode("Normal")}
-            style={GamemodeButtonStyle("Normal")}
-          >
-            Normal
-          </button>
-          <button
-            onClick={() => setCurrentGamemode("Hardcore")}
-            style={GamemodeButtonStyle("Hardcore")}
-          >
-            Hardcore
-          </button>
+      {isGameRunning ? (
+        <div className="Prompt">
+          <div className="Gamemode">
+            <button
+              onClick={() => setCurrentGamemode("Normal")}
+              style={GamemodeButtonStyle("Normal")}
+            >
+              Normal
+            </button>
+            <button
+              onClick={() => setCurrentGamemode("Hardcore")}
+              style={GamemodeButtonStyle("Hardcore")}
+            >
+              Hardcore
+            </button>
+          </div>
+          <div className="PlayerStatus">
+            <button
+              onClick={() => setUserReady(!userReady)}
+              style={PlayerReadyButton(userReady)}
+            >
+              Ready
+            </button>
+          </div>
         </div>
-        <div className="PlayerStatus">
-          <button
-            onClick={() => setUserReady(!userReady)}
-            style={PlayerReadyButton(userReady)}
-          >
-            Ready
-          </button>
-        </div>
-      </div>
+      ) : (
+    //    <div className="video-container">
+    //    <video autoPlay loop>
+    //      <source src={../../../public/FaTruckLoading.mp4} type="video/mp4" />
+    //    </video>
+    //  </div>
+      )}
     </div>
   );
 }
