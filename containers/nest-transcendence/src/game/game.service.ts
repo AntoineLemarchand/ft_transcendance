@@ -96,6 +96,7 @@ export class GameService {
     }
 
     sendStartEvent(this.broadcastingGateway);
+    await this.sleepUntil(1000);
     while (game.getProgress() !== GameProgress.FINISHED) {
       game.executeStep();
       this.broadcastingGateway.emitGameUpdate(game.getId().toString(), game);
