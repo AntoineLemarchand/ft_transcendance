@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { GiHamburgerMenu } from "react-icons/gi";
 
@@ -11,7 +11,7 @@ import { Channel, Message, putMessageInChannels } from "../../utils/Message";
 import { useCookies } from "react-cookie";
 import { Socket } from "socket.io-client";
 
-function Chat(props: {socket: Socket}) {
+function Chat(props: { socket: Socket }) {
   const [NewConvMenu, SetNewConvMenu] = useState(false);
   const [SearchMenu, SetSearchMenu] = useState(false);
   const [channelToModify, setChannelToModify] = useState("");
@@ -117,7 +117,12 @@ function Chat(props: {socket: Socket}) {
   const OnKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && currentChannel !== undefined) {
       let messageContent: string = (event.target as any).value;
-      send(cookie["userInfo"].name, messageContent, currentChannel.channelName);
+      if (messageContent !== "")
+        send(
+          cookie["userInfo"].name,
+          messageContent,
+          currentChannel.channelName
+        );
       setCurrentMessage("");
     }
   };
