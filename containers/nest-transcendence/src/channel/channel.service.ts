@@ -24,8 +24,7 @@ export class ChannelService {
 
   async sendMessage(message: Message): Promise<void> {
     const channel = await this.getChannelByName(message.channel);
-    if (channel.isUserMuted(message.sender))
-      return ;
+    if (channel.isUserMuted(message.sender)) return;
     await channel.addMessage(message);
     await this.channelRepository.save(channel);
     await this.broadcastingGateway.emitMessage(message.channel, message);
@@ -44,8 +43,7 @@ export class ChannelService {
       'only admins can mute other members',
     );
     const muteCandidate = await this.userService.getUser(mutedUsername);
-    if (muteCandidate === undefined)
-      throw new ErrNotFound('User does exist');
+    if (muteCandidate === undefined) throw new ErrNotFound('User does exist');
     if (!muteCandidate.channelNames.includes(channelName))
       throw new ErrNotFound('User is not ErrNotFoundmember');
     channel.muteUser(mutedUsername, minutesToMute);
@@ -121,14 +119,13 @@ export class ChannelService {
         channel.getType() == 'privateChannel' &&
         targetUsername != channel.getAdmins()[0]
       )
-        throw new ErrUnAuthorized('joining a private channel is not allowed',
-        );
+        throw new ErrUnAuthorized('joining a private channel is not allowed');
       if (channel.isUserBanned(targetUsername))
         throw new ErrUnAuthorized('the user is banned');
-			if (
-				(await channel.getPassword()) &&
-				(await channel.comparePassword(channelPassword) == false)
-			)
+      if (
+        (await channel.getPassword()) &&
+        !(await channel.comparePassword(channelPassword))
+      )
         throw new ErrUnAuthorized('wrong password');
     }
   }
@@ -155,9 +152,10 @@ export class ChannelService {
       'This user is not an admin',
     );
     if (channel.isOwner(bannedUsername))
-      throw new ErrForbidden("An owner cannot be banned");
+      throw new ErrForbidden('An owner cannot be banned');
     channel.banUser(bannedUsername);
     await this.userService.removeChannelName(bannedUsername, channelName);
+    await this.channelRepository.save(channel);
   }
   async inviteToChannel(
     executorName: string,
@@ -176,6 +174,7 @@ export class ChannelService {
     );
     await this.addUserToChannel(invitedName, channelName, channel);
     await channel.unbanUser(invitedName);
+    await this.channelRepository.save(channel);
   }
 
   async createDirectMessageChannelFor(
@@ -223,7 +222,6 @@ export class ChannelService {
     executor: string,
     message: string,
   ) {
-    if (!channel.isAdmin(executor))
-      throw new ErrUnAuthorized(message);
+    if (!channel.isAdmin(executor)) throw new ErrUnAuthorized(message);
   }
 }
