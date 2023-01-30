@@ -59,7 +59,7 @@ export class GameController {
   @Get('getById/:id')
   async getById(@Param() params: any) {
     return {
-      gameInfo: await this.gameService.getInfoObject(params.id),
+      gameInfo: await this.gameService.getInfoObject(parseInt(params.id)),
     };
   }
 

@@ -173,8 +173,17 @@ describe('direct messaging', () => {
     await channelService.createDirectMessageChannelFor('Thomas', 'HisFriend');
 
     expect(
-      await channelService.getChannelByName('Thomas_HisFriend'),
+      await channelService.getChannelByName('HisFriend_Thomas'),
     ).toBeDefined();
+  });
+
+  it('should create only one channel for direct messaging', async () => {
+    const channelCountBefore = (await channelService.getChannels()).length;
+    await channelService.createDirectMessageChannelFor('Thomas', 'HisFriend');
+    await channelService.createDirectMessageChannelFor('HisFriend', 'Thomas');
+
+    const channelCountAfter = (await channelService.getChannels()).length;
+    expect(channelCountAfter).toBe(channelCountBefore + 1);
   });
 
   it('should invite the target user to the direct message', async () => {
@@ -183,14 +192,14 @@ describe('direct messaging', () => {
     expect(
       (await await userService.getUser('HisFriend'))
         ?.getChannelNames()
-        .includes('Thomas_HisFriend'),
+        .includes('HisFriend_Thomas'),
     ).toBeTruthy();
   });
 
   it('should make the target user an admin', async () => {
     await channelService.createDirectMessageChannelFor('Thomas', 'HisFriend');
 
-    const result = await channelService.getChannelByName('Thomas_HisFriend');
+    const result = await channelService.getChannelByName('HisFriend_Thomas');
     expect(result?.isAdmin('HisFriend')).toBeTruthy();
   });
 });

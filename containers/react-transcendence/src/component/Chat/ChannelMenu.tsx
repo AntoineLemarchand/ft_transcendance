@@ -6,14 +6,14 @@ function DisplayList(props: {
 		currentChannel: Channel | undefined,
 		setCurrentChannel: Function,
     modifyChannel: Function,
-    userName: string,
+    username: string,
 	}) {
 	const ChannelButtonStyle = (channel: Channel) => {
 		return {
 			backgroundColor:  props.currentChannel === undefined
     || channel.channelName !== props.currentChannel.channelName ?
       '#458588' : '#83a598',
-      gridColumn: channel.admins.includes(props.userName) &&
+      gridColumn: channel.admins.includes(props.username) &&
       channel.channelName.indexOf('_') === -1 ? '1' : '1/3',
 		}
 	}
@@ -22,25 +22,25 @@ function DisplayList(props: {
 	return (
 		<div className="channelList">
 		{
-		props.joinedChannels.map((channel: Channel, idx: number) =>
-    <div className="Channel" key={idx}>
-			<button
-				style={ChannelButtonStyle(channel)}
-				onClick={()=>props.setCurrentChannel(channel)}
-				>
-				{
-          !channel.channelName.includes('_') ? channel.channelName :
-          '☺ ' + (channel.channelName.split('_')[0] === props.userName ?
-          channel.channelName.split('_')[1] : channel.channelName.split('_')[0])
-        }</button>
-        {
-          channel.admins.includes(props.userName) &&
-          channel.channelName.indexOf('_') === -1 &&
-          <button
-          onClick={()=>props.modifyChannel(channel.channelName)}>
-          <FaPen /></button>
-        }
-    </div>
+      props.joinedChannels.map((channel: Channel, idx: number) =>
+        <div className="Channel" key={idx}>
+        <button
+          style={ChannelButtonStyle(channel)}
+          onClick={()=>props.setCurrentChannel(channel)}
+          >
+          {
+            !channel.channelName.includes('_') ? channel.channelName :
+            '☺ ' + (channel.channelName.split('_')[0] === props.username ?
+            channel.channelName.split('_')[1] : channel.channelName.split('_')[0])
+          }</button>
+          {
+            channel.admins.includes(props.username) &&
+            channel.channelName.indexOf('_') === -1 &&
+            <button
+            onClick={()=>props.modifyChannel(channel.channelName)}>
+            <FaPen /></button>
+          }
+        </div>
 		)}
 		</div>
 	)
@@ -52,7 +52,7 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 	SetNewConvMenu: Function,
 	SetSearchMenu: Function,
   modifyChannel: Function,
-  userName: string,
+  username: string,
 	}) {
 	return (
 			<div className="channelMenu">
@@ -67,7 +67,7 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 					currentChannel={props.currentChannel}
 					setCurrentChannel={props.setCurrentChannel}
           modifyChannel={props.modifyChannel}
-          userName={props.userName}
+          username={props.username}
 				/>
 			</div>
 		);
