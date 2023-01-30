@@ -43,11 +43,13 @@ function Historic(props: {username: string}) {
 
 	return (
 		<div className="Historic">
-			<header>
+			<div className="statsHeader">
         <p>games played: {playedGames.length}</p>
-        <p>Won: {playedGames.filter(item=>(isPlayerOne(item) && item.score1) > item.score2).length}</p>
-        <p>Lost: {playedGames.filter(item=>(isPlayerOne(item) && item.score2) < item.score1).length}</p>
-			</header>
+        <p>Won: {playedGames.filter(item=>(isPlayerOne(item) && item.score1) >
+          item.score2).length}</p>
+        <p>Lost: {playedGames.filter(item=>(isPlayerOne(item) && item.score2) <
+          item.score1).length}</p>
+			</div>
 			<div className="content">
 
 				<div className="head">
