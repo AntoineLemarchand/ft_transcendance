@@ -7,6 +7,7 @@ import 'static/Profile/Profile.scss'
 import ProfileHeader from './Header'
 import Historic from './Historic'
 import Friends from './Friends'
+import Options from './Options'
 
 import { User } from '../../utils/User'
 import { Channel } from "../../utils/Message";
@@ -142,7 +143,7 @@ function Profile(props: {user: any}) {
           <div className="content">
             {tabIndex === 0 && <Friends friends={user.friends}/>}
             {tabIndex === 1 && <Historic username={user.name}/>}
-            {tabIndex === 2 && <Friends friends={user.friends}/>}
+            {tabIndex === 2 && <Options username={props.user.name}/>}
           </div>
         }
 		</div>
