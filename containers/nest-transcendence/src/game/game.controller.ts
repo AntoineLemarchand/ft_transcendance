@@ -56,46 +56,56 @@ export class GameController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('getById/:id')
+  async getById(@Param() params: any) {
+    return {
+      gameInfo: await this.gameService.getInfoObject(params.id),
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('getPerUser')
   async getPerUser(@Request() req: any) {
     return { games: this.gameService.getGamesForUser(req.user.name) };
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Get('getSavedGames')
   async getSavedGames() {
     const allSavedGames = await this.gameService.getSavedGames();
     return { games: allSavedGames };
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Get('getSavedGamesCount')
   async getSavedGamesCount() {
     const savedGamesCount = await this.gameService.getSavedGamesCount();
     return { games: savedGamesCount };
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Get('getSavedGamesByPlayer/:username')
   async getSavedGamesByPlayer(@Param() params: any) {
-    const savedGamesByPlayer = await this.gameService
-      .getSavedGamesByPlayer(params.username);
+    const savedGamesByPlayer = await this.gameService.getSavedGamesByPlayer(
+      params.username,
+    );
     return { games: savedGamesByPlayer };
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Get('getWonGamesByPlayer/:username')
   async getWonGamesByPlayer(@Param() params: any) {
-    const wonGamesByPlayer = await this.gameService
-      .getWonGamesByPlayer(params.username);
+    const wonGamesByPlayer = await this.gameService.getWonGamesByPlayer(
+      params.username,
+    );
     return { games: wonGamesByPlayer };
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('getWonGamesCountByPlayer/:username')
   async getWonGamesCountByPlayer(@Param() params: any) {
-    const wonGamesCountByPlayer = await this.gameService
-      .getWonGamesCountByPlayer(params.username);
+    const wonGamesCountByPlayer =
+      await this.gameService.getWonGamesCountByPlayer(params.username);
     return { games: wonGamesCountByPlayer };
   }
 

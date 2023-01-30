@@ -178,10 +178,19 @@ export class GameService {
     );
   }
 
-  async getSavedGameById(id: number) {
-    const result = await this.gameRepository.findOneBy({ gameId: id });
-    if (result) return result;
-    else return Promise.reject(new Error('No such id'));
+  async getInfoObject(id: number) {
+    const result: {
+      gameObject: undefined | GameObject;
+      gameStat: undefined | GameStat;
+    } = { gameObject: undefined, gameStat: undefined };
+    const gameStat = await this.gameRepository.findOneBy({ gameId: id });
+    if (gameStat) result.gameStat = gameStat;
+    try {
+      result.gameObject = this.currentGames.findOne(id);
+    } catch (e) {
+      result.gameObject;
+    }
+    return result;
   }
 
   async getSavedGames(): Promise<GameStat[]> {

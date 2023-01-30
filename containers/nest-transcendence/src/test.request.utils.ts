@@ -405,6 +405,16 @@ export const getSavedGames = async (
     .set('Authorization', 'Bearer ' + jwt);
 };
 
+export const getGameById = async (
+  callerModule: INestApplication,
+  jwt: string,
+  gameId: number,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getById/' + gameId)
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
 export const getSavedGamesCount = async (
   callerModule: INestApplication,
   jwt: string,
