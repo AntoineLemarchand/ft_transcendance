@@ -2,7 +2,7 @@ import {useState, useEffect} from 'react';
 
 import 'static/Profile/Historic.scss';
 
-function Historic(props: {isSelected: boolean, username: string}) {
+function Historic(props: {username: string}) {
   const [playedGames, setPlayedGames] = useState<{
     gameId: number,
     player1: string,
@@ -32,7 +32,6 @@ function Historic(props: {isSelected: boolean, username: string}) {
         }
         }).then(response => {
           response.text().then(text => {
-            console.log(JSON.parse(text));
             setPlayedGames(JSON.parse(text).games);
           })
         })
@@ -43,7 +42,7 @@ function Historic(props: {isSelected: boolean, username: string}) {
   }
 
 	return (
-		<div className="Historic" style={{display: props.isSelected ? "":"none"}}>
+		<div className="Historic">
 			<header>
         <p>games played: {playedGames.length}</p>
         <p>Won: {playedGames.filter(item=>(isPlayerOne(item) && item.score1) > item.score2).length}</p>

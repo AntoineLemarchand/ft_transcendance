@@ -89,7 +89,7 @@ $usercardHeight: 6rem;
 
 	.tabs {
 		button {
-			width: 50%;
+			width: calc(100% / 3);
 			height: 100%;
       cursor: pointer;
 		}

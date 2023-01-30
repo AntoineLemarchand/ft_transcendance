@@ -24,11 +24,9 @@ function FriendCard(props: {username: string, status: string, key: number}) {
     )
 }
 
-function Friends(props: {isSelected: boolean, friends: {username: string, status: string}[]}) {
+function Friends(props: {friends: {username: string, status: string}[]}) {
 	return (
-    <div
-      className="Friends"
-      style={{display: props.isSelected ? "block" : "none"}}>
+    <div className="Friends">
       <h1>Friends</h1>
       <div className="friendList">{
         props.friends.map((friend: any, idx: number) => {

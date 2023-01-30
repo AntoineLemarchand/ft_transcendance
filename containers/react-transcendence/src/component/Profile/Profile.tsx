@@ -130,12 +130,19 @@ function Profile(props: {user: any}) {
 						onClick={()=>setTabIndex(1)}
 						style={TabStyle(1)}
 						>Historic</button>
+          {user && props.user.name === user.name &&
+					<button
+						onClick={()=>setTabIndex(2)}
+						style={TabStyle(2)}
+						>Options</button>
+          }
 				</div>
         {
           user && 
           <div className="content">
-            <Friends isSelected={tabIndex === 0} friends={user.friends}/>
-            <Historic isSelected={tabIndex === 1} username={user.name}/>
+            {tabIndex === 0 && <Friends friends={user.friends}/>}
+            {tabIndex === 1 && <Historic username={user.name}/>}
+            {tabIndex === 2 && <Friends friends={user.friends}/>}
           </div>
         }
 		</div>

@@ -4,7 +4,7 @@ $friendLineHeight: 4.5rem;
 
 .Friends {
   height: 100%;
-  display: grid;
+  display: block;
   grid-template-rows: 4rem auto;
   text-align: center;
   color: color('textPrimary');
