@@ -23,7 +23,6 @@ function DisplayList(props: {
 		<div className="channelList">
 		{
       props.joinedChannels.map((channel: Channel, idx: number) =>
-        console.log(channel) ||
         <div className="Channel" key={idx}>
         <button
           style={ChannelButtonStyle(channel)}
