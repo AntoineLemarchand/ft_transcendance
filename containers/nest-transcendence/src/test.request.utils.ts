@@ -356,6 +356,31 @@ export async function setReadyForGame(
     });
 }
 
+export async function setHardcoreMode(
+  callerModule: INestApplication,
+  jwt: any,
+	username: string,
+  gameId: number,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/game/setHardcoreMode')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+			username: username.toString(),
+      gameId: gameId,
+    });
+}
+
+export const getMode = async (
+  callerModule: INestApplication,
+  jwt: string,
+  gameId: number
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/game/getMode/' + gameId)
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
 export async function startSpectatingGame(
   callerModule: INestApplication,
   jwt: any,
@@ -381,7 +406,6 @@ export async function endSpectatingGame(
       gameId: gameId.toString(),
     });
 }
-
 
 export async function setNotReadyForGame(
   callerModule: INestApplication,
