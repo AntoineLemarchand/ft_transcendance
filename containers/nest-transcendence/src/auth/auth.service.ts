@@ -1,16 +1,13 @@
-import {
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/user.entities';
 import { CreateUserDTO } from '../app.controller';
 import { ErrForbidden, ErrUnAuthorized } from '../exceptions';
-import axios from 'axios'
+import axios from 'axios';
+import { authenticator } from 'otplib';
+import { toFileStream } from 'qrcode';
+import { Response } from 'express';
 
 export class Identity {
   constructor(public name: string, public id: number) {}
@@ -41,6 +38,12 @@ export class AuthService {
     };
   }
 
+  async generateJwt(payload: any) {
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+
   async createUser(userCandidate: CreateUserDTO) {
     const user = await this.userService.getUser(userCandidate.username);
     if (user !== undefined) throw new ErrUnAuthorized('User already exists');
@@ -60,15 +63,41 @@ export class AuthService {
   }
 
   async fetchUser(accessToken: string): Promise<any> {
-    const { data: searchResponse } = await axios.get('https://api.intra.42.fr/v2/me', {
-      headers: {
-        'Authorization': `Bearer ${ accessToken }`,
-      }
-    });
+    const { data: searchResponse } = await axios.get(
+      'https://api.intra.42.fr/v2/me',
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
     return searchResponse;
   }
 
   async getUserInfo(user: Identity): Promise<any> {
     return this.userService.getUser(user.name);
+  }
+
+  async activate2fa(username: string) {
+    const secret = authenticator.generateSecret();
+    const app_name: string = process.env
+      .TWO_FACTOR_AUTHENTICATION_APP_NAME as string;
+    const otpAuthUrl = authenticator.keyuri(username, app_name, secret);
+    await this.userService.set2faSecret(username, secret);
+    return otpAuthUrl;
+  }
+
+  public async qrCodeStreamPipe(stream: Response, otpPathUrl: string) {
+    return toFileStream(stream, otpPathUrl);
+  }
+
+  async logIn2fa(username: string, code2fa: string) {
+    const user = await this.userService.getUser(username);
+    const isValid = await authenticator.verify({
+      token: code2fa,
+      secret: user!.secret2fa,
+    });
+    if (!isValid) throw new ErrUnAuthorized('wrong 2fa code');
+    return this.generateJwt({ is2faAuthenticated: true, name: username });
   }
 }

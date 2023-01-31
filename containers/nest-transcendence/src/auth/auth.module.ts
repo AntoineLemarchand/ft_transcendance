@@ -10,9 +10,16 @@ import { AuthController } from './auth.controller';
 import { ChannelModule } from '../channel/channel.module';
 import { Oauth2Strategy } from './auth.oauth2.strategy';
 import { ConfigModule } from '@nestjs/config';
+import { JwtTwoFaStrategy } from './auth.2fa.strategy';
 
 @Module({
-  providers: [AuthService, LocalStrategy, JwtStrategy, Oauth2Strategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    Oauth2Strategy,
+    JwtTwoFaStrategy,
+  ],
   imports: [
     ConfigModule.forRoot(),
     forwardRef(() => UserModule),

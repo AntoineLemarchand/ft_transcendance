@@ -54,12 +54,12 @@ export const signinUser = async (
   password: string,
   image?: Buffer,
 ) => {
-  
   if (image)
-    return request(callerModule.getHttpServer()).post('/auth/signin')
+    return request(callerModule.getHttpServer())
+      .post('/auth/signin')
       .field('username', username)
       .field('password', password)
-      .attach("image", image, "test.png");
+      .attach('image', image, 'test.png');
   return request(callerModule.getHttpServer()).post('/auth/signin').send({
     username: username,
     password: password,
@@ -84,6 +84,38 @@ export const getUserData = async (
     .get('/user/info/' + name)
     .set('Authorization', 'Bearer ' + jwt);
 };
+
+export async function activateTwoFactorAuth(
+  callerModule: INestApplication,
+  jwt: any,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/auth/2fa/activate')
+    .set('Authorization', 'Bearer ' + jwt);
+}
+
+export async function logInTwoFactor(
+  callerModule: INestApplication,
+  jwt: any,
+  code2fa: string,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/auth/2fa/login')
+    .set('Authorization', 'Bearer ' + jwt)
+    .send({
+      code2fa: code2fa,
+    });
+}
+
+export async function testTwoFactorAuth(
+  callerModule: INestApplication,
+  jwt: any,
+) {
+  return request(callerModule.getHttpServer())
+    .get('/auth/2fa/test')
+    .set('Authorization', 'Bearer ' + jwt);
+}
+
 
 export const joinChannel = async (
   callerModule: INestApplication,
@@ -382,7 +414,6 @@ export async function endSpectatingGame(
     });
 }
 
-
 export async function setNotReadyForGame(
   callerModule: INestApplication,
   jwt: any,
@@ -427,7 +458,7 @@ export const getSavedGamesCount = async (
 export const getSavedGamesByPlayer = async (
   callerModule: INestApplication,
   jwt: string,
-  username: string
+  username: string,
 ) => {
   return request(callerModule.getHttpServer())
     .get('/game/getSavedGamesByPlayer/' + username)
@@ -437,7 +468,7 @@ export const getSavedGamesByPlayer = async (
 export const getWonGamesByPlayer = async (
   callerModule: INestApplication,
   jwt: string,
-  username: string
+  username: string,
 ) => {
   return request(callerModule.getHttpServer())
     .get('/game/getWonGamesByPlayer/' + username)
@@ -447,7 +478,7 @@ export const getWonGamesByPlayer = async (
 export const getWonGamesCountByPlayer = async (
   callerModule: INestApplication,
   jwt: string,
-  username: string
+  username: string,
 ) => {
   return request(callerModule.getHttpServer())
     .get('/game/getWonGamesCountByPlayer/' + username)

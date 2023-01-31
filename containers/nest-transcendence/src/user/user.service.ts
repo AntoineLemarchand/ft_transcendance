@@ -13,6 +13,7 @@ import {
 import { RoomHandler } from '../broadcasting/broadcasting.roomHandler';
 import { GameService } from '../game/game.service';
 import { BroadcastingGateway } from "../broadcasting/broadcasting.gateway";
+import { authenticator } from "otplib";
 
 @Injectable()
 export class UserService {
@@ -159,5 +160,11 @@ export class UserService {
     const user = (await this.getUser(username)) as User;
     user.setImage(image);
     this.userRepository.save(user);
+  }
+
+  async set2faSecret(username: string, secret: string) {
+    const user = (await this.getUser(username)) as User;
+    user.secret2fa = secret;
+    await this.userRepository.save(user);
   }
 }
