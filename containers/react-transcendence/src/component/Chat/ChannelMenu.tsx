@@ -24,7 +24,7 @@ function DisplayList(props: {
     };
   };
 
-  const LeaveChannel = (event: any) => {
+  const LeaveChannel = (channelName: string) => {
       fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/channel/join", {
         credentials: "include",
         method: "DELETE",
@@ -33,11 +33,11 @@ function DisplayList(props: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          channelName: event.target.value,
+          channelName: channelName,
         }),
       }).then((result) => {
         if (result.status === 401)
-          alert("You cannot leave the channels you created");
+          alert("You cannot leave a channels you created");
         else {
           props.updateChannels();
           props.setCurrentChannel(undefined);
@@ -62,8 +62,7 @@ function DisplayList(props: {
           </button>
           <button
             className="leaveButton"
-            onClick={LeaveChannel}
-            value={channel.channelName}
+            onClick={() => LeaveChannel(channel.channelName)}
           >
             <FaTimes />
           </button>
