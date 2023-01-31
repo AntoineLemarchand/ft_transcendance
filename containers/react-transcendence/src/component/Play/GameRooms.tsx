@@ -67,6 +67,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
       },
       body: JSON.stringify({
         gameId: params.gid,
+        mode: currentGamemode,
       }),
     }).then((response) => {
       if (response.status === 404) navigate("/game");
@@ -90,7 +91,11 @@ export function PreMatchRoom(props: { socket: Socket }) {
 
   useEffect(() => {
     const messageListener = (payload: string) => {
-      if (JSON.parse(payload).gameId == params.gid) setGameStart(payload);
+      if (JSON.parse(payload).gameId == params.gid) {
+        setCurrentGamemode(JSON.parse(payload).gameMode);
+        setGameStart(payload);
+        setIsGameRunning(true);
+      }
     };
     props.socket.on("gameUpdateToClient", messageListener);
     return () => {
