@@ -26,15 +26,15 @@ export class GameController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('setHardcoreMode')
-  async setHardcoreMode(@Request() req: any) {
-    await this.gameService.setHardcoreMode(req.user.name, parseInt(req.body.gameId));
+  @Post('setMode')
+  async setMode(@Request() req: any) {
+    await this.gameService.setMode(req.user.name, parseInt(req.body.gameId));
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('setNormalMode')
-  async setNormalMode(@Request() req: any) {
-    await this.gameService.setNormalMode(req.user.name, parseInt(req.body.gameId));
+  @Post('unsetMode')
+  async unsetMode(@Request() req: any) {
+    await this.gameService.unsetMode(req.user.name, parseInt(req.body.gameId));
   }
   
 	@UseGuards(JwtAuthGuard)

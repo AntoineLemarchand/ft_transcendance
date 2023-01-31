@@ -82,20 +82,20 @@ export class GameService {
 		return game.getMode();
 	}
 
-	async setNormalMode(executorName: string, gameId: number) {
+	async setMode(executorName: string, gameId: number) {
 		const game = await this.currentGames.findOne(gameId);
 		if (executorName == game.getPlayerNames()[0])
-			game.setNormalMode();
+			game.setMode();
     else
 			return Promise.reject(
         new ErrUnAuthorized('this action is reserved to leftist player'),
       );
 	}
-
-	async setHardcoreMode(executorName: string, gameId: number) {
+	
+	async unsetMode(executorName: string, gameId: number) {
 		const game = await this.currentGames.findOne(gameId);
 		if (executorName == game.getPlayerNames()[0])
-			game.setHardcoreMode();
+			game.unsetMode();
     else
 			return Promise.reject(
         new ErrUnAuthorized('this action is reserved to leftist player'),

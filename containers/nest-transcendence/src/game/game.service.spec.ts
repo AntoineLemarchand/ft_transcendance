@@ -112,28 +112,36 @@ describe('setting up a game', () => {
 });
 
 describe('starting a game', () => {
-	it('should set game mode as hardcore', async () => {
+	it('should set game mode to true', async () => {
     const gameObject = await gameService.initGame('player1', 'player42');
 	
-		gameService.setHardcoreMode('player1', gameObject.getId());	
+		gameService.setMode('player1', gameObject.getId());	
 		expect(
-			await gameService.getMode(gameObject.getId())).toBe("HARDCORE");
+			await gameService.getMode(gameObject.getId())).toBeTruthy();
 	});
   
+	it('should unset game mode to true', async () => {
+    const gameObject = await gameService.initGame('player1', 'player42');
+	
+		gameService.unsetMode('player1', gameObject.getId());	
+		expect(
+			await gameService.getMode(gameObject.getId())).toBeFalsy();
+	});
+	
 	it('should fail if the player setting the mode is not game initiator', async () => {
     const gameObject = await gameService.initGame('player1', 'player42');
 	
     await expect(
-			gameService.setHardcoreMode('player42', gameObject.getId()),	
+			gameService.setMode('player42', gameObject.getId()),	
     ).rejects.toThrow();
-		expect(await gameService.getMode(gameObject.getId())).toBe("NORMAL");
+		expect(await gameService.getMode(gameObject.getId())).toBeFalsy();
 	});
 	
 	it('should fail if the player setting the mode is not one of the players', async () => {
     const gameObject = await gameService.initGame('player1', 'player42');
 
     await expect(
-      async () => await gameService.setHardcoreMode('outsider', gameObject.getId()),
+      async () => await gameService.setMode('outsider', gameObject.getId()),
     ).rejects.toThrow();
   });
 

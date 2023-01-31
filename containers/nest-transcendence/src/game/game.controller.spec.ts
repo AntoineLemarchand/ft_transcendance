@@ -132,8 +132,8 @@ describe('starting a game', () => {
     const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
     await testUtils.initGame(app, jwt, 'Thomas');
 	
-		const spy = jest.spyOn(gameService, 'setHardcoreMode');	
-		await testUtils.setHardcoreMode(app, jwt, 'admin', 0);
+		const spy = jest.spyOn(gameService, 'setMode');	
+		await testUtils.setMode(app, jwt, 'admin', 0);
     
 		expect(spy).toHaveBeenCalledWith('admin', 0);
   });

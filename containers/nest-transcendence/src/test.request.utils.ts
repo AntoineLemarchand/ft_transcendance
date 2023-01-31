@@ -356,14 +356,14 @@ export async function setReadyForGame(
     });
 }
 
-export async function setHardcoreMode(
+export async function setMode(
   callerModule: INestApplication,
   jwt: any,
 	username: string,
   gameId: number,
 ) {
   return request(callerModule.getHttpServer())
-    .post('/game/setHardcoreMode')
+    .post('/game/setMode')
     .set('Authorization', 'Bearer ' + jwt)
     .send({
 			username: username.toString(),
