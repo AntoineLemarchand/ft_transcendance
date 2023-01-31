@@ -167,7 +167,7 @@ describe('AuthController', () => {
     const spy = jest
       .spyOn(authService, 'logIn2fa')
       .mockImplementation(async (username: string, code: string) => {
-        return 'faketoken';
+        return {access_token: 'faketoken'};
       });
     await testUtils.signinUser(app, 'Ginette', 'camemb3rt');
     const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
@@ -200,9 +200,9 @@ describe('AuthController', () => {
     await testUtils.signinUser(app, 'Ginette', 'camemb3rt');
     const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
     await testUtils.activateTwoFactorAuth(app, jwt);
-    const jwt2fa = await testUtils.logInTwoFactor(app, jwt, 'code');
-    console.log(jwt2fa.body.access_token);
-    const result = await testUtils.testTwoFactorAuth(app, jwt2fa.body.access_token);
+    const jwt2faResult = await testUtils.logInTwoFactor(app, jwt, 'code');
+    const jwt2fa = jwt2faResult.body.access_token;
+    const result = await testUtils.testTwoFactorAuth(app, jwt2fa);
 
     expect(result.status).toBe(200);
   });

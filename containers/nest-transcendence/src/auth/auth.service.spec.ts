@@ -119,8 +119,10 @@ describe('logging in with 2fa', () => {
     await authService.logIn2fa('username', 'correct code');
 
     expect(spy).toHaveBeenCalledWith({
-      is2faAuthenticated: true,
-      name: 'username',
+      user: {
+        hasSucceeded2Fa: true,
+        name: 'username',
+      },
     });
   });
 });
@@ -151,7 +153,7 @@ describe('validating 2fa', () => {
     const username = 'test';
     await authService.createUser({ username: username, password: 'fromage' });
     await authService.activate2fa(username);
-    const decryptedJwt = { user: { name: username }, hasSucceeded2Fa: true };
+    const decryptedJwt = { user: { name: username, hasSucceeded2Fa: true } };
 
     const result = await jwtTwoFaStrategy.validate(decryptedJwt);
     const newUser = (await userService.getUser(username)) as User;

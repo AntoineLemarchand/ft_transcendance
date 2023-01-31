@@ -98,6 +98,8 @@ export class AuthService {
       secret: user!.secret2fa,
     });
     if (!isValid) throw new ErrUnAuthorized('wrong 2fa code');
-    return this.generateJwt({ is2faAuthenticated: true, name: username });
+    return this.generateJwt({
+      user: { name: username, hasSucceeded2Fa: true },
+    });
   }
 }
