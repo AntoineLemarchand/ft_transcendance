@@ -166,6 +166,53 @@ describe('joining a channel', () => {
 
     expect(result.status).toBe(409);
   });
+
+});
+
+describe('leaving a channel', () => {
+  it('should return 200 when leaving the channel and remove from channel',
+     async () => {
+    await testUtils.signinUser(app, 'testUser', 'testPassword');
+    const jwtOwner = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    const jwt = await testUtils.getLoginToken(app, 'testUser', 'testPassword');
+    await testUtils.joinChannel(app, jwtOwner, 'newChannelName', 'default');
+    await testUtils.joinChannel(app, jwt, 'newChannelName', 'default');
+
+    const result = await request(app.getHttpServer())
+      .delete('/channel/join')
+      .set('Authorization', 'Bearer ' + jwt)
+      .send({channelName: 'newChannelName'})
+
+    expect(result.status).toBe(200);
+    console.log((await userService.getUser('testUser'))!.getChannelNames())
+    expect(
+      (await userService.getUser('testUser'))!
+        .getChannelNames()
+        .includes('newChannelName'),
+    ).toBeFalsy();
+  });
+
+  it('should return 401 when leaving non existing channel', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'testUser', 'testPassword');
+    const result = await request(app.getHttpServer())
+      .delete('/channel/join')
+      .set('Authorization', 'Bearer ' + jwt)
+      .send({channelName: 'newChannelName'})
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should return 401 when leaving as the owner', async () => {
+    const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
+    await testUtils.joinChannel(app, jwt, 'newChannelName', 'default');
+
+    const result = await request(app.getHttpServer())
+      .delete('/channel/join')
+      .set('Authorization', 'Bearer ' + jwt)
+      .send({channelName: 'newChannelName'})
+
+    expect(result.status).toBe(401);
+  });
 });
 
 describe('creating a direct message channel', () => {

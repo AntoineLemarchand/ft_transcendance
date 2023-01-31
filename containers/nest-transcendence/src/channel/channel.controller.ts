@@ -143,4 +143,21 @@ export class ChannelController {
       throw new HttpException(e, HttpStatus.UNAUTHORIZED);
     }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('join')
+  async leaveChannel(@Request() req: any) {
+    console.log(req.user.name);
+    console.log(req.body.channelName);
+    try {
+      const result = await this.channelService.getChannelByName(
+        req.body.channelName,
+      );
+      if (result.isOwner(req.user.name))
+        throw new HttpException("this user is the owner", HttpStatus.UNAUTHORIZED);
+      await this.channelService.removeFromChannel(req.user.name, req.body.channelName);
+    } catch (e) {
+      throw new HttpException(e.name, HttpStatus.UNAUTHORIZED);
+    }
+  }
 }

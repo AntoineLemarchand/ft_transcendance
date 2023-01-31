@@ -130,6 +130,10 @@ export class ChannelService {
     }
   }
 
+  async removeFromChannel(username: string, channelName: string) {
+    await this.userService.removeChannelName(username, channelName);
+  }
+
   private async addUserToChannel(
     targetUsername: string,
     channelName: string,
