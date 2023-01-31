@@ -100,6 +100,8 @@ function Game(props: { firstMove: string; socket: Socket , mode : string}) {
   };
 
   const keyUpHandler = (event: any) => {
+    setLeftPos(currentMove.players[0].bar.position.y)
+    setRightPos(currentMove.players[1].bar.position.y)
     if (event.code === "ArrowUp") {
       props.socket.emit(
         "gameUpdateToServer",
