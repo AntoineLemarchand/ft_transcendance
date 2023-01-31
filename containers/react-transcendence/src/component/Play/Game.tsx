@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,12 @@ function Game(props: { firstMove: string; socket: Socket , mode : string}) {
   const [rightPos, setRightPos] = useState(0.5);
   const navigate = useNavigate();
 
+  const BoardStyle = {
+    backgroundImage: props.mode === "Normal" ? "url(/thisissparta.jpg)" : "url(../../../bg-shrek.jpg)",
+    backgroundSize: props.mode === "Normal" ? "contains" : "cover",
+    backgroundRepeat: props.mode === "Normal" ? "repeat" : "no-repeat",
+  };
+
   const ballStyle = {
     width: "1rem",
     height: "1rem",
@@ -22,22 +28,50 @@ function Game(props: { firstMove: string; socket: Socket , mode : string}) {
   };
 
   const LeftPaddleStyle = {
-    bottom: leftPos * 100 + "%",
-    height: "calc(" + currentMove.players[0].bar.barHeight * 100 + "% - 1rem)",
+    bottom: (leftPos - currentMove.players[0].bar.barHeight / 2) * 100 + "%",
+    height: "calc(" + currentMove.players[0].bar.barHeight * 100 + "%)",
     background: props.mode === "Normal" ? "#ebdbb2" : "#b8bb26",
   };
 
   const RightPaddleStyle = {
-    bottom: rightPos * 100 + "%",
-    height: "calc(" + currentMove.players[1].bar.barHeight * 100 + "% - 1rem)",
+    bottom: (rightPos - currentMove.players[1].bar.barHeight / 2) * 100 + "%",
+    height: "calc(" + currentMove.players[1].bar.barHeight * 100 + "%)",
     background: props.mode === "Normal" ? "#928374" : "#282828",
   };
 
-  const BoardStyle = {
-    backgroundImage: props.mode === "Normal" ? "url(/thisissparta.jpg)" : "url(../../../bg-shrek.jpg)",
-    backgroundSize: props.mode === "Normal" ? "contains" : "cover",
-    backgroundRepeat: props.mode === "Normal" ? "repeat" : "no-repeat",
-  };
+  useEffect(() => {
+    const updateBarPosition = (
+      bar: {
+        barHeight: number;
+        position: { x: number; y: number };
+        movement: { direction: number; startTimeStamp: number };
+        speed: number;
+      },
+      position: number,
+      setPosition: Function
+    ) => {
+      if (position >= 1 - bar.barHeight / 2 &&
+        bar.movement.direction === 1)
+        setPosition(1 - bar.barHeight / 2);
+      else if (
+        position <= 0 + bar.barHeight / 2 &&
+        bar.movement.direction === -1
+      )
+        setPosition(0 + bar.barHeight / 2);
+      else
+        setPosition(
+          bar.position.y +
+            ((Date.now() - bar.movement.startTimeStamp) / 1000) *
+              bar.movement.direction *
+              bar.speed
+        );
+    };
+    const interval = setInterval(() => {
+      updateBarPosition(currentMove.players[0].bar, leftPos, setLeftPos);
+      updateBarPosition(currentMove.players[1].bar, rightPos, setRightPos);
+    }, 5);
+    return () => clearInterval(interval);
+  });
 
   const keyDownHandler = (event: any) => {
     if (event.repeat) return;
@@ -115,39 +149,6 @@ function Game(props: { firstMove: string; socket: Socket , mode : string}) {
       props.socket.off("gameUpdateToClient", messageListener);
     };
   }, []);
-
-  useEffect(() => {
-    const updateBarPosition = (
-      bar: {
-        barHeight: number;
-        position: { x: number; y: number };
-        movement: { direction: number; startTimeStamp: number };
-        speed: number;
-      },
-      position: number,
-      setPosition: Function
-    ) => {
-      if (position >= 1 - bar.barHeight && bar.movement.direction === 1)
-        setPosition(1 - bar.barHeight / 2);
-      else if (
-        position <= 0 + bar.barHeight / 2 &&
-        bar.movement.direction === -1
-      )
-        setPosition(0 + bar.barHeight / 2);
-      else
-        setPosition(
-          bar.position.y +
-            ((Date.now() - bar.movement.startTimeStamp) / 1000) *
-              bar.movement.direction *
-              bar.speed
-        );
-    };
-    const interval = setInterval(() => {
-      updateBarPosition(currentMove.players[0].bar, leftPos, setLeftPos);
-      updateBarPosition(currentMove.players[1].bar, rightPos, setRightPos);
-    }, 5);
-    return () => clearInterval(interval);
-  });
 
   return (
     <div className="Game">
