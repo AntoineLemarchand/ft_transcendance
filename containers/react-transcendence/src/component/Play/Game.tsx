@@ -1,11 +1,11 @@
-import { useEffect, useState, } from "react";
+import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import "static/Play/Game.scss";
 import GameStatus from "./GameStatus";
 
-function Game(props: { firstMove: string; socket: Socket , mode : boolean}) {
+function Game(props: { firstMove: string; socket: Socket; mode: boolean }) {
   const [currentMove, setCurrentMove] = useState(JSON.parse(props.firstMove));
   const [cookies] = useCookies(["userInfo"]);
   const [leftPos, setLeftPos] = useState(0.5);
@@ -34,15 +34,50 @@ function Game(props: { firstMove: string; socket: Socket , mode : boolean}) {
   };
 
   const BoardStyle = {
-    backgroundImage: !props.mode ? "url(/thisissparta.jpg)" : "url(../../../bg-shrek.jpg)",
+    backgroundImage: !props.mode
+      ? "url(/thisissparta.jpg)"
+      : "url(../../../bg-shrek.jpg)",
     backgroundSize: !props.mode ? "contains" : "cover",
     backgroundRepeat: !props.mode ? "repeat" : "no-repeat",
   };
 
+  useEffect(() => {
+    const updateBarPosition = (
+      bar: {
+        barHeight: number;
+        position: { x: number; y: number };
+        movement: { direction: number; startTimeStamp: number };
+        speed: number;
+      },
+      position: number,
+      setPosition: Function
+    ) => {
+      if (position >= 1 - bar.barHeight / 2 && bar.movement.direction === 1)
+        setPosition(1 - bar.barHeight / 2);
+      else if (
+        position <= 0 + bar.barHeight / 2 &&
+        bar.movement.direction === -1
+      )
+        setPosition(0 + bar.barHeight / 2);
+      else
+        setPosition(
+          bar.position.y +
+            ((Date.now() - bar.movement.startTimeStamp) / 1000) *
+              bar.movement.direction *
+              bar.speed
+        );
+    };
+    const interval = setInterval(() => {
+      updateBarPosition(currentMove.players[0].bar, leftPos, setLeftPos);
+      updateBarPosition(currentMove.players[1].bar, rightPos, setRightPos);
+    }, 5);
+    return () => clearInterval(interval);
+  });
+
   const keyDownHandler = (event: any) => {
     if (event.repeat) return;
     if (event.code === "ArrowUp") {
-      console.log('keydown!');
+      console.log("keydown!");
       props.socket.emit(
         "gameUpdateToServer",
         JSON.stringify({
@@ -66,6 +101,8 @@ function Game(props: { firstMove: string; socket: Socket , mode : boolean}) {
   };
 
   const keyUpHandler = (event: any) => {
+    setLeftPos(currentMove.players[0].bar.position.y);
+    setRightPos(currentMove.players[1].bar.position.y);
     if (event.code === "ArrowUp") {
       props.socket.emit(
         "gameUpdateToServer",
@@ -115,39 +152,6 @@ function Game(props: { firstMove: string; socket: Socket , mode : boolean}) {
       props.socket.off("gameUpdateToClient", messageListener);
     };
   }, []);
-
-  useEffect(() => {
-    const updateBarPosition = (
-      bar: {
-        barHeight: number;
-        position: { x: number; y: number };
-        movement: { direction: number; startTimeStamp: number };
-        speed: number;
-      },
-      position: number,
-      setPosition: Function
-    ) => {
-      if (position >= 1 - bar.barHeight && bar.movement.direction === 1)
-        setPosition(1 - bar.barHeight / 2);
-      else if (
-        position <= 0 + bar.barHeight / 2 &&
-        bar.movement.direction === -1
-      )
-        setPosition(0 + bar.barHeight / 2);
-      else
-        setPosition(
-          bar.position.y +
-            ((Date.now() - bar.movement.startTimeStamp) / 1000) *
-              bar.movement.direction *
-              bar.speed
-        );
-    };
-    const interval = setInterval(() => {
-      updateBarPosition(currentMove.players[0].bar, leftPos, setLeftPos);
-      updateBarPosition(currentMove.players[1].bar, rightPos, setRightPos);
-    }, 5);
-    return () => clearInterval(interval);
-  });
 
   return (
     <div className="Game">
