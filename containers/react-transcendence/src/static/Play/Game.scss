@@ -21,12 +21,10 @@ $paddleWidth: 3%;
       transition: 0.2s linear;
 
       &.left {
-        background: color("textPrimary");
         left: 0;
       }
 
       &.right {
-        background: color("greyPrimary");
         right: 0;
       }
     }
@@ -52,7 +50,6 @@ $paddleWidth: 3%;
         display: block;
         position: absolute;
         box-sizing: border-box;
-        background: color("greyPrimary");
         border-radius: 50%;
       }
     }

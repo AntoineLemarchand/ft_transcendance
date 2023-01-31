@@ -1,13 +1,13 @@
-import { useEffect, useState, useContext } from 'react';
-import { useCookies } from 'react-cookie';
-import { Socket } from 'socket.io-client';
-import { useNavigate } from 'react-router-dom';
-import 'static/Play/Game.scss';
-import GameStatus from './GameStatus';
+import { useEffect, useState, useContext } from "react";
+import { useCookies } from "react-cookie";
+import { Socket } from "socket.io-client";
+import { useNavigate } from "react-router-dom";
+import "static/Play/Game.scss";
+import GameStatus from "./GameStatus";
 
-function Game(props: { firstMove: string; socket: Socket }) {
+function Game(props: { firstMove: string; socket: Socket , mode : string}) {
   const [currentMove, setCurrentMove] = useState(JSON.parse(props.firstMove));
-  const [cookies] = useCookies(['userInfo']);
+  const [cookies] = useCookies(["userInfo"]);
   const [leftPos, setLeftPos] = useState(0.5);
   const [rightPos, setRightPos] = useState(0.5);
   const navigate = useNavigate();
@@ -18,36 +18,45 @@ function Game(props: { firstMove: string; socket: Socket }) {
     left: "calc(" + currentMove.collision.coordinates.x * 100 + "% - .5rem)",
     bottom: "calc(" + currentMove.collision.coordinates.y * 100 + "% - .5rem)",
     transition: currentMove.collision.time + "s linear",
+    background: props.mode === "Normal" ? "#928374" : "#cc241d",
   };
 
   const LeftPaddleStyle = {
     bottom: leftPos * 100 + "%",
     height: "calc(" + currentMove.players[0].bar.barHeight * 100 + "% - 1rem)",
+    background: props.mode === "Normal" ? "#ebdbb2" : "#b8bb26",
   };
 
   const RightPaddleStyle = {
     bottom: rightPos * 100 + "%",
     height: "calc(" + currentMove.players[1].bar.barHeight * 100 + "% - 1rem)",
+    background: props.mode === "Normal" ? "#928374" : "#282828",
+  };
+
+  const BoardStyle = {
+    backgroundImage: props.mode === "Normal" ? "url(/thisissparta.jpg)" : "url(../../../bg-shrek.jpg)",
+    backgroundSize: props.mode === "Normal" ? "contains" : "cover",
+    backgroundRepeat: props.mode === "Normal" ? "repeat" : "no-repeat",
   };
 
   const keyDownHandler = (event: any) => {
     if (event.repeat) return;
-    if (event.code === 'ArrowUp') {
+    if (event.code === "ArrowUp") {
       props.socket.emit(
-        'gameUpdateToServer',
+        "gameUpdateToServer",
         JSON.stringify({
-          username: cookies['userInfo'].name,
-          action: 'startUp',
+          username: cookies["userInfo"].name,
+          action: "startUp",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
         })
       );
-    } else if (event.code === 'ArrowDown') {
+    } else if (event.code === "ArrowDown") {
       props.socket.emit(
-        'gameUpdateToServer',
+        "gameUpdateToServer",
         JSON.stringify({
-          username: cookies['userInfo'].name,
-          action: 'startDown',
+          username: cookies["userInfo"].name,
+          action: "startDown",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
         })
@@ -56,22 +65,22 @@ function Game(props: { firstMove: string; socket: Socket }) {
   };
 
   const keyUpHandler = (event: any) => {
-    if (event.code === 'ArrowUp') {
+    if (event.code === "ArrowUp") {
       props.socket.emit(
-        'gameUpdateToServer',
+        "gameUpdateToServer",
         JSON.stringify({
-          username: cookies['userInfo'].name,
-          action: 'endUp',
+          username: cookies["userInfo"].name,
+          action: "endUp",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
         })
       );
-    } else if (event.code === 'ArrowDown') {
+    } else if (event.code === "ArrowDown") {
       props.socket.emit(
-        'gameUpdateToServer',
+        "gameUpdateToServer",
         JSON.stringify({
-          username: cookies['userInfo'].name,
-          action: 'endDown',
+          username: cookies["userInfo"].name,
+          action: "endDown",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
         })
@@ -88,24 +97,22 @@ function Game(props: { firstMove: string; socket: Socket }) {
     window.addEventListener("keydown", keyDownHandler);
     window.addEventListener("keyup", keyUpHandler);
     return function cleanup() {
-      window.removeEventListener('keydown', keyDownHandler);
-      window.removeEventListener('keyup', keyUpHandler);
+      window.removeEventListener("keydown", keyDownHandler);
+      window.removeEventListener("keyup", keyUpHandler);
     };
   }, []);
 
   useEffect(() => {
     const messageListener = (payload: string) => {
       const gameStatus = JSON.parse(payload);
-      if (gameStatus.gameId !== JSON.parse(props.firstMove).gameId)
-        return;
-      if (gameStatus.progress === 2)
-        navigate('/results/' + gameStatus.gameId);
-      setCurrentMove(gameStatus)
-    }
-    props.socket.on('gameUpdateToClient', messageListener);
-    return (() => {
-      props.socket.off('gameUpdateToClient', messageListener);
-    })
+      if (gameStatus.gameId !== JSON.parse(props.firstMove).gameId) return;
+      if (gameStatus.progress === 2) navigate("/results/" + gameStatus.gameId);
+      setCurrentMove(gameStatus);
+    };
+    props.socket.on("gameUpdateToClient", messageListener);
+    return () => {
+      props.socket.off("gameUpdateToClient", messageListener);
+    };
   }, []);
 
   useEffect(() => {
@@ -143,7 +150,7 @@ function Game(props: { firstMove: string; socket: Socket }) {
 
   return (
     <div className="Game">
-      <div className="Board">
+      <div className="Board" style={BoardStyle}>
         <span className="player left" style={LeftPaddleStyle} />
         <div className="Field">
           <span className="separator" />

@@ -38,6 +38,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
           if (data.gameInfo.gameObject && data.gameInfo.gameObject.progress) {
             setIsGameRunning(true);
           }
+          // SET GAME MODE WITH BOOLEAN FROM BACK HERE
         });
       }
     });
@@ -81,7 +82,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
   }, []);
 
   if (gameStart !== "") {
-    return <Game firstMove={gameStart} socket={props.socket} />;
+    return <Game firstMove={gameStart} socket={props.socket} mode = {currentGamemode}/>;
   }
   return (
     <div className="waitingRoom">
@@ -96,10 +97,10 @@ export function PreMatchRoom(props: { socket: Socket }) {
               Normal
             </button>
             <button
-              onClick={() => setCurrentGamemode("Hardcore")}
-              style={GamemodeButtonStyle("Hardcore")}
+              onClick={() => setCurrentGamemode("SuperMap")}
+              style={GamemodeButtonStyle("SuperMap")}
             >
-              Hardcore
+              SuperMap
             </button>
           </div>
         }
@@ -114,7 +115,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
         </div>
       ) : (
         <div className="LoadingScreen">
-          <img src="/loading.gif" alt="loading" />
+          <img src="/loading.gif" Alt="loading" />
         </div>
       )}
     </div>
@@ -159,7 +160,7 @@ export function MatchMakingRoom(props: { socket: Socket }) {
     <div className="waitingRoom">
       <div className="Prompt">
         <p>waiting for a game{dotAmount}</p>
-        <img src="/loading.gif" alt="loading" />
+        <img src="/loading.gif" Alt="loading" />
       </div>
     </div>
   );
