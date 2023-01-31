@@ -1,11 +1,11 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, } from "react";
 import { useCookies } from "react-cookie";
 import { Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import "static/Play/Game.scss";
 import GameStatus from "./GameStatus";
 
-function Game(props: { firstMove: string; socket: Socket , mode : string}) {
+function Game(props: { firstMove: string; socket: Socket , mode : boolean}) {
   const [currentMove, setCurrentMove] = useState(JSON.parse(props.firstMove));
   const [cookies] = useCookies(["userInfo"]);
   const [leftPos, setLeftPos] = useState(0.5);
@@ -18,25 +18,25 @@ function Game(props: { firstMove: string; socket: Socket , mode : string}) {
     left: "calc(" + currentMove.collision.coordinates.x * 100 + "% - .5rem)",
     bottom: "calc(" + currentMove.collision.coordinates.y * 100 + "% - .5rem)",
     transition: currentMove.collision.time + "s linear",
-    background: props.mode === "Normal" ? "#928374" : "#cc241d",
+    background: !props.mode ? "#928374" : "#cc241d",
   };
 
   const LeftPaddleStyle = {
     bottom: leftPos * 100 + "%",
     height: "calc(" + currentMove.players[0].bar.barHeight * 100 + "% - 1rem)",
-    background: props.mode === "Normal" ? "#ebdbb2" : "#b8bb26",
+    background: !props.mode ? "#ebdbb2" : "#b8bb26",
   };
 
   const RightPaddleStyle = {
     bottom: rightPos * 100 + "%",
     height: "calc(" + currentMove.players[1].bar.barHeight * 100 + "% - 1rem)",
-    background: props.mode === "Normal" ? "#928374" : "#282828",
+    background: !props.mode ? "#928374" : "#282828",
   };
 
   const BoardStyle = {
-    backgroundImage: props.mode === "Normal" ? "url(/thisissparta.jpg)" : "url(../../../bg-shrek.jpg)",
-    backgroundSize: props.mode === "Normal" ? "contains" : "cover",
-    backgroundRepeat: props.mode === "Normal" ? "repeat" : "no-repeat",
+    backgroundImage: !props.mode ? "url(/thisissparta.jpg)" : "url(../../../bg-shrek.jpg)",
+    backgroundSize: !props.mode ? "contains" : "cover",
+    backgroundRepeat: !props.mode ? "repeat" : "no-repeat",
   };
 
   const keyDownHandler = (event: any) => {
