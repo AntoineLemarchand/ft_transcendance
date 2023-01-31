@@ -85,6 +85,15 @@ export const getUserData = async (
     .set('Authorization', 'Bearer ' + jwt);
 };
 
+export const isUsingTwoFactorAuth = async (
+  callerModule: INestApplication,
+  jwt: string,
+) => {
+  return request(callerModule.getHttpServer())
+    .get('/auth/2fa/status')
+    .set('Authorization', 'Bearer ' + jwt);
+};
+
 export async function activateTwoFactorAuth(
   callerModule: INestApplication,
   jwt: any,

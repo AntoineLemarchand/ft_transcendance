@@ -16,7 +16,7 @@ import { CreateUserDTO } from '../app.controller';
 import { Response as ExpressResponse } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from './jwt.auth.guard';
-import { JwtTwoFactorGuard } from "./auth.2fa.guard";
+import { JwtTwoFactorGuard } from './auth.2fa.guard';
 
 @Controller()
 export class AuthController {
@@ -60,10 +60,13 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('2fa/login')
   async login2fa(@Request() req: any) {
-    return await this.authService.logIn2fa(
-      req.user.name,
-      req.body.code2fa
-    );
+    return await this.authService.logIn2fa(req.user.name, req.body.code2fa);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('2fa/status')
+  async get2faStatus(@Request() req: any) {
+    return { status: await this.authService.isUserUsing2fa(req.user.name) };
   }
 
   @UseGuards(JwtTwoFactorGuard)

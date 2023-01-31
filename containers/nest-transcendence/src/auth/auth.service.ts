@@ -102,4 +102,9 @@ export class AuthService {
       user: { name: username, hasSucceeded2Fa: true },
     });
   }
+
+  async isUserUsing2fa(username: string) {
+    const user = (await this.userService.getUser(username)) as User;
+    return user.secret2fa !== '';
+  }
 }

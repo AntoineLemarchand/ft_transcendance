@@ -167,7 +167,7 @@ describe('AuthController', () => {
     const spy = jest
       .spyOn(authService, 'logIn2fa')
       .mockImplementation(async (username: string, code: string) => {
-        return {access_token: 'faketoken'};
+        return { access_token: 'faketoken' };
       });
     await testUtils.signinUser(app, 'Ginette', 'camemb3rt');
     const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
@@ -205,5 +205,46 @@ describe('AuthController', () => {
     const result = await testUtils.testTwoFactorAuth(app, jwt2fa);
 
     expect(result.status).toBe(200);
+  });
+
+  it('should be possible to reach a 2fa protected route when 2fa activated and code incorrect', async () => {
+    jest.spyOn(authenticator, 'verify').mockImplementation(() => {
+      return false;
+    });
+    await testUtils.signinUser(app, 'Ginette', 'camemb3rt');
+    const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
+    await testUtils.activateTwoFactorAuth(app, jwt);
+    const jwt2faResult = await testUtils.logInTwoFactor(app, jwt, 'code');
+    const jwt2fa = jwt2faResult.body.access_token;
+    const result = await testUtils.testTwoFactorAuth(app, jwt2fa);
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should fail to inquire about the 2fa state without being 1fa logged in', async () => {
+    const result = await testUtils.isUsingTwoFactorAuth(app, 'invalid jwt');
+    expect(result.status).toBe(401);
+  });
+
+  it('should only require 1fa to inquire about the 2fa state', async () => {
+    await testUtils.signinUser(app, 'Ginette', 'camemb3rt');
+    const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
+    const result = await testUtils.isUsingTwoFactorAuth(app, jwt);
+
+    expect(result.status).toBe(200);
+  });
+
+  it('should return the 2fa state', async () => {
+    const spy = jest
+      .spyOn(authService, 'isUserUsing2fa')
+      .mockImplementation(async () => {
+        return true;
+      });
+    await testUtils.signinUser(app, 'Ginette', 'camemb3rt');
+    const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
+    const result = await testUtils.isUsingTwoFactorAuth(app, jwt);
+
+    expect(spy).toHaveBeenCalledWith('Ginette');
+    expect(result.body.status).toBe(true);
   });
 });

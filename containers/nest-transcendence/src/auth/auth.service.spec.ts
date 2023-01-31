@@ -160,3 +160,25 @@ describe('validating 2fa', () => {
     expect(result).toStrictEqual(newUser);
   });
 });
+
+describe('requesting info', () => {
+  beforeEach(async () => {
+    await authService.createUser({
+      password: 'password',
+      username: 'username',
+    });
+  });
+
+  it('should return false if the user has not activated 2fa', async function () {
+    const result = await authService.isUserUsing2fa('username');
+
+    expect(result).toBeFalsy();
+  });
+
+  it('should return true if the user has activated 2fa', async function () {
+    await authService.activate2fa('username');
+    const result = await authService.isUserUsing2fa('username');
+
+    expect(result).toBeTruthy();
+  });
+});
