@@ -26,6 +26,24 @@ export class GameController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('setMode')
+  async setMode(@Request() req: any) {
+    await this.gameService.setMode(req.user.name, parseInt(req.body.gameId));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('unsetMode')
+  async unsetMode(@Request() req: any) {
+    await this.gameService.unsetMode(req.user.name, parseInt(req.body.gameId));
+  }
+  
+	@UseGuards(JwtAuthGuard)
+  @Get('getMode/:id')
+  async getMode(@Param() params: any) {
+    return { games: this.gameService.getMode(parseInt(params.id)) };
+  }
+  
+	@UseGuards(JwtAuthGuard)
   @Post('setReady')
   async setReady(@Request() req: any) {
     await this.gameService.setReady(req.user.name, parseInt(req.body.gameId));

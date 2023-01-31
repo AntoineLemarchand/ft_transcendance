@@ -72,12 +72,14 @@ export class Player {
 
 export class GameObject {
   private progress: GameProgress;
+	gameMode: boolean;
   collision: Collision;
   players: Player[];
   constructor(private gameId: number, player1: string, player2: string) {
     this.collision = new Collision({ x: 0.5, y: 0.5 }, 90, 0.5);
     this.collision.reset();
     this.progress = GameProgress.INITIALIZED;
+		this.gameMode = false;
     this.players = [
       new Player(player1, new PlayerBar({ x: 0, y: 0.5 })),
       new Player(player2, new PlayerBar({ x: 1, y: 0.5 })),
@@ -101,6 +103,19 @@ export class GameObject {
       if (player.name === executorName) player.ready = false;
     }
   }
+
+	setMode() {
+		this.gameMode = true;
+	}
+
+	unsetMode() {
+		this.gameMode = false;
+	}
+
+	getMode() {
+		return this.gameMode;
+	}
+
   getId() {
     return this.gameId;
   }

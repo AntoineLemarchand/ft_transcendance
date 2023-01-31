@@ -112,8 +112,41 @@ describe('setting up a game', () => {
 });
 
 describe('starting a game', () => {
-  it('should fail if the executing user is not one of the players', async () => {
+	it('should set game mode to true', async () => {
     const gameObject = await gameService.initGame('player1', 'player42');
+	
+		gameService.setMode('player1', gameObject.getId());	
+		expect(
+			await gameService.getMode(gameObject.getId())).toBeTruthy();
+	});
+  
+	it('should unset game mode to true', async () => {
+    const gameObject = await gameService.initGame('player1', 'player42');
+	
+		gameService.unsetMode('player1', gameObject.getId());	
+		expect(
+			await gameService.getMode(gameObject.getId())).toBeFalsy();
+	});
+	
+	it('should fail if the player setting the mode is not game initiator', async () => {
+    const gameObject = await gameService.initGame('player1', 'player42');
+	
+    await expect(
+			gameService.setMode('player42', gameObject.getId()),	
+    ).rejects.toThrow();
+		expect(await gameService.getMode(gameObject.getId())).toBeFalsy();
+	});
+	
+	it('should fail if the player setting the mode is not one of the players', async () => {
+    const gameObject = await gameService.initGame('player1', 'player42');
+
+    await expect(
+      async () => await gameService.setMode('outsider', gameObject.getId()),
+    ).rejects.toThrow();
+  });
+
+  it('should fail if the user set as ready is not one of the players', async () => {
+		const gameObject = await gameService.initGame('player1', 'player42');
 
     await expect(
       async () => await gameService.setReady('outsider', gameObject.getId()),
