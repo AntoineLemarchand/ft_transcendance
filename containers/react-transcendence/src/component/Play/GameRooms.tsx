@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie"
 import { Socket } from "socket.io-client";
 import "static/Play/GameRooms.scss";
 import Game from "./Game";
@@ -10,8 +11,10 @@ export function PreMatchRoom(props: { socket: Socket }) {
   const [gameStart, setGameStart] = useState("");
   const [isGameRunning, setIsGameRunning] = useState(false);
   const [currentGamemode, setCurrentGamemode] = useState("Normal");
+  const [player0, setPlayer0] = useState(''); 
   const params = useParams();
   const navigate = useNavigate();
+  const [cookies] = useCookies(['userInfo']);
 
   useEffect(() => {
     fetch(
@@ -31,6 +34,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
       else {
         response.text().then((text) => {
           const data = JSON.parse(text);
+          setPlayer0(data.gameInfo.gameObject.players[0].name)
           if (data.gameInfo.gameObject && data.gameInfo.gameObject.progress) {
             setIsGameRunning(true);
           }
@@ -83,6 +87,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
     <div className="waitingRoom">
       {!isGameRunning ? (
         <div className="Prompt">
+        { cookies['userInfo'] && player0 === cookies['userInfo'].name &&
           <div className="Gamemode">
             <button
               onClick={() => setCurrentGamemode("Normal")}
@@ -97,6 +102,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
               Hardcore
             </button>
           </div>
+        }
           <div className="PlayerStatus">
             <button
               onClick={() => setUserReady(!userReady)}
