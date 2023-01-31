@@ -1,5 +1,5 @@
 import { Channel } from "../../utils/Message";
-import { FaPlus, FaSearch, FaPen } from 'react-icons/fa'
+import { FaPlus, FaSearch, FaPen, FaTimes } from 'react-icons/fa'
 
 function DisplayList(props: {
 		joinedChannels: Channel[],
@@ -33,10 +33,12 @@ function DisplayList(props: {
             '☺ ' + (channel.channelName.split('_')[0] === props.username ?
             channel.channelName.split('_')[1] : channel.channelName.split('_')[0])
           }</button>
+          <button className="leaveButton"><FaTimes /></button>
           {
             channel.admins.includes(props.username) &&
             channel.channelName.indexOf('_') === -1 &&
             <button
+            className="editButton"
             onClick={()=>props.modifyChannel(channel.channelName)}>
             <FaPen /></button>
           }
