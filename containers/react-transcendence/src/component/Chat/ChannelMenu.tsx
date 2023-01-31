@@ -7,6 +7,7 @@ function DisplayList(props: {
 		setCurrentChannel: Function,
     modifyChannel: Function,
     username: string,
+    updateChannels: Function,
 	}) {
 	const ChannelButtonStyle = (channel: Channel) => {
 		return {
@@ -18,6 +19,24 @@ function DisplayList(props: {
 		}
 	}
 
+  const LeaveChannel = (event: any) => {
+    fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/channel/join", {
+      credentials: "include",
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        channelName: event.target.value
+      })
+    }).then((result) => {
+      if (result.status === 401)
+        alert("You cannot leave the channels you created");
+      else
+        props.updateChannels();
+    });
+  }
 
 	return (
 		<div className="channelList">
@@ -33,7 +52,11 @@ function DisplayList(props: {
             '☺ ' + (channel.channelName.split('_')[0] === props.username ?
             channel.channelName.split('_')[1] : channel.channelName.split('_')[0])
           }</button>
-          <button className="leaveButton"><FaTimes /></button>
+          <button
+            className="leaveButton"
+            onClick={LeaveChannel}
+            value={channel.channelName}>
+            <FaTimes /></button>
           {
             channel.admins.includes(props.username) &&
             channel.channelName.indexOf('_') === -1 &&
@@ -55,6 +78,7 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 	SetSearchMenu: Function,
   modifyChannel: Function,
   username: string,
+  updateChannels: Function,
 	}) {
 	return (
 			<div className="channelMenu">
@@ -70,6 +94,7 @@ function ChannelMenu(props: {currentChannel: Channel | undefined,
 					setCurrentChannel={props.setCurrentChannel}
           modifyChannel={props.modifyChannel}
           username={props.username}
+          updateChannels={props.updateChannels}
 				/>
 			</div>
 		);
