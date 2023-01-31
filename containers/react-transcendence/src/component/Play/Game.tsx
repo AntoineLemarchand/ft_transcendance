@@ -22,14 +22,14 @@ function Game(props: { firstMove: string; socket: Socket; mode: boolean }) {
   };
 
   const LeftPaddleStyle = {
-    bottom: leftPos * 100 + "%",
-    height: "calc(" + currentMove.players[0].bar.barHeight * 100 + "% - 1rem)",
+    bottom: (leftPos - currentMove.players[0].bar.barHeight / 2) * 100 + "%",
+    height: "calc(" + currentMove.players[0].bar.barHeight * 100 + "%)",
     background: !props.mode ? "#ebdbb2" : "#b8bb26",
   };
 
   const RightPaddleStyle = {
-    bottom: rightPos * 100 + "%",
-    height: "calc(" + currentMove.players[1].bar.barHeight * 100 + "% - 1rem)",
+    bottom: (rightPos - currentMove.players[1].bar.barHeight / 2) * 100 + "%",
+    height: "calc(" + currentMove.players[1].bar.barHeight * 100 + "%)",
     background: !props.mode ? "#928374" : "#282828",
   };
 
