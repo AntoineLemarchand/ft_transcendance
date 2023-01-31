@@ -141,9 +141,9 @@ function Profile(props: {user: any}) {
         {
           user && 
           <div className="content">
-            {tabIndex === 0 && <Friends friends={user.friends}/>}
-            {tabIndex === 1 && <Historic username={user.name}/>}
-            {tabIndex === 2 && <Options username={props.user.name}/>}
+            {tabIndex === 0 && <Friends friends={user.friends} />}
+            {tabIndex === 1 && <Historic username={user.name} />}
+            {tabIndex === 2 && <Options />}
           </div>
         }
 		</div>

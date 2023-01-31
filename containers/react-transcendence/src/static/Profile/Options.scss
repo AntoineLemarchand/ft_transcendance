@@ -1,0 +1,28 @@
+@import 'static/gruvbox';
+
+.Options {
+  height: 100%;
+  display: flex;
+  overflow-y: scroll;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  color: color('textPrimary');
+
+  .ChangeValue {
+    display: grid;
+    grid-template-rows: 3rem 3rem 2rem;
+
+    input {
+      width: 95%;
+      height: 2rem;
+      border: .2rem dashed color('greyPrimary');
+      background: color('background2');
+    }
+
+    button {
+      width: 50%;
+      margin-left: auto;
+    }
+  }
+}
