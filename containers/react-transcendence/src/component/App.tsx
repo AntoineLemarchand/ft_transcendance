@@ -8,6 +8,7 @@ import NotFound from './NotFound'
 import Header from './Header'
 import Login from './Account/Login'
 import SignIn from './Account/SignIn'
+import TwoFactor from './Account/TwoFactor'
 
 import Home from './Home/Home'
 import Play from './Play/Play'
@@ -57,12 +58,15 @@ function App() {
       path:'/profile/:uid',
       component: <Main component={<Profile user={cookies['userInfo']}/>}/>
     }, {
+      path:'/twoFactor',
+      component: <TwoFactor />
+    }, {
       path:'/*',
       component: <NotFound />
     },
   ]
 
-  useEffect(()=> {
+  useEffect( () => {
     document.title='Transcendance'
     return (() => socket?.close())
   }, [])
