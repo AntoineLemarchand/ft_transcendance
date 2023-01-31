@@ -74,11 +74,12 @@ function Chat(props: { socket: Socket }) {
       const allChannels = putMessageInChannels(message, joinedChannel);
       setJoinedChannel(allChannels);
     };
-    props.socket.on("messageToClient", messageListener);
+    props.socket?.on("messageToClient", messageListener);
     if (currentChannel === undefined && joinedChannel.length > 0)
       setCurrentChannel(joinedChannel[0]);
     return () => {
-      props.socket.off("messageToClient", messageListener);
+      props.socket?.off("messageToClient", messageListener);
+      props.socket?.off("messageToServer", messageListener);
     };
     // eslint-disable-next-line
   }, [joinedChannel]);

@@ -1,7 +1,7 @@
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useCookies } from 'react-cookie';
-import { SocketContext } from './WebSocket'
+import { Socket } from 'socket.io-client';
 
 import 'static/Main.scss'
 
@@ -19,7 +19,7 @@ import Chat from './Chat/Chat'
 import Profile from './Profile/Profile'
 
 
-function Main(props: {component: any}) {
+function Main(props: {component: any, socket: Socket}) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const tab = location.pathname.split('/')[1];
@@ -29,6 +29,7 @@ function Main(props: {component: any}) {
     removeCookie('auth', {path: '/'});
     removeCookie('userInfo', {path: '/'});
 		navigate('/');
+    props.socket.close();
 	}
 
   useEffect(() => {
@@ -40,8 +41,8 @@ function Main(props: {component: any}) {
 	const pages = [
 		{ icon: <FaHome/>, ref: 'home', component: <Home />},
 		{ icon: <FaTableTennis/>, ref: 'game', component: <Play/>},
-		{ icon: <FaCommentDots/>, ref: 'chat', component: <Chat/>},
-		{ icon: <FaUser/>, ref: 'profile', component: <Profile username={cookie['userInfo']}/>},
+		{ icon: <FaCommentDots/>, ref: 'chat', component: <Chat socket={props.socket}/>},
+		{ icon: <FaUser/>, ref: 'profile', component: <Profile user={cookie['userInfo']}/>},
 	];
 
 	const tabStyle= (ref: string): React.CSSProperties  => {
