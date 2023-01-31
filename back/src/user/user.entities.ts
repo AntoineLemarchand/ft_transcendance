@@ -7,6 +7,8 @@ export class User {
   public image: Buffer;
   @Column('text')
   public imageFormat: string | undefined;
+  @Column('text')
+  public accessToken: string;
   @Column('text', { array: true })
   public friends: string[] = [];
   @Column('text', { array: true })
@@ -20,7 +22,7 @@ export class User {
     default: '',
   })
   public password: string;
-  public accessToken: string;
+  // public accessToken: string;
 
   constructor(name: string, password: string, accessToken: string, image?: Express.Multer.File) {
 		this.password = password;

@@ -36,9 +36,16 @@ export class UserService {
     };
   }
 
-  async getUser(name: string) {
-    const test = await this.userRepository.findOneBy({ name: name });
-    if (!test) return undefined;
+  async getUser(name: string, accessToken?: string) {
+    let test;
+    if (accessToken)
+    {
+      test = await this.userRepository.findOneBy({ accessToken: accessToken});
+    }
+    else
+      test = await this.userRepository.findOneBy({ name: name });
+    if (!test)
+      return undefined;
     return test;
   }
 
@@ -53,6 +60,9 @@ export class UserService {
   }
 
   async createUser(user: User) {
+    if (!user.accessToken) {
+      user.accessToken = '';
+    }
     await this.userRepository.save(user);
     await this.channelService.joinChannel(user.getName(), 'welcome', '');
   }

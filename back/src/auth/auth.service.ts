@@ -24,11 +24,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<User> {
-    const user = await this.userService.getUser(username);
-
+  async validateUser(username: string, password: string, accessToken?: string): Promise<User> {
+    const user = await this.userService.getUser(username, accessToken);
     if (user !== undefined) {
-      if (user.comparePassword(password)) return user;
+      if (user.comparePassword(password) || user.accessToken) return user;
       throw new ErrUnAuthorized('Wrong password');
     }
     throw new ErrUnAuthorized('Could not find user');
@@ -42,7 +41,7 @@ export class AuthService {
   }
 
   async createUser(userCandidate: CreateUserDTO) {
-    const user = await this.userService.getUser(userCandidate.username);
+    const user = await this.userService.getUser(userCandidate.username, userCandidate.accessToken);
     if (user !== undefined) throw new ErrUnAuthorized('User already exists');
     if (userCandidate.username.includes('_'))
       throw new ErrForbidden('no underscores in usernames');

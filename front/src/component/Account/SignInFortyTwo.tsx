@@ -1,28 +1,23 @@
 import React from 'react'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCookies } from "react-cookie";
 
 import 'static/Account/Prompt.scss'
 
 import { ReactComponent as SchoolLogo } from "static/logo.svg";
 
 function SignInFortyTwo() {
+  const [cookies, setCookie] = useCookies(['fortytwo_token']);
+
 	const navigate = useNavigate();
   const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmation, setConfirmation] = useState('')
+  // const [password, setPassword] = useState('')
+  // const [confirmation, setConfirmation] = useState('')
   const [selectedImage, setSelectedImage] = useState<File>()
 
   const UpdateUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value)
-  }
-
-  const UpdatePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value)
-  }
-
-  const UpdateConfirmation = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmation(event.target.value)
   }
 
   const UpdateImage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,9 +30,6 @@ function SignInFortyTwo() {
   if (username === '') {
     alert('Please provide a username');
     return;
-  } else if (password !== confirmation) {
-    alert('Passwords do not match');
-    return;
   } else if (selectedImage !== undefined && !selectedImage.type.includes('image')) {
     alert('Please upload an image file');
     return;
@@ -45,21 +37,42 @@ function SignInFortyTwo() {
 
   let body = new FormData();
   body.append('username', username);
-  body.append('password', password);
+  body.append('accessToken', cookies['fortytwo_token']);
   if (selectedImage)
-    body.append('image', selectedImage)
+    body.append('image', selectedImage);
 
+
+  // STEP 3: SIGN USER IN DB
   fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/signin', {
     method: 'POST',
     body: body,
   })
-  .then(response => {
+  .then(async (response) => {
     if (response.status === 201) {
-      navigate('/');
-    } else {
-      alert('Username already taken');
-    }
-  })
+        const token = await response.text().then((body) => {
+          return JSON.parse(body).access_token;
+        });
+        setCookie("auth", token, { path: "/", sameSite: 'strict' });
+        setCookie("userInfo", "", { path: "/", sameSite: 'strict' });
+        fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/user/info", {
+          credentials: "include",
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }).then((result) => {
+          result.text().then((text) => {
+            let cookie = JSON.parse(text).userInfo;
+            cookie.image = [];
+            setCookie("userInfo", cookie, { path: "/", sameSite: 'strict' });
+          });
+        });
+        navigate("/home");
+      } else {
+        alert('Username already taken');
+      }
+    });
 }
 
 	return (

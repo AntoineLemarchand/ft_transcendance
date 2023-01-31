@@ -38,34 +38,29 @@ export class AuthController {
     @UploadedFile() image: Express.Multer.File,
     @Res({ passthrough: true }) res: ExpressResponse,
   ) {
+    // const userData = await this.authService.fetchUser(req.cookie['access_']);
     if (image)
       userCandidate.image = image;
+    // STEP 4: USER CREATION 
     const token = await this.authService.createUser(userCandidate);
-    res.cookie('token', { access_token: token });
     return token;
   }
 
   @Get('oauth/callback')
   @UseGuards(Oauth2Guard)
-  async signinFortyTwo(
+  async callbackFortyTwo(
     @Request() req: Express.Request,
     @Res() res: ExpressResponse,
   ) {
     const newUser = req.user as Identity;
-    console.log('accessToken : ' + newUser.accessToken);
     if (newUser.accessToken) {
-      console.log('prompt redirection');
+      // STEP 2.1 SET COOKIES WITH 42API TOKEN
+      // STEP 2.2: USER REDIRECTION TO USERNAME PROMPT
+      res.cookie('fortytwo_token', newUser.accessToken);
       res.redirect('http://' + process.env.SERVER_URL + ':' + process.env.SERVER_PORT +
                    '/signinFortyTwo');
     }
     else {
-    // sign jwt
-      await this.authService.createUser({
-        // username: newUser.login,
-        username: 'newUser.login',
-        password: '',
-        accessToken: newUser.accessToken
-      });
       const { access_token: token } = await this.authService.login(req.user as Identity);
       const userInfo = this.authService.getUserInfo(req.user as Identity);
       res.cookie('auth', token);
