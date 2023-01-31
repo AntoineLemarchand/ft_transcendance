@@ -77,6 +77,31 @@ export class GameService {
       );
   }
 
+	async getMode(gameId: number) {
+		const game = await this.currentGames.findOne(gameId);
+		return game.getMode();
+	}
+
+	async setNormalMode(executorName: string, gameId: number) {
+		const game = await this.currentGames.findOne(gameId);
+		if (executorName == game.getPlayerNames()[0])
+			game.setNormalMode();
+    else
+			return Promise.reject(
+        new ErrUnAuthorized('this action is reserved to leftist player'),
+      );
+	}
+
+	async setHardcoreMode(executorName: string, gameId: number) {
+		const game = await this.currentGames.findOne(gameId);
+		if (executorName == game.getPlayerNames()[0])
+			game.setHardcoreMode();
+    else
+			return Promise.reject(
+        new ErrUnAuthorized('this action is reserved to leftist player'),
+      );
+	}
+
   async setReady(executorName: string, gameId: number) {
     const game = await this.currentGames.findOne(gameId);
     await this.prohibitNonPlayerActions(executorName, game);
@@ -117,10 +142,11 @@ export class GameService {
     executorName: string,
     game: GameObject,
   ) {
-    if (!game.getPlayerNames().find((name) => name === executorName))
+    if (!game.getPlayerNames().find((name) => name === executorName)) {
       return Promise.reject(
         new ErrUnAuthorized('this action is reserved to active players'),
       );
+		}
   }
 
   private async areValidPlayers(player1name: string, player2name: string) {
