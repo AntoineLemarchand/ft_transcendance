@@ -20,8 +20,9 @@ export class User {
     default: '',
   })
   public password: string;
+  public accessToken: string;
 
-  constructor(name: string, password: string, image?: Express.Multer.File) {
+  constructor(name: string, password: string, accessToken: string, image?: Express.Multer.File) {
 		this.password = password;
 		this.hashPassword(password);
     this.name = name;
@@ -33,6 +34,7 @@ export class User {
       this.image = Buffer.from('');
       this.imageFormat = '';
     }
+    this.accessToken = accessToken;
   }
 
   getName() {

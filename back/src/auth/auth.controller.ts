@@ -45,49 +45,33 @@ export class AuthController {
     return token;
   }
 
-  // @Post('signinFortyTwo')
-  // async signinFortyTwo(
-  //   @Request() req: Express.Request,
-  //   @Body() userCandidate: CreateUserDTO,
-  //   @Res() res: ExpressResponse,
-  // ) {
-  //   console.dir(req.body);
-  //   console.log(JSON.stringify(req.body));
-  //   // if (image)
-  //   //   userCandidate.image = image;
-  //   // const token = await this.authService.createUser(userCandidate);
-  //   // res.cookie('token', { access_token: token });
-  //   // res.status = 200;
-  //   return 'token';
-  // }
-
-  @Post('signinFortyTwo')
-  @UseInterceptors(FileInterceptor('image'))
+  @Get('oauth/callback')
+  @UseGuards(Oauth2Guard)
   async signinFortyTwo(
-    @Body() userCandidate: CreateUserDTO,
-    @UploadedFile() image: Express.Multer.File,
-    @Res({ passthrough: true }) res: ExpressResponse,
+    @Request() req: Express.Request,
+    @Res() res: ExpressResponse,
   ) {
-    console.dir(userCandidate);
-    // console.log(JSON.stringify(req.body));
-    if (image)
-      userCandidate.image = image;
-    const token = await this.authService.createUser(userCandidate);
-    return token;
+    const newUser = req.user as Identity;
+    console.log('accessToken : ' + newUser.accessToken);
+    if (newUser.accessToken) {
+      console.log('prompt redirection');
+      res.redirect('http://' + process.env.SERVER_URL + ':' + process.env.SERVER_PORT +
+                   '/signinFortyTwo');
+    }
+    else {
+    // sign jwt
+      await this.authService.createUser({
+        // username: newUser.login,
+        username: 'newUser.login',
+        password: '',
+        accessToken: newUser.accessToken
+      });
+      const { access_token: token } = await this.authService.login(req.user as Identity);
+      const userInfo = this.authService.getUserInfo(req.user as Identity);
+      res.cookie('auth', token);
+      res.cookie('userInfo', userInfo);
+      res.redirect('http://' + process.env.SERVER_URL + ':' + process.env.SERVER_PORT + '/home');
+      return token;
+    }
   }
-
-
-  // @Get('oauth/callback')
-  // @UseGuards(Oauth2Guard)
-  // async signinFortyTwo(
-  //   @Request() req: Express.Request,
-  //   @Res() res: ExpressResponse,
-  // ) {
-  //   const { access_token: token } = await this.authService.login(req.user as Identity);
-  //   const userInfo = this.authService.getUserInfo(req.user as Identity);
-  //   res.cookie('auth', token);
-  //   res.cookie('userInfo', userInfo);
-  //   res.redirect('http://' + process.env.SERVER_URL + ':' + process.env.SERVER_PORT + '/home');
-  //   return token;
-  // }
 }

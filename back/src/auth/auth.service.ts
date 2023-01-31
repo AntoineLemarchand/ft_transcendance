@@ -13,7 +13,7 @@ import { ErrForbidden, ErrUnAuthorized } from '../exceptions';
 import axios from 'axios'
 
 export class Identity {
-  constructor(public name: string, public id: number) {}
+  constructor(public name: string, public id: number, public accessToken: string) {}
 }
 
 @Injectable()
@@ -49,6 +49,7 @@ export class AuthService {
     const newUser: User = new User(
       userCandidate.username,
       userCandidate.password,
+      userCandidate.accessToken
     );
     if (userCandidate.image) {
       newUser.image = userCandidate.image.buffer;
@@ -56,7 +57,7 @@ export class AuthService {
     }
 
     await this.userService.createUser(newUser);
-    return this.login(new Identity(userCandidate.username, 1));
+    return this.login(new Identity(userCandidate.username, 1, ''));
   }
 
   async fetchUser(accessToken: string): Promise<any> {

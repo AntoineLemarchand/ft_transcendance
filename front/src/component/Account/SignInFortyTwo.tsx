@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 import 'static/Account/Prompt.scss'
 
-function SignIn() {
+import { ReactComponent as SchoolLogo } from "static/logo.svg";
+
+function SignInFortyTwo() {
 	const navigate = useNavigate();
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -64,10 +66,6 @@ function SignIn() {
 		<div className="Prompt">
 			<input type="text" placeholder="Username"
         onChange={UpdateUsername}/>
-			<input type="password" placeholder="Password"
-        onChange={UpdatePassword}/>
-			<input type="password" placeholder="Confirm Password"
-        onChange={UpdateConfirmation}/>
       <div className="avatar">
         <img src={selectedImage !== undefined ? URL.createObjectURL(selectedImage) : ''} alt="Avatar: " />
         <input type="file" accept="image/*"
@@ -75,10 +73,12 @@ function SignIn() {
         />
       </div>
       <div className="buttonBox">
-        <button className="signin" onClick={ProcessSignIn}>Sign in</button>
+        <button className="Oauth" onClick={ProcessSignIn}>
+          <SchoolLogo />
+        </button>
       </div>
 		</div>
 	)
 }
 
-export default SignIn;
+export default SignInFortyTwo;

@@ -8,6 +8,7 @@ import { UserService } from './user/user.service'
 export class CreateUserDTO {
   username: string;
   password: string;
+  accessToken: string;
   image?: Express.Multer.File;
 }
 

@@ -81,6 +81,7 @@ function Login() {
             '&response_type=code'
         }>
         <button className="Oauth">
+          <SchoolLogo />
         </button>
         </a>
       </div>

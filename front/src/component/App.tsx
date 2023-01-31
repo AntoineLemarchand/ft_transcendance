@@ -8,6 +8,7 @@ import NotFound from './NotFound'
 import Header from './Header'
 import Login from './Account/Login'
 import SignIn from './Account/SignIn'
+import SignInFortyTwo from './Account/SignInFortyTwo'
 
 import Home from './Home/Home'
 import Play from './Play/Play'
@@ -29,6 +30,9 @@ function App() {
     }, {
       path: '/signin',
       component: <SignIn />
+    }, {
+      path: '/signinFortyTwo',
+      component: <SignInFortyTwo />
     }, {
       path: '/home',
       component: <Main component={<Home />}/>
