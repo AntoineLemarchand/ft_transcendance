@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { Socket, io } from 'socket.io-client';
@@ -19,44 +19,51 @@ import Profile from './Profile/Profile'
 
 import '../static/App.scss'
 
+
 function App() {
   const [cookies] = useCookies(['auth', 'userInfo']);
-  const [socket, setSocket] = useState<Socket | undefined>(undefined);
+  const [socket, setSocket] = useState<Socket>();
+
+  function WrappedComponent( props: {component: any}) {
+    return (
+      <Main component={props.component} socket={socket as Socket}/>
+    )
+  } 
 
   const routes = [
     {
       path: '/',
-      component: <Login />
+      component: <Login socketSetter={setSocket}/>
     }, {
       path: '/signin',
       component: <SignIn />
     }, {
       path: '/home',
-      component: <Main component={<Home />}/>
+      component: <WrappedComponent component={<Home />}/>
     }, {
       path:'/spectate',
-      component: <Main component={<Spectate />}/>
+      component: <WrappedComponent component={<Spectate />}/>
     }, {
       path:'/chat',
-      component: socket && <Main component={<Chat socket={socket}/>}/>
+      component: <WrappedComponent component={<Chat socket={socket as Socket}/>}/>
     }, {
       path:'/waitingroom',
-      component: socket && <Main component={<MatchMakingRoom socket={socket}/>}/>
+      component: <WrappedComponent component={<MatchMakingRoom socket={socket as Socket}/>}/>
     }, {
       path:'/game',
-      component: <Main component={<Play />}/>
+      component: <WrappedComponent component={<Play />}/>
     }, {
       path:'/game/:gid',
-      component: socket && <Main component={<PreMatchRoom socket={socket}/>}/>
+      component: <WrappedComponent component={<PreMatchRoom socket={socket as Socket}/>}/>
     }, {
       path:'/results/:gid',
-      component: <Main component={<ResultRoom />}/>
+      component: <WrappedComponent component={<ResultRoom />}/>
     }, {
       path:'/profile',
-      component: <Main component={<Profile user={cookies['userInfo']}/>}/>
+      component: <WrappedComponent component={<Profile user={cookies['userInfo']}/>}/>
     }, {
       path:'/profile/:uid',
-      component: <Main component={<Profile user={cookies['userInfo']}/>}/>
+      component: <WrappedComponent component={<Profile user={cookies['userInfo']}/>}/>
     }, {
       path:'/twoFactor',
       component: <TwoFactor />
@@ -68,7 +75,7 @@ function App() {
 
   useEffect( () => {
     document.title='Transcendance'
-    return (() => socket?.close())
+    return (() => {socket?.close()})
   }, [])
 
   useEffect(() => {
@@ -88,7 +95,7 @@ function App() {
 		<Header/>
 		<Routes>
       {
-        routes.map((route: {path: string, component: JSX.Element}, idx: number) => {
+        routes.map((route: {path: string, component: ReactNode}, idx: number) => {
           return (<Route
             key={idx}
             path={route.path}

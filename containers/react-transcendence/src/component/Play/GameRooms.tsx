@@ -97,9 +97,9 @@ export function PreMatchRoom(props: { socket: Socket }) {
         setIsGameRunning(true);
       }
     };
-    props.socket.on("gameUpdateToClient", messageListener);
+    props.socket?.on("gameUpdateToClient", messageListener);
     return () => {
-      props.socket.off("gameUpdateToClient", messageListener);
+      props.socket?.off("gameUpdateToClient", messageListener);
     };
   }, []);
 
@@ -165,9 +165,9 @@ export function MatchMakingRoom(props: { socket: Socket }) {
     const messageListener = (payload: string) => {
       navigate("/game/" + payload);
     };
-    props.socket.on("emitMatchMadeToClient", messageListener);
+    props.socket?.on("emitMatchMadeToClient", messageListener);
     return () => {
-      props.socket.off("emitMatchMadeToClient", messageListener);
+      props.socket?.off("emitMatchMadeToClient", messageListener);
     };
   }, []);
 

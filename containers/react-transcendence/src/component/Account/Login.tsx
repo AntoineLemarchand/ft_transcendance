@@ -2,12 +2,13 @@ import * as React from "react";
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import { io } from "socket.io-client";
 
 import "static/Account/Prompt.scss";
 
 import { ReactComponent as SchoolLogo } from "static/logo.svg";
 
-function Login() {
+function Login(props: {socketSetter: Function}) {
   const navigate = useNavigate();
   const [cookie, setCookie] = useCookies(["auth", "userInfo"]);
   const [username, setUsername] = useState("");
@@ -16,6 +17,14 @@ function Login() {
   useEffect(() => {
     if (cookie["auth"] !== undefined) navigate("/home");
   });
+
+  const initSocket = (token: string) => {
+      const newSocket = io("http://" + process.env.REACT_APP_SERVER_IP, {
+        withCredentials: true,
+        query: { auth: token },
+      });
+      props.socketSetter(newSocket);
+  }
 
   const ProcessLogin = () => {
     fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/auth/login", {
@@ -33,6 +42,7 @@ function Login() {
           return JSON.parse(body).access_token;
         });
         setCookie("auth", token, { path: "/", sameSite: 'strict' });
+        initSocket(token);
         setCookie("userInfo", "", { path: "/", sameSite: 'strict' });
         fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/user/info", {
           credentials: "include",
