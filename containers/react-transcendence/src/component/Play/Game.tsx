@@ -77,7 +77,6 @@ function Game(props: { firstMove: string; socket: Socket; mode: boolean }) {
   const keyDownHandler = (event: any) => {
     if (event.repeat) return;
     if (event.code === "ArrowUp") {
-      console.log("keydown!");
       props.socket.emit(
         "gameUpdateToServer",
         JSON.stringify({
