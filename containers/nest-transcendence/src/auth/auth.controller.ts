@@ -75,6 +75,7 @@ export class AuthController {
       req.body.code2fa,
     );
     res.cookie('token', { access_token: token, sameSite: 'strict' });
+    console.log(token);
     return token;
   }
 
