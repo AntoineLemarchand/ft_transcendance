@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class User {
-  @Column({type: 'bytea'})
+  @Column({ type: 'bytea' })
   public image: Buffer;
   @Column('text')
   public imageFormat: string | undefined;
@@ -20,16 +20,17 @@ export class User {
     default: '',
   })
   public password: string;
+  @Column({ nullable: true, default: '' })
+  secret2fa: string;
 
   constructor(name: string, password: string, image?: Express.Multer.File) {
-		this.password = password;
-		this.hashPassword(password);
+    this.password = password;
+    this.hashPassword(password);
     this.name = name;
     if (image) {
       this.image = image.buffer;
       this.imageFormat = image.mimetype;
-    }
-    else {
+    } else {
       this.image = Buffer.from('');
       this.imageFormat = '';
     }
@@ -107,17 +108,17 @@ export class User {
     }
   }
 
-	private hashPassword(plaintextPassword: string) {
-		const bcrypt = require('bcrypt');
-		const saltRounds = 10;
+  private hashPassword(plaintextPassword: string) {
+    const bcrypt = require('bcrypt');
+    const saltRounds = 10;
 
-		if (plaintextPassword === undefined) return;
-		this.password = bcrypt.hashSync(plaintextPassword, saltRounds);
-	}
+    if (plaintextPassword === undefined) return;
+    this.password = bcrypt.hashSync(plaintextPassword, saltRounds);
+  }
 
-	comparePassword(plaintextPassword: string) {
-		const bcrypt = require('bcrypt');
-		if (plaintextPassword === undefined) return;
-		return bcrypt.compareSync(plaintextPassword, this.password);
-	}
+  comparePassword(plaintextPassword: string) {
+    const bcrypt = require('bcrypt');
+    if (plaintextPassword === undefined) return;
+    return bcrypt.compareSync(plaintextPassword, this.password);
+  }
 }

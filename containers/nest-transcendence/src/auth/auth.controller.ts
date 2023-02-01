@@ -14,7 +14,9 @@ import { Oauth2Guard } from './Oauth2.guard';
 import { AuthService, Identity } from './auth.service';
 import { CreateUserDTO } from '../app.controller';
 import { Response as ExpressResponse } from 'express';
-import { FileInterceptor } from '@nestjs/platform-express'
+import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from './jwt.auth.guard';
+import { JwtTwoFactorGuard } from './auth.2fa.guard';
 
 @Controller()
 export class AuthController {
@@ -38,11 +40,39 @@ export class AuthController {
     @UploadedFile() image: Express.Multer.File,
     @Res({ passthrough: true }) res: ExpressResponse,
   ) {
-    if (image)
-      userCandidate.image = image;
+    if (image) userCandidate.image = image;
     const token = await this.authService.createUser(userCandidate);
-    res.cookie('token', { access_token: token });
+    res.cookie('token', { access_token: token, sameSite: 'strict' });
     return token;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('2fa/activate')
+  async activate2fa(
+    @Request() req: any,
+    @Res({ passthrough: true }) response: ExpressResponse,
+  ) {
+    const qrCode = await this.authService.activate2fa(req.user.name);
+    response.setHeader('content-type', 'image/png');
+    return this.authService.qrCodeStreamPipe(response, qrCode);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('2fa/login')
+  async login2fa(@Request() req: any) {
+    return await this.authService.logIn2fa(req.user.name, req.body.code2fa);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('2fa/status')
+  async get2faStatus(@Request() req: any) {
+    return { status: await this.authService.isUserUsing2fa(req.user.name) };
+  }
+
+  @UseGuards(JwtTwoFactorGuard)
+  @Get('2fa/test')
+  async test2fa() {
+    return { res: true };
   }
 
   @Get('oauth/callback')
@@ -51,11 +81,19 @@ export class AuthController {
     @Request() req: Express.Request,
     @Res() res: ExpressResponse,
   ) {
-    const { access_token: token } = await this.authService.login(req.user as Identity);
+    const { access_token: token } = await this.authService.login(
+      req.user as Identity,
+    );
     const userInfo = this.authService.getUserInfo(req.user as Identity);
     res.cookie('auth', token);
     res.cookie('userInfo', userInfo);
-    res.redirect('http://' + process.env.SERVER_URL + ':' + process.env.SERVER_PORT + '/home');
+    res.redirect(
+      'http://' +
+        process.env.SERVER_URL +
+        ':' +
+        process.env.SERVER_PORT +
+        '/home',
+    );
     return token;
   }
 }
