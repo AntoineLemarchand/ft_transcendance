@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { Request as RequestType } from 'express';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private authService: AuthService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
