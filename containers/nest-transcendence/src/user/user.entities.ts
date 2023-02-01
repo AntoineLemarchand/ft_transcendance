@@ -109,7 +109,6 @@ export class User {
   }
 
   private hashPassword(plaintextPassword: string) {
-    const bcrypt = require('bcrypt');
     const saltRounds = 10;
 
     if (plaintextPassword === undefined) return;
@@ -117,7 +116,6 @@ export class User {
   }
 
   comparePassword(plaintextPassword: string) {
-    const bcrypt = require('bcrypt');
     if (plaintextPassword === undefined) return;
     return bcrypt.compareSync(plaintextPassword, this.password);
   }

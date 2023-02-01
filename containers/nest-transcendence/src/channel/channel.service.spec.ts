@@ -9,11 +9,11 @@ import { DataSource } from 'typeorm';
 import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
 import { ChannelModule } from './channel.module';
 import { GameStat } from '../game/game.entities';
-import { GameModule } from '../game/game.module';
 
 jest.spyOn(Channel.prototype, 'addMessage');
 jest.spyOn(BroadcastingGateway.prototype, 'emitMessage');
 jest.mock('../broadcasting/broadcasting.gateway');
+jest.spyOn(global, "setTimeout").mockImplementation(jest.fn());
 
 let channelService: ChannelService;
 let broadcasting: BroadcastingGateway;

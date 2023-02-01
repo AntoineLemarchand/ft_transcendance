@@ -25,9 +25,9 @@ export class ChannelService {
   async sendMessage(message: Message): Promise<void> {
     const channel = await this.getChannelByName(message.channel);
     if (channel.isUserMuted(message.sender)) return;
-    await channel.addMessage(message);
+    channel.addMessage(message);
     await this.channelRepository.save(channel);
-    await this.broadcastingGateway.emitMessage(message.channel, message);
+    this.broadcastingGateway.emitMessage(message.channel, message);
   }
 
   async muteMemberForMinutes(

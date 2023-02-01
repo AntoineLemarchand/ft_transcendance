@@ -52,13 +52,13 @@ export class GameController {
   @UseGuards(JwtAuthGuard)
   @Post('spectate')
   async beginSpectating(@Request() req: any) {
-    await this.gameService.beginSpectate(req.user.name, req.body.gameId);
+    await this.gameService.beginSpectate(req.user.name, parseInt(req.body.gameId));
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('spectate')
   async endSpectating(@Request() req: any) {
-    await this.gameService.endSpectate(req.user.name, req.body.gameId);
+    await this.gameService.endSpectate(req.user.name, parseInt(req.body.gameId));
   }
 
   @UseGuards(JwtAuthGuard)
