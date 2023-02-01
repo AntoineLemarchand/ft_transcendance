@@ -68,8 +68,8 @@ describe('creating users', () => {
   });
 });
 
-describe('activating 2fa', () => {
-  it('should define the secret', async function () {
+describe('turn 2fa on and off', () => {
+  it('should define the secret when turning on', async function () {
     const username = 'test';
     await authService.createUser({ username: username, password: 'fromage' });
     await authService.activate2fa(username);
@@ -78,7 +78,17 @@ describe('activating 2fa', () => {
     expect(newUser.secret2fa).toStrictEqual('this is a 2fa secret');
   });
 
-  it('should return the otpAuthUrl', async function () {
+  it('should remove the secret when turning off', async function () {
+    const username = 'test';
+    await authService.createUser({ username: username, password: 'fromage' });
+    await authService.activate2fa(username);
+    await authService.deactivate2fa(username);
+
+    const newUser = (await userService.getUser(username)) as User;
+    expect(newUser.secret2fa).toStrictEqual('');
+  });
+
+  it('should return the otpAuthUrl when turning on', async function () {
     const username = 'test';
     await authService.createUser({ username: username, password: 'fromage' });
     const result = await authService.activate2fa(username);
