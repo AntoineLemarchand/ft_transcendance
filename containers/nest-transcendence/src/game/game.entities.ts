@@ -75,11 +75,13 @@ export class GameObject {
 	gameMode: boolean;
   collision: Collision;
   players: Player[];
+  radius: number;
   constructor(private gameId: number, player1: string, player2: string) {
-    this.collision = new Collision({ x: 0.5, y: 0.5 }, 90, 0.5);
+    this.radius = 0.01;
+    this.collision = new Collision({ x: 0.5, y: 0.5 }, 90, 0.5, this.radius);
     this.collision.reset();
     this.progress = GameProgress.INITIALIZED;
-		this.gameMode = false;
+	this.gameMode = false;
     this.players = [
       new Player(player1, new PlayerBar({ x: 0, y: 0.5 })),
       new Player(player2, new PlayerBar({ x: 1, y: 0.5 })),
@@ -133,16 +135,19 @@ export class GameObject {
   }
 
   private calcScorer() {
+    //console.log(this.collision.getCoordinates());
     if (
-      isAlmostEqual(this.collision.getCoordinates().x, 0) &&
-      !this.players[0].bar.isContact(this.collision.getCoordinates())
+      (isAlmostEqual(this.collision.getCoordinates().x, 0+this.radius) &&
+      !this.players[0].bar.isContact(this.collision.getCoordinates())) ||
+      this.collision.getCoordinates().x < 0+this.radius
     ) {
       this.players[1].score++;
       return this.players[1];
     }
     if (
-      isAlmostEqual(this.collision.getCoordinates().x, 1) &&
-      !this.players[1].bar.isContact(this.collision.getCoordinates())
+      (isAlmostEqual(this.collision.getCoordinates().x, 1-this.radius) &&
+      !this.players[1].bar.isContact(this.collision.getCoordinates())) ||
+        this.collision.getCoordinates().x > 1-this.radius
     ) {
       this.players[0].score++;
       return this.players[0];

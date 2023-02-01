@@ -100,11 +100,12 @@ describe('calculating the point of collision', () => {
     const origin = { x: 0, y: 0.5 };
     const angle = 0;
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
-    expect(result.x).toBeCloseTo(1);
+    expect(result.x).toBeCloseTo(1-radius);
     expect(result.y).toBeCloseTo(0.5);
   });
 
@@ -112,11 +113,12 @@ describe('calculating the point of collision', () => {
     const origin = { x: 1, y: 0.5 };
     const angle = deg2rad(180);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
-    expect(result.x).toBeCloseTo(0);
+    expect(result.x).toBeCloseTo(0+radius);
     expect(result.y).toBeCloseTo(0.5);
   });
 
@@ -124,11 +126,12 @@ describe('calculating the point of collision', () => {
     const origin = { x: 0.5, y: 0.5 };
     const angle = deg2rad(180);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
-    expect(result.x).toBeCloseTo(0);
+    expect(result.x).toBeCloseTo(0+radius);
     expect(result.y).toBeCloseTo(0.5);
   });
 
@@ -136,11 +139,12 @@ describe('calculating the point of collision', () => {
     const origin = { x: 0.5, y: 0.5 };
     const angle = deg2rad(0);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
-    expect(result.x).toBeCloseTo(1);
+-radius
     expect(result.y).toBeCloseTo(0.5);
   });
 
@@ -148,95 +152,103 @@ describe('calculating the point of collision', () => {
     const origin = { x: 0.5, y: 0.5 };
     const angle = deg2rad(60);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
-    expect(result.x).toBeCloseTo(0.7886751);
-    expect(result.y).toBeCloseTo(1);
+    expect(result.x).toBeCloseTo(0.7829016319029167);
+    expect(result.y).toBeCloseTo(1-radius);
   });
 
   it('should return a point above the origin', () => {
     const origin = { x: 0.5, y: 0 };
     const angle = deg2rad(90);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0.5);
-    expect(result.y).toBeCloseTo(1);
+    expect(result.y).toBeCloseTo(1-radius);
   });
 
   it('should return a point below the origin', () => {
     const origin = { x: 0.5, y: 1 };
     const angle = deg2rad(270);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0.5);
-    expect(result.y).toBeCloseTo(0);
+    expect(result.y).toBeCloseTo(0+radius);
   });
 
   it('should return a point below the origin', () => {
     const origin = { x: 0.5, y: 0.5 };
     const angle = deg2rad(270);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0.5);
-    expect(result.y).toBeCloseTo(0);
+    expect(result.y).toBeCloseTo(0+radius);
   });
 
   it('should return upper corner', () => {
     const origin = { x: 0.5, y: 0.5 };
     const angle = deg2rad(45);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
-    expect(result.x).toBeCloseTo(1);
-    expect(result.y).toBeCloseTo(1);
+-radius
+    expect(result.y).toBeCloseTo(1-radius);
   });
 
   it('should return a point above the origin', () => {
     const origin = { x: 0.5, y: 0.5 };
     const angle = deg2rad(90);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0.5);
-    expect(result.y).toBeCloseTo(1);
+    expect(result.y).toBeCloseTo(1-radius);
   });
 
   it('should return collision with wall above', () => {
     const origin = { x: 0.5, y: 0.5 };
     const angle = deg2rad(60);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
-    expect(result.x).toBeCloseTo(0.7886751);
-    expect(result.y).toBeCloseTo(1);
+    expect(result.x).toBeCloseTo(0.7829016319029167);
+    expect(result.y).toBeCloseTo(1-radius);
   });
 
   it('should return collision with wall above', () => {
     const origin = { x: 0.5, y: 0.5 };
     const angle = deg2rad(15);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getCoordinates();
-    expect(result.x).toBeCloseTo(1);
+-radius
     expect(result.y).toBeCloseTo(0.6339746);
   });
 
@@ -244,34 +256,36 @@ describe('calculating the point of collision', () => {
     const origin = { x: 0.5, y: 0.5 };
     const angle = Math.atan(0.5 / 0.25);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
 
     collision.update();
 
     let result = collision.getCoordinates();
     expect(result.x).toBeCloseTo(0.75);
-    expect(result.y).toBeCloseTo(1);
+    expect(result.y).toBeCloseTo(1-radius);
 
     collision.update();
 
     result = collision.getCoordinates();
-    expect(result.x).toBeCloseTo(1);
+-radius
     expect(result.y).toBeCloseTo(0.5);
 
     collision.update();
 
     result = collision.getCoordinates();
-    expect(result.x).toBeCloseTo(0.75);
-    expect(result.y).toBeCloseTo(0);
+    expect(result.x).toBeCloseTo(0.75-radius);
+    expect(result.y).toBeCloseTo(0+radius);
   });
 
   it('should never go below zero (this is a bug)', () => {
     const yDest = 0.12322229749486029;
-    const xDest = 1;
+    const radius = 0.01;
+    const xDest = 1-radius;
     const origin = { x: 0.5, y: 0.5 };
     const angle = Math.atan((yDest - origin.y) / (xDest - origin.x));
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const collision = new Collision(origin, angle, speed, radius);
 
     collision.update();
 
@@ -291,43 +305,47 @@ describe('calculating the time until the next collision', () => {
     const origin = { x: 0, y: 0.5 };
     const angle = 0;
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getTimeUntilImpact();
 
-    expect(result).toBeCloseTo(1);
+    expect(result).toBeCloseTo(0.98);
   });
 
   it('should take half a second to travel the distance a half with the speed of one per second', function () {
     const origin = { x: 0.5, y: 0.5 };
     const angle = 0;
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getTimeUntilImpact();
 
-    expect(result).toBeCloseTo(0.5);
+    expect(result).toBeCloseTo(0.48);
   });
 
   it('should calculate the correct distance for a diagonal case', function () {
     const origin = { x: 0.5, y: 0.5 };
     const angle = deg2rad(45);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getTimeUntilImpact();
 
-    expect(result).toBeCloseTo(0.707107);
+    expect(result).toBeCloseTo(0.6829646455628166);
   });
 
   it('should calc an ETA of nearly zero', function () {
     const origin = { x: 0.5, y: 0.5 };
     const angle = deg2rad(45);
     const speed = 10000000000;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
     collision.update();
 
     const result = collision.getTimeUntilImpact();
@@ -341,7 +359,8 @@ describe('resetting a collision', () => {
     const origin = { x: 1, y: 1 };
     const angle = deg2rad(45);
     const speed = 1;
-    const collision = new Collision(origin, angle, speed);
+    const radius = 0.01;
+    const collision = new Collision(origin, angle, speed, radius);
 
     collision.reset();
 
