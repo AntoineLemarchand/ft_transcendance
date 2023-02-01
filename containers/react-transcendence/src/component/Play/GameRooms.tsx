@@ -12,9 +12,24 @@ export function PreMatchRoom(props: { socket: Socket }) {
   const [isGameRunning, setIsGameRunning] = useState(false);
   const [currentGamemode, setCurrentGamemode] = useState(true);
   const [player0, setPlayer0] = useState("");
+  const [init, setInit] = useState(false);
   const params = useParams();
   const navigate = useNavigate();
   const [cookies] = useCookies(["userInfo"]);
+
+  const spectate = () => {
+    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/game/spectate', {
+        credentials: 'include',
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          gameId: params.gid,
+        })
+    }).then(result=>result.status === 404);
+  }
 
   useEffect(() => {
     fetch(
@@ -39,6 +54,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
             setIsGameRunning(true);
           }
           setCurrentGamemode(data.gameInfo.gameObject.gameMode);
+          spectate();
         });
       }
     });
@@ -75,18 +91,20 @@ export function PreMatchRoom(props: { socket: Socket }) {
   }, [currentGamemode]);
 
   useEffect(() => {
-    fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/game/setReady", {
-      credentials: "include",
-      method: userReady ? "POST" : "DELETE",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-      body: JSON.stringify({
-        gameId: params.gid,
-      }),
-    }).then((response) => {
-      if (response.status === 404) navigate("/game");
-    });
+    if (init)
+      fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/game/setReady", {
+        credentials: "include",
+        method: userReady ? "POST" : "DELETE",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+        body: JSON.stringify({
+          gameId: params.gid,
+        }),
+      }).then((response) => {
+        if (response.status === 404) navigate("/game");
+      });
+    setInit(true)
   }, [userReady]);
 
   useEffect(() => {
