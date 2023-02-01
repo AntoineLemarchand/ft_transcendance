@@ -1,16 +1,55 @@
 import 'static/Account/Prompt.scss';
 import { useState, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 
 function TwoFactor() {
   const [twoFaStatus, setTwoFaStatus] = useState(false);
+  const [initComponent, setInitComponent] = useState(false);
   const [qrCode, setQrCode] = useState('');
+  const [currentCode, setCurrentCode] = useState('');
+  const [cookies, setCookies] = useCookies(['auth']);
+  const navigate = useNavigate();
 
-  const ToggleTwoFa = (event) => {
-    setTwoFaStatus(event.target.checked);
-    if (event.target.checked) {
-      fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/2fa/activate', {
+  const connect2fa = () => {
+      fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/login', {
         credentials: "include",
-        method: "GET",
+        method: "POST",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+        body: JSON.stringify({
+          code2fa: currentCode,
+        }),
+      }).then(response => {
+        response.text().then(text => {
+          setCookies('auth', JSON.parse(text),
+            {path: {path: "/", sameSite: 'strict'}}
+          )
+        });
+      })
+      setInitComponent(true);
+  }
+
+  const statusHook = (event) => {
+    if (!initComponent)
+      return;
+    if (!event.target.checked) {
+      fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/deactivate', {
+        credentials: "include",
+        method: "POST",
+      }).then(result => {
+        if (result.status == 401) {
+          alert('please type your code to deactivate')
+        } else {
+          setQrCode('');
+          setTwoFaStatus(false);
+        }
+      })
+    } else {
+      fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/activate', {
+        credentials: "include",
+        method: "POST",
       }).then(response => {
         response.blob().then( (blob: Blob) => {
           const fileReader = new FileReader();
@@ -20,23 +59,21 @@ function TwoFactor() {
           fileReader.readAsDataURL(blob);
         })
       })
-    } else {
-      fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/2fa/deactivate', {
-        credentials: "include",
-        method: "GET",
-      })
-      setQrCode('');
+      setTwoFaStatus(true);
     }
   }
 
   useEffect(() => {
-      fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/2fa/status', {
+      if (!cookies['auth'])
+        navigate('/');
+      fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/status', {
         credentials: "include",
         method: "GET",
       }).then(response => {
         response.text().then(text => setTwoFaStatus(JSON.parse(text).status))
       })
-  })
+      setInitComponent(true);
+  }, [])
 
   return (
     <div className="Prompt">
@@ -45,13 +82,21 @@ function TwoFactor() {
         <label className="switch">
           <input
             type="checkbox"
-            onChange={ToggleTwoFa}
-            checked={twoFaStatus}
-          />
+            onChange={statusHook}
+            checked={twoFaStatus}/>
           <span className="slider"></span>
         </label>
       </header>
-      <img src={qrCode} alt={twoFaStatus ? 'activated' : 'deactivated'} />
+        { twoFaStatus && 
+          <div className="Activated">
+            <img src={qrCode} alt={twoFaStatus ? 'activated' : ''} />
+            <input
+              type="text"
+              value={currentCode}
+              onChange={(event)=>setCurrentCode(event.target.value)}/>
+            <button onClick={connect2fa}>connect</button>
+          </div>
+        }
     </div>
   )
 }

@@ -67,6 +67,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('2fa/login')
   async login2fa(@Request() req: any) {
+    console.log(req.body.code2fa);
     return await this.authService.logIn2fa(req.user.name, req.body.code2fa);
   }
 
