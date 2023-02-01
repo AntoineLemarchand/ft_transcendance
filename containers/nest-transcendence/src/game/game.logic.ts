@@ -41,13 +41,16 @@ export class MinimalPhysics {
   static getShortestDistanceToWall(
     origin: { x: number; y: number },
     angle: number,
+    radius: number,
   ) {
     const distances = { x: Infinity, y: Infinity };
     if (Math.cos(angle) != 0) {
-      distances.x = Math.cos(angle) < 0 ? -origin.x : 1 - origin.x;
+      distances.x =
+        Math.cos(angle) < 0 ? -(origin.x - radius) : 1 - (origin.x + radius);
     }
     if (Math.sin(angle) != 0) {
-      distances.y = Math.sin(angle) < 0 ? -origin.y : 1 - origin.y;
+      distances.y =
+        Math.sin(angle) < 0 ? -(origin.y - radius) : 1 - (origin.y + radius);
     }
     return distances;
   }
@@ -55,8 +58,13 @@ export class MinimalPhysics {
   static calcCollisionCoordinates(
     origin: { x: number; y: number },
     angle: number,
+    radius: number,
   ) {
-    const distances = MinimalPhysics.getShortestDistanceToWall(origin, angle);
+    const distances = MinimalPhysics.getShortestDistanceToWall(
+      origin,
+      angle,
+      radius,
+    );
     const result: { x: number; y: number }[] = [];
     if (Math.cos(angle) != 0) {
       result.push({
@@ -71,9 +79,9 @@ export class MinimalPhysics {
       });
     }
     if (result.length === 1) return result[0];
-    if (MinimalPhysics.isCoordinateOutsideBoundaries(result[0]))
+    if (MinimalPhysics.isCoordinateOutsideBoundaries(result[0], radius))
       return result[1];
-    if (MinimalPhysics.isCoordinateOutsideBoundaries(result[1]))
+    if (MinimalPhysics.isCoordinateOutsideBoundaries(result[1], radius))
       return result[0];
     if (
       Math.pow(result[0].x, 2) + Math.pow(result[0].y, 2) <=
@@ -82,8 +90,16 @@ export class MinimalPhysics {
       return result[0];
     return result[1];
   }
-  private static isCoordinateOutsideBoundaries(input: { x: number; y: number }){
-    return input.y > 1 || input.x > 1 || input.y < 0 || input.x < 0;
+  private static isCoordinateOutsideBoundaries(
+    input: { x: number; y: number },
+    radius: number,
+  ) {
+    return (
+      input.y > 1 - radius ||
+      input.x > 1 - radius ||
+      input.y < 0 + radius ||
+      input.x < 0 + radius
+    );
   }
 
   static getTimeOfCollision(
@@ -91,11 +107,12 @@ export class MinimalPhysics {
     collision: { x: number; y: number },
     angle: number,
     speed: number,
+    radius: number,
   ) {
     const distance = Math.sqrt(
       Math.pow(origin.x - collision.x, 2) + Math.pow(origin.y - collision.y, 2),
     );
-    return distance / speed;
+    return (distance - radius) / speed;
   }
 }
 
@@ -104,7 +121,7 @@ export class PlayerBar {
 
   constructor(
     private position = { x: 0, y: 0.5 },
-    private speed = 0.75,
+    private speed = 0.8,
     private barHeight: number = 0.2,
   ) {
     this.movement = { startTimeStamp: 0, direction: 0 };
@@ -147,6 +164,7 @@ export class Collision {
     private coordinates: { x: number; y: number },
     private angle: number,
     private speed: number,
+    private radius: number,
   ) {}
 
   update() {
@@ -154,19 +172,27 @@ export class Collision {
     this.coordinates = MinimalPhysics.calcCollisionCoordinates(
       this.coordinates,
       this.angle,
+      this.radius,
     );
     this.time = MinimalPhysics.getTimeOfCollision(
       oldCoordinates,
       this.coordinates,
       this.angle,
       this.speed,
+      this.radius,
     );
-    if (this.coordinates.y === 1 || this.coordinates.y === 0)
+    if (
+      this.coordinates.y === 1 - this.radius ||
+      this.coordinates.y === 0 + this.radius
+    )
       this.angle = MinimalPhysics.calcNewAngle(
         this.angle,
         WallDirection.Horizontal,
       );
-    if (this.coordinates.x === 1 || this.coordinates.x === 0)
+    if (
+      this.coordinates.x === 1 - this.radius ||
+      this.coordinates.x === 0 + this.radius
+    )
       this.angle = MinimalPhysics.calcNewAngle(
         this.angle,
         WallDirection.Vertical,

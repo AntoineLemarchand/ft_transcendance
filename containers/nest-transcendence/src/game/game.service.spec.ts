@@ -58,7 +58,7 @@ beforeEach(async () => {
 
 async function finishAGame(p1: string, p2: string) {
   const gameObject = await gameService.initGame(p1, p2);
-  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
+  gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1, 0.01);
   await gameService.setReady(p2, gameObject.getId());
   await gameService.runGame(gameObject);
   // do not put before run game, else await will not work
@@ -249,7 +249,7 @@ describe('running a game', () => {
       .spyOn(broadcastingGateway, 'emitGameUpdate')
       .mockImplementation(jest.fn());
     const gameObject = new GameObject(0, 'p1', 'p2');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1, 0.01);
     gameObject.players[0].score = 8;
 
     await gameService.runGame(gameObject);
@@ -262,7 +262,7 @@ describe('running a game', () => {
       .spyOn(broadcastingGateway, 'emitGameUpdate')
       .mockImplementation(jest.fn());
     const gameObject = new GameObject(0, 'p1', 'p2');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1, 0.01);
     gameObject.players[0].score = 9;
 
     await gameService.runGame(gameObject);
@@ -272,7 +272,7 @@ describe('running a game', () => {
 
   it('should save game once it is finished', async () => {
     const gameObject = new GameObject(0, 'pépé', 'mémé');
-    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1);
+    gameObject.collision = new Collision({ x: 1, y: 1 }, 0, 1, 0.01);
     gameObject.players[0].score = 9;
 
     await gameService.runGame(gameObject);
