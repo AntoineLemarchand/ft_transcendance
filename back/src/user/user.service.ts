@@ -26,7 +26,7 @@ export class UserService {
     private gameService: GameService,
   ) {}
 
-  async getUserInfo(name: string) {
+  async getUserInfo(name: string, accessToken?: string) {
     const test = await this.getUser(name);
     if (!test) return undefined;
     const { password, friends, ...userWithoutPassword } = test;
@@ -60,9 +60,6 @@ export class UserService {
   }
 
   async createUser(user: User) {
-    if (!user.accessToken) {
-      user.accessToken = '';
-    }
     await this.userRepository.save(user);
     await this.channelService.joinChannel(user.getName(), 'welcome', '');
   }

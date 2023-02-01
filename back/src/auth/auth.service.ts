@@ -41,7 +41,7 @@ export class AuthService {
   }
 
   async createUser(userCandidate: CreateUserDTO) {
-    const user = await this.userService.getUser(userCandidate.username, userCandidate.accessToken);
+    const user = await this.userService.getUser(userCandidate.username);
     if (user !== undefined) throw new ErrUnAuthorized('User already exists');
     if (userCandidate.username.includes('_'))
       throw new ErrForbidden('no underscores in usernames');

@@ -7,7 +7,10 @@ export class User {
   public image: Buffer;
   @Column('text')
   public imageFormat: string | undefined;
-  @Column('text')
+  @Column({
+    nullable: false,
+    default: '',
+  })
   public accessToken: string;
   @Column('text', { array: true })
   public friends: string[] = [];

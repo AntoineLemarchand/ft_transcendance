@@ -42,7 +42,6 @@ function SignInFortyTwo() {
     body.append('image', selectedImage);
 
 
-  // STEP 3: SIGN USER IN DB
   fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/auth/signin', {
     method: 'POST',
     body: body,
