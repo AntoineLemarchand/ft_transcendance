@@ -103,6 +103,15 @@ export async function activateTwoFactorAuth(
     .set('Authorization', 'Bearer ' + jwt);
 }
 
+export async function deactivateTwoFactorAuth(
+  callerModule: INestApplication,
+  jwt: any,
+) {
+  return request(callerModule.getHttpServer())
+    .post('/auth/2fa/deactivate')
+    .set('Authorization', 'Bearer ' + jwt);
+}
+
 export async function logInTwoFactor(
   callerModule: INestApplication,
   jwt: any,

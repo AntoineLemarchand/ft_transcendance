@@ -57,6 +57,12 @@ export class AuthController {
     return this.authService.qrCodeStreamPipe(response, qrCode);
   }
 
+  @UseGuards(JwtTwoFactorGuard)
+  @Post('2fa/deactivate')
+  async deactivate2fa(@Request() req: any) {
+    await this.authService.deactivate2fa(req.user.name);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('2fa/login')
   async login2fa(@Request() req: any) {
