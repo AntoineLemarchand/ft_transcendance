@@ -8,6 +8,7 @@ import axios from 'axios';
 import { authenticator } from 'otplib';
 import { toFileStream } from 'qrcode';
 import { Response } from 'express';
+import * as qrCode from 'qrcode';
 
 export class Identity {
   constructor(public name: string, public id: number) {}
@@ -91,8 +92,8 @@ export class AuthService {
     await this.userService.set2faSecret(username, '');
   }
 
-  public async qrCodeStreamPipe(stream: Response, otpPathUrl: string) {
-    return toFileStream(stream, otpPathUrl);
+  public async qrCodeStreamPipe(otpPathUrl: string) {
+    return qrCode.toBuffer(otpAuthUrl);
   }
 
   async logIn2fa(username: string, code2fa: string) {

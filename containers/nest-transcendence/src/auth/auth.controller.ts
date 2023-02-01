@@ -17,6 +17,7 @@ import { Response as ExpressResponse } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from './jwt.auth.guard';
 import { JwtTwoFactorGuard } from './auth.2fa.guard';
+import * as qrCode from 'qrcode';
 
 @Controller()
 export class AuthController {
@@ -50,11 +51,12 @@ export class AuthController {
   @Post('2fa/activate')
   async activate2fa(
     @Request() req: any,
-    @Res({ passthrough: true }) response: ExpressResponse,
+    @Res({ passthrough: true }) res: ExpressResponse,
   ) {
-    const qrCode = await this.authService.activate2fa(req.user.name);
-    response.setHeader('content-type', 'image/png');
-    return this.authService.qrCodeStreamPipe(response, qrCode);
+    const otpAuthUrl = await this.authService.activate2fa(req.user.name);
+    const result = this.authService.qrCodeStreamPipe(otpAuthUrl);
+    res.setHeader('content-type', 'image/png');
+    res.send(result);
   }
 
   @UseGuards(JwtTwoFactorGuard)
