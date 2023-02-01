@@ -23,7 +23,7 @@ function TwoFactor() {
         }),
       }).then(response => {
         response.text().then(text => {
-          setCookies('auth', JSON.parse(text),
+          setCookies('auth', JSON.parse(text).access_token,
             {path: {path: "/", sameSite: 'strict'}}
           )
         });
