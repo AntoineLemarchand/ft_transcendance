@@ -66,8 +66,17 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('2fa/login')
-  async login2fa(@Request() req: any) {
-    return await this.authService.logIn2fa(req.user.name, req.body.code2fa);
+  async login2fa(
+    @Request() req: any,
+    @Res({ passthrough: true }) res: ExpressResponse,
+  ) {
+    const token = await this.authService.logIn2fa(
+      req.user.name,
+      req.body.code2fa,
+    );
+    res.cookie('token', { access_token: token, sameSite: 'strict' });
+    console.log(token);
+    return token;
   }
 
   @UseGuards(JwtAuthGuard)
