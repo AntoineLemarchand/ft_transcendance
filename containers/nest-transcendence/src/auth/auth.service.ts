@@ -87,6 +87,10 @@ export class AuthService {
     return otpAuthUrl;
   }
 
+  async deactivate2fa(username: string) {
+    await this.userService.set2faSecret(username, '');
+  }
+
   public async qrCodeStreamPipe(stream: Response, otpPathUrl: string) {
     return toFileStream(stream, otpPathUrl);
   }

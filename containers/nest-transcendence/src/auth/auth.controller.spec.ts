@@ -6,7 +6,7 @@ import { User } from '../typeorm';
 import { createTestModule } from '../test.module.utils';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
-import { testTwoFactorAuth } from '../test.request.utils';
+import { deactivateTwoFactorAuth, testTwoFactorAuth } from "../test.request.utils";
 import { authenticator } from 'otplib';
 
 jest.mock('../broadcasting/broadcasting.gateway');
@@ -246,5 +246,21 @@ describe('AuthController', () => {
 
     expect(spy).toHaveBeenCalledWith('Ginette');
     expect(result.body.status).toBe(true);
+  });
+
+  it('should fail to disable 2fa when not logged in with at least 1fa', async () => {
+    const result = await testUtils.deactivateTwoFactorAuth(app, 'invalid jwt');
+
+    expect(result.status).toBe(401);
+  });
+
+  it('should call disable 2fa when logged in', async () => {
+    const spy = jest.spyOn(authService, 'deactivate2fa');
+    await testUtils.signinUser(app, 'Ginette', 'camemb3rt');
+    const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
+    const result = await testUtils.deactivateTwoFactorAuth(app, jwt);
+
+    expect(result.status).toBe(201);
+    expect(spy).toHaveBeenCalledWith('Ginette');
   });
 });
