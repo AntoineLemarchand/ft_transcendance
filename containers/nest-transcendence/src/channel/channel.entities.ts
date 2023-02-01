@@ -139,14 +139,12 @@ export class Channel {
   }
 
   private hashPassword(plaintextPassword: string) {
-    const bcrypt = require('bcrypt');
     const saltRounds = 10;
 
     this.password = bcrypt.hashSync(plaintextPassword, saltRounds);
   }
 
   comparePassword(plaintextPassword: string) {
-    const bcrypt = require('bcrypt');
     return bcrypt.compareSync(plaintextPassword, this.password);
   }
 

@@ -18,6 +18,7 @@ Object.defineProperty(performance, 'now', {
   configurable: true,
   writable: true,
 });
+jest.spyOn(global, "setTimeout").mockImplementation(jest.fn());
 
 jest.spyOn(performance, 'now').mockImplementationOnce(() => 1);
 jest.mock('../broadcasting/broadcasting.gateway');
