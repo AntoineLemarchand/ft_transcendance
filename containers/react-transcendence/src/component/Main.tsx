@@ -35,6 +35,24 @@ function Main(props: {component: any, socket: Socket}) {
   useEffect(() => {
     if (cookie['auth'] === undefined || cookie['userInfo'] === undefined)
       navigate('/');
+    fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/status', {
+      credentials: "include",
+      method: "GET",
+    }).then(response => {
+      if (response.status === 401)
+        ProcessLogout();
+      response.text()
+      .then(text => {
+        if (JSON.parse(text).status === true)
+          fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/test', {
+            credentials: "include",
+            method: "GET",
+          }).then(response => {
+            if (response.status === 401)
+              navigate('/twofactor')
+          })
+      })
+    })
   }, []);
 
 
