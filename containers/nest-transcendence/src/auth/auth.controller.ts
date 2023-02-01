@@ -54,9 +54,8 @@ export class AuthController {
     @Res({ passthrough: true }) res: ExpressResponse,
   ) {
     const otpAuthUrl = await this.authService.activate2fa(req.user.name);
-    const result = this.authService.qrCodeStreamPipe(otpAuthUrl);
     res.setHeader('content-type', 'image/png');
-    res.send(result);
+    res.send(await this.authService.qrCodeStreamPipe(otpAuthUrl));
   }
 
   @UseGuards(JwtTwoFactorGuard)

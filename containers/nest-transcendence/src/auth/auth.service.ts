@@ -93,7 +93,7 @@ export class AuthService {
   }
 
   public async qrCodeStreamPipe(otpPathUrl: string) {
-    return qrCode.toBuffer(otpPathUrl);
+    return await qrCode.toBuffer(otpPathUrl);
   }
 
   async logIn2fa(username: string, code2fa: string) {
