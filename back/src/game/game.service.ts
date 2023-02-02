@@ -105,8 +105,10 @@ export class GameService {
   async setReady(executorName: string, gameId: number) {
     const game = await this.currentGames.findOne(gameId);
     await this.prohibitNonPlayerActions(executorName, game);
+    const prevState = game.getProgress();
     game.setReady(executorName);
-    if (game.getProgress() === GameProgress.RUNNING) this.runGame(game);
+    if (game.getProgress() === GameProgress.RUNNING && prevState !==
+        GameProgress.RUNNING) this.runGame(game);
   }
 
   async unsetReady(executorName: string, gameId: number) {

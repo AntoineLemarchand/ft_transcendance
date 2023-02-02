@@ -2,37 +2,49 @@ import 'static/Account/Prompt.scss';
 import { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
+import { Socket } from 'socket.io-client';
 
-function TwoFactor() {
+function TwoFactor(props: {socket: Socket}) {
   const [twoFaStatus, setTwoFaStatus] = useState(false);
   const [initComponent, setInitComponent] = useState(false);
   const [qrCode, setQrCode] = useState('');
   const [currentCode, setCurrentCode] = useState('');
-  const [cookies, setCookies] = useCookies(['auth']);
+  const [cookies, setCookies, removeCookies] = useCookies(['auth']);
   const navigate = useNavigate();
 
   const connect2fa = () => {
-      fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/login', {
-        credentials: "include",
-        method: "POST",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-        },
-        body: JSON.stringify({
-          code2fa: currentCode,
-        }),
-      }).then(response => {
-        response.text().then(text => {
-          setCookies('auth', JSON.parse(text).access_token,
-            {path: {path: "/", sameSite: 'strict'}}
-          )
-          navigate('/profile');
-        });
-      })
+    if (currentCode.length !== 6 || isNaN(+currentCode) ||
+      Number(currentCode) < 0) {
+        alert('Wrong code format');
+        setCurrentCode('');
+        return;
+      }
+    fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/login', {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+      body: JSON.stringify({
+        code2fa: currentCode,
+      }),
+    }).then(response => {
+      if (response.status === 401) {
+        alert('Invalid code');
+        setCurrentCode('');
+        return;
+      }
+      response.text().then(text => {
+        setCookies('auth', JSON.parse(text).access_token,
+          {path: {path: "/", sameSite: 'strict'}}
+        )
+        navigate('/profile');
+      });
+    })
   }
 
   const statusHook = (event) => {
-    if (!initComponent)
+    if (!initComponent || !cookies['auth'])
       return;
     if (!event.target.checked) {
       fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/deactivate', {
@@ -94,7 +106,13 @@ function TwoFactor() {
               type="text"
               value={currentCode}
               onChange={(event)=>setCurrentCode(event.target.value)}/>
-            <button onClick={connect2fa}>connect</button>
+            <button onClick={connect2fa}>Connect</button>
+            <button onClick={()=>{
+              removeCookies('auth', {path: '/'});
+              props.socket.close();
+              navigate('/')}
+            }>
+              Logout</button>
           </div>
         }
     </div>

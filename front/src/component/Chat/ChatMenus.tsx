@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useCookies } from 'react-cookie';
-
 import 'static/Chat/ChatMenus.scss';
-import { FaUser, FaUsers } from 'react-icons/fa'
+import { FaUser, FaUsers } from 'react-icons/fa';
+import { User, updateUserInfo} from '../../utils/User';
 
 export function ChannelModifyMenu(props: {channel: string, callback: Function}) {
   const [ newPassword, setNewPassword ] = useState('')
@@ -114,10 +113,11 @@ export function SearchMenu( props: {
   callback: Function,
 	toggle: React.MouseEventHandler<HTMLDivElement>,
 }) {
-	const [searchedChannels, setSearchedChannels] = useState<string[]>([])
-	const [searchedUsers, setSearchedUsers] = useState<string[]>([])
-	const [channelName, setChannelName] = useState<string>('')
-	const [channelPassword, setChannelPassword] = useState<string>('')
+	const [searchedChannels, setSearchedChannels] = useState<string[]>([]);
+	const [searchedUsers, setSearchedUsers] = useState<string[]>([]);
+	const [channelName, setChannelName] = useState<string>('');
+	const [channelPassword, setChannelPassword] = useState<string>('');
+  const [userInfo, setUserInfo] = useState<User>();
 
 	const updateSearchedChannels = (query: string) => {
     fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/channel/getMatchingNames/' + query , {
@@ -222,9 +222,9 @@ export function SearchMenu( props: {
 	}
 
 	useEffect(()=> {
+    updateUserInfo(setUserInfo);
 		updateSearchedChannels('');
 	}, [])
-	const [ cookie ,,] = useCookies(['userInfo']);
 
 	if (channelName === '') {
 		return (
@@ -246,7 +246,7 @@ export function SearchMenu( props: {
 						}
 						{
 							searchedUsers.map((username: string, idx: number) => {
-                return ( (username !== cookie['userInfo'].name) &&
+                return ( (username !== userInfo.name) &&
                   <button key={idx} value={username} onClick={directMessage}>
                     <FaUser /> {username}
                   </button>
