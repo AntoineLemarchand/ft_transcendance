@@ -3,6 +3,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
+  IsOptional,
   Length,
   max,
 } from 'class-validator';
@@ -14,7 +15,11 @@ export class CreateUserDTO {
   username: string;
   @IsNotEmpty()
   password: string;
+  @IsOptional()
   image?: Express.Multer.File;
+  @IsOptional()
+  @IsString()
+  accessToken?: any;
 }
 
 export class TwoFactorDTO {
