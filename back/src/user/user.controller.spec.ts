@@ -6,9 +6,9 @@ import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
 import { User } from '../typeorm';
 import { UserService } from './user.service';
 import { createTestModule } from '../test.module.utils';
-import { Server, Socket } from "socket.io";
-import { BroadcastingGateway } from "../broadcasting/broadcasting.gateway";
-import { RoomHandler } from "../broadcasting/broadcasting.roomHandler";
+import { Server, Socket } from 'socket.io';
+import { BroadcastingGateway } from '../broadcasting/broadcasting.gateway';
+import { RoomHandler } from '../broadcasting/broadcasting.roomHandler';
 
 //the mocks are required to test without opening a real Socket.io Gateway on every test
 jest.mock('../broadcasting/broadcasting.gateway');
@@ -76,14 +76,14 @@ beforeEach(async () => {
 
 describe('Making friends', () => {
   it('should return 404 on adding unexisting friend', async () => {
-    const result = await testUtils.addFriend(app, jwt, 'non existing user');
+    const result = await testUtils.addFriend(app, jwt, 'nonExistingUser');
 
     expect(result.status).toBe(404);
   });
 
   it('should return 401 on adding friend twice', async () => {
     await testUtils.signinUser(app, 'JayDee', 'yeah');
-    await testUtils.addFriend(app, jwt, 'JayDee');
+    const tmp = await testUtils.addFriend(app, jwt, 'JayDee');
 
     const response = await testUtils.addFriend(app, jwt, 'JayDee');
     const result = await testUtils.getUserData(app, jwt, 'Thomas');
@@ -101,9 +101,9 @@ describe('Making friends', () => {
     expect(result.status).toBe(201);
   });
 
-  it('should return 201 and a list of friends', async () => {
-    await testUtils.signinUser(app, 'new Friend', 'yeah');
-    await testUtils.addFriend(app, jwt, 'new Friend');
+  it('should return 200 and a list of friends', async () => {
+    await testUtils.signinUser(app, 'newFriend', 'yeah');
+    await testUtils.addFriend(app, jwt, 'newFriend');
 
     const result = await testUtils.getUserData(app, jwt, 'Thomas');
 
@@ -116,7 +116,7 @@ describe('Making friends', () => {
     await testUtils.signinUser(app, 'JayDee', 'yeah');
     testUtils.addFriend(app, jwt, 'JayDee');
 
-    const result = await testUtils.removeFriend(app, jwt, 'not my friend');
+    const result = await testUtils.removeFriend(app, jwt, 'notMyFriend');
 
     expect(result.status).toBe(404);
   });
@@ -136,7 +136,7 @@ describe('Making friends', () => {
 
 describe('Getting user info', () => {
   it('should return 404 on non existing user info', async () => {
-    const result = await testUtils.getUserData(app, jwt, 'non existing user');
+    const result = await testUtils.getUserData(app, jwt, 'nonExistingUser');
 
     expect(result.status).toBe(404);
   });
@@ -209,14 +209,14 @@ describe('Getting user info', () => {
 
     expect(result.status).toBe(200);
     expect(result.body).toStrictEqual(Buffer.from('test image buffer'));
-  })
+  });
 
   it('should return 200 and set another image', async () => {
     const testImage: Buffer = Buffer.from('test image buffer');
 
     await request(app.getHttpServer())
       .post('/user/image')
-      .attach("image", testImage, "test.png")
+      .attach('image', testImage, 'test.png')
       .set('Authorization', 'Bearer ' + jwt);
     const result = await request(app.getHttpServer())
       .get('/user/image/Thomas')
@@ -224,7 +224,7 @@ describe('Getting user info', () => {
 
     expect(result.status).toBe(200);
     expect(result.body).toStrictEqual(Buffer.from('test image buffer'));
-  })
+  });
 });
 
 describe('Login', () => {

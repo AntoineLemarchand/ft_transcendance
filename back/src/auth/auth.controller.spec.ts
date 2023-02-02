@@ -6,7 +6,6 @@ import { User } from '../typeorm';
 import { createTestModule } from '../test.module.utils';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
-import { deactivateTwoFactorAuth, testTwoFactorAuth } from "../test.request.utils";
 import { authenticator } from 'otplib';
 
 jest.mock('../broadcasting/broadcasting.gateway');
@@ -77,7 +76,7 @@ describe('AuthController', () => {
   it('should return 403 on underscore in username', async () => {
     return testUtils
       .signinUser(app, '_illegal_name', 'wrong password')
-      .then((response) => expect(response.status).toBe(403));
+      .then((response) => expect(response.status).toBe(400));
   });
 
   it('should return 201 and a token when creating user', async () => {

@@ -115,6 +115,8 @@ export class ChannelService {
         );
     }
     async function isJoiningAllowed() {
+      if (channel.channelName === 'welcome')
+        return ;
       if (
         channel.getType() == 'privateChannel' &&
         targetUsername != channel.getAdmins()[0]

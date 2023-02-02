@@ -13,7 +13,7 @@ import { GameStat } from '../game/game.entities';
 jest.spyOn(Channel.prototype, 'addMessage');
 jest.spyOn(BroadcastingGateway.prototype, 'emitMessage');
 jest.mock('../broadcasting/broadcasting.gateway');
-jest.spyOn(global, "setTimeout").mockImplementation(jest.fn());
+jest.spyOn(global, 'setTimeout').mockImplementation(jest.fn());
 
 let channelService: ChannelService;
 let broadcasting: BroadcastingGateway;
@@ -344,6 +344,11 @@ describe('Administrating a channel', () => {
         'newPassword',
       ),
     ).toBeTruthy();
+  });
+
+  it('should ignore password of welcome channel', async () => {
+    await channelService.setPassword('admin', 'newPassword', 'welcome');
+    await userService.createUser(new User('does not know the', 'password'));
   });
 
   it('should throw if trying mute to a member without being an admin', async () => {

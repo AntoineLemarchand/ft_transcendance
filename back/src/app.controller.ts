@@ -1,8 +1,6 @@
-import { Body, Controller, Get, Post, Delete, Request, UseGuards } from '@nestjs/common';
-import { HttpException, HttpStatus} from '@nestjs/common';
-import { LocalAuthGuard } from './auth/local-auth.guard';
-import { Identity } from './auth/auth.service';
+import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt.auth.guard';
+<<<<<<< HEAD:back/src/app.controller.ts
 import { UserService } from './user/user.service'
 
 export class CreateUserDTO {
@@ -11,9 +9,11 @@ export class CreateUserDTO {
   accessToken: string;
   image?: Express.Multer.File;
 }
+=======
+>>>>>>> origin/api:containers/nest-transcendence/src/app.controller.ts
 
 class RequestBody {
-	readonly name: string;
+  readonly name: string;
 }
 
 @Controller()

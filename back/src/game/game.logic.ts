@@ -152,8 +152,10 @@ export class PlayerBar {
   }
 
   isContact(point: { x: number; y: number }) {
-    if (this.position.y - this.barHeight / 2 > point.y) return false;
-    if (this.position.y + this.barHeight / 2 < point.y) return false;
+    if (this.getPositionAtT(Date.now()).y - this.barHeight / 2 > point.y)
+      return false;
+    if (this.getPositionAtT(Date.now()).y + this.barHeight / 2 < point.y)
+      return false;
     return true;
   }
 }

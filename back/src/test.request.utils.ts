@@ -289,7 +289,7 @@ export async function addChannelAdmin(
     .set('Authorization', 'Bearer ' + jwt)
     .send({
       channelName: channelName,
-      adminCandidateName: targetUsername,
+      adminCandidate: targetUsername,
     });
   return response;
 }
@@ -409,15 +409,13 @@ export async function setReadyForGame(
 export async function setMode(
   callerModule: INestApplication,
   jwt: any,
-	username: string,
   gameId: number,
 ) {
   return request(callerModule.getHttpServer())
     .post('/game/setMode')
     .set('Authorization', 'Bearer ' + jwt)
     .send({
-			username: username.toString(),
-      gameId: gameId,
+      gameId: gameId.toString(),
     });
 }
 

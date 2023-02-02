@@ -131,24 +131,24 @@ describe('starting a game', () => {
   it('should call appropriate service (setMode)', async function () {
     const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
     await testUtils.initGame(app, jwt, 'Thomas');
-	
-		const spy = jest.spyOn(gameService, 'setMode');	
-		await testUtils.setMode(app, jwt, 'admin', 0);
-    
-		expect(spy).toHaveBeenCalledWith('admin', 0);
+
+    const spy = jest.spyOn(gameService, 'setMode');
+    const result = await testUtils.setMode(app, jwt, 0);
+
+    expect(spy).toHaveBeenCalledWith('admin', 0);
   });
-  
-	it('should call appropriate service (getMode)', async function () {
+
+  it('should call appropriate service (getMode)', async function () {
     const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
     await testUtils.initGame(app, jwt, 'Thomas');
-	
-		const spy = jest.spyOn(gameService, 'getMode');	
-		await testUtils.getMode(app, jwt, 0);
-    
-		expect(spy).toHaveBeenCalledWith(0);
+
+    const spy = jest.spyOn(gameService, 'getMode');
+    await testUtils.getMode(app, jwt, 0);
+
+    expect(spy).toHaveBeenCalledWith(0);
   });
-  
-	it('should fail if user not logged in', async function () {
+
+  it('should fail if user not logged in', async function () {
     const jwt = await testUtils.getLoginToken(app, 'admin', 'admin');
     await testUtils.initGame(app, jwt, 'Thomas');
     const result = await testUtils.setReadyForGame(app, 'invalid token', 0);

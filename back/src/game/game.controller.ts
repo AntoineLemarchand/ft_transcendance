@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -9,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { GameService } from './game.service';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
+import { UserRefDTO } from '../user/user.dto';
+import { GameCreationDTO, GameRefDTO, GameRefParamDTO } from "./game.dto";
 
 @Controller()
 export class GameController {
@@ -16,55 +19,55 @@ export class GameController {
 
   @UseGuards(JwtAuthGuard)
   @Post('init')
-  async createGame(@Request() req: any) {
+  async createGame(@Request() req: any, @Body() input: GameCreationDTO) {
     return {
       gameObject: await this.gameService.initGame(
         req.user.name,
-        req.body.player2,
+        input.player2,
       ),
     };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('setMode')
-  async setMode(@Request() req: any) {
-    await this.gameService.setMode(req.user.name, parseInt(req.body.gameId));
+  async setMode(@Request() req: any, @Body() input: GameRefDTO) {
+    await this.gameService.setMode(req.user.name, parseInt(input.gameId));
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('unsetMode')
-  async unsetMode(@Request() req: any) {
-    await this.gameService.unsetMode(req.user.name, parseInt(req.body.gameId));
+  async unsetMode(@Request() req: any, @Body() input: GameRefDTO) {
+    await this.gameService.unsetMode(req.user.name, parseInt(input.gameId));
   }
-  
-	@UseGuards(JwtAuthGuard)
+
+  @UseGuards(JwtAuthGuard)
   @Get('getMode/:id')
-  async getMode(@Param() params: any) {
+  async getMode(@Param() params: GameRefParamDTO) {
     return { games: this.gameService.getMode(parseInt(params.id)) };
   }
-  
-	@UseGuards(JwtAuthGuard)
+
+  @UseGuards(JwtAuthGuard)
   @Post('setReady')
-  async setReady(@Request() req: any) {
-    await this.gameService.setReady(req.user.name, parseInt(req.body.gameId));
+  async setReady(@Request() req: any, @Body() input: GameRefDTO) {
+    await this.gameService.setReady(req.user.name, parseInt(input.gameId));
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('spectate')
-  async beginSpectating(@Request() req: any) {
-    await this.gameService.beginSpectate(req.user.name, parseInt(req.body.gameId));
+  async beginSpectating(@Request() req: any, @Body() input: GameRefDTO) {
+    await this.gameService.beginSpectate(req.user.name, parseInt(input.gameId));
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('spectate')
-  async endSpectating(@Request() req: any) {
-    await this.gameService.endSpectate(req.user.name, parseInt(req.body.gameId));
+  async endSpectating(@Request() req: any, @Body() input: GameRefDTO) {
+    await this.gameService.endSpectate(req.user.name, parseInt(input.gameId));
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('setReady')
-  async unsetReady(@Request() req: any) {
-    await this.gameService.unsetReady(req.user.name, parseInt(req.body.gameId));
+  async unsetReady(@Request() req: any, @Body() input: GameRefDTO) {
+    await this.gameService.unsetReady(req.user.name, parseInt(input.gameId));
   }
 
   @UseGuards(JwtAuthGuard)
@@ -75,7 +78,7 @@ export class GameController {
 
   @UseGuards(JwtAuthGuard)
   @Get('getById/:id')
-  async getById(@Param() params: any) {
+  async getById(@Param() params: GameRefParamDTO) {
     return {
       gameInfo: await this.gameService.getInfoObject(parseInt(params.id)),
     };
@@ -103,7 +106,7 @@ export class GameController {
 
   @UseGuards(JwtAuthGuard)
   @Get('getSavedGamesByPlayer/:username')
-  async getSavedGamesByPlayer(@Param() params: any) {
+  async getSavedGamesByPlayer(@Param() params: UserRefDTO) {
     const savedGamesByPlayer = await this.gameService.getSavedGamesByPlayer(
       params.username,
     );
@@ -112,7 +115,7 @@ export class GameController {
 
   @UseGuards(JwtAuthGuard)
   @Get('getWonGamesByPlayer/:username')
-  async getWonGamesByPlayer(@Param() params: any) {
+  async getWonGamesByPlayer(@Param() params: UserRefDTO) {
     const wonGamesByPlayer = await this.gameService.getWonGamesByPlayer(
       params.username,
     );
@@ -121,7 +124,7 @@ export class GameController {
 
   @UseGuards(JwtAuthGuard)
   @Get('getWonGamesCountByPlayer/:username')
-  async getWonGamesCountByPlayer(@Param() params: any) {
+  async getWonGamesCountByPlayer(@Param() params: UserRefDTO) {
     const wonGamesCountByPlayer =
       await this.gameService.getWonGamesCountByPlayer(params.username);
     return { games: wonGamesCountByPlayer };
