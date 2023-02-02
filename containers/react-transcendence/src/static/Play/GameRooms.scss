@@ -1,4 +1,4 @@
-@import 'static/gruvbox';
+@import "static/gruvbox";
 
 .waitingRoom {
   width: 100%;
@@ -8,25 +8,31 @@
   align-items: center;
 
   .Prompt {
-    color: color('textPrimary');
+    color: color("textPrimary");
 
     button {
       width: 5rem;
       height: 2.5rem;
       margin-left: auto;
-      background: color('redSecondary')
+      background: color("redSecondary");
     }
 
     .Gamemode {
       width: 80%;
       display: grid;
       grid-template-columns: 1fr 1fr;
-
     }
 
-    .Gamemode button{width: 100%;}
+    .Gamemode button {
+      width: 100%;
+    }
 
-    .PlayerStatus button{width: 80%;}
+    .PlayerStatus button {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 }
 
@@ -37,7 +43,7 @@
   align-items: center;
 
   .Prompt {
-    color: color('textPrimary');
+    color: color("textPrimary");
     text-align: center;
     .stats {
       display: grid;

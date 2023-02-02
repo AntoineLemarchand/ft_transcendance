@@ -10,13 +10,13 @@ import { ReactComponent as SchoolLogo } from "static/logo.svg";
 
 function Login(props: {socketSetter: Function}) {
   const navigate = useNavigate();
-  const [cookie, setCookie] = useCookies(["auth", "userInfo"]);
+  const [cookie, setCookie] = useCookies(["auth"]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   useEffect(() => {
     if (cookie["auth"] !== undefined) navigate("/home");
-  });
+  }, []);
 
   const initSocket = (token: string) => {
       const newSocket = io("http://" + process.env.REACT_APP_SERVER_IP, {
@@ -43,21 +43,6 @@ function Login(props: {socketSetter: Function}) {
         });
         setCookie("auth", token, { path: "/", sameSite: 'strict' });
         initSocket(token);
-        setCookie("userInfo", "", { path: "/", sameSite: 'strict' });
-        fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/user/info", {
-          credentials: "include",
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }).then((result) => {
-          result.text().then((text) => {
-            let cookie = JSON.parse(text).userInfo;
-            cookie.image = [];
-            setCookie("userInfo", cookie, { path: "/", sameSite: 'strict' });
-          });
-        });
         navigate("/home");
       } else {
         alert("Wrong credentials");

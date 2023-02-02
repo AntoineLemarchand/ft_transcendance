@@ -21,7 +21,7 @@ import '../static/App.scss'
 
 
 function App() {
-  const [cookies] = useCookies(['auth', 'userInfo']);
+  const [cookies] = useCookies(['auth']);
   const [socket, setSocket] = useState<Socket>();
 
   function WrappedComponent( props: {component: any}) {
@@ -60,13 +60,13 @@ function App() {
       component: <WrappedComponent component={<ResultRoom />}/>
     }, {
       path:'/profile',
-      component: <WrappedComponent component={<Profile user={cookies['userInfo']}/>}/>
+      component: <WrappedComponent component={<Profile />}/>
     }, {
       path:'/profile/:uid',
-      component: <WrappedComponent component={<Profile user={cookies['userInfo']}/>}/>
+      component: <WrappedComponent component={<Profile />}/>
     }, {
       path:'/twoFactor',
-      component: <TwoFactor />
+      component: <TwoFactor socket={socket as Socket}/>
     }, {
       path:'/*',
       component: <NotFound />

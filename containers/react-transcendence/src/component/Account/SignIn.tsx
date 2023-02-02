@@ -55,7 +55,7 @@ function SignIn() {
     if (response.status === 201) {
       navigate('/');
     } else {
-      alert('Username already taken');
+      alert('Invalid username');
     }
   })
 }

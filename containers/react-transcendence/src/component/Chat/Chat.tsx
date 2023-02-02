@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
-
 import { GiHamburgerMenu } from "react-icons/gi";
-
 import "static/Chat/Chat.scss";
-
 import ChatName from "./ChatName";
 import * as Menus from "./ChatMenus";
 import ChannelMenu from "./ChannelMenu";
 import { Channel, Message, putMessageInChannels } from "../../utils/Message";
-import { useCookies } from "react-cookie";
 import { Socket } from "socket.io-client";
+import { User, updateUserInfo } from '../../utils/User'
 
 function Chat(props: { socket: Socket }) {
   const [NewConvMenu, SetNewConvMenu] = useState(false);
@@ -19,8 +16,7 @@ function Chat(props: { socket: Socket }) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [joinedChannel, setJoinedChannel] = useState<Channel[]>([]);
   const [blockedUsers, setBlockedUsers] = useState<string[]>([]);
-
-  const [cookie] = useCookies(["auth", "userInfo"]);
+  const [userInfo, setUserInfo] = useState<User>();
 
   const send = (sender: string, content: string, channel: string) => {
     props.socket.emit(
@@ -64,6 +60,7 @@ function Chat(props: { socket: Socket }) {
   };
 
   useEffect(() => {
+    updateUserInfo(setUserInfo)
     updateJoinedChannels();
     // eslint-disable-next-line
   }, []);
@@ -96,14 +93,14 @@ function Chat(props: { socket: Socket }) {
           className="message"
           style={{
             textAlign:
-              message.sender === cookie["userInfo"].name ? "right" : "left",
+              message.sender === userInfo.name ? "right" : "left",
           }}
         >
           <ChatName
             username={message.sender}
             sender={message.sender}
             channel={currentChannel}
-            userName={cookie["userInfo"].name}
+            userName={userInfo.name}
             updateContent={setCurrentChannel}
           />
           <p className="content">
@@ -120,7 +117,7 @@ function Chat(props: { socket: Socket }) {
       let messageContent: string = (event.target as any).value;
       if (messageContent !== "")
         send(
-          cookie["userInfo"].name,
+          userInfo.name,
           messageContent,
           currentChannel.channelName
         );
@@ -129,7 +126,7 @@ function Chat(props: { socket: Socket }) {
   };
 
   return (
-    <div className="Chat">
+    userInfo && <div className="Chat">
       {channelToModify !== "" && (
         <Menus.ChannelModifyMenu
           channel={channelToModify}
@@ -161,7 +158,7 @@ function Chat(props: { socket: Socket }) {
         joinedChannel={joinedChannel}
         SetNewConvMenu={SetNewConvMenu}
         SetSearchMenu={SetSearchMenu}
-        username={cookie["userInfo"] && cookie["userInfo"].name}
+        username={userInfo && userInfo.name}
         updateChannels={updateJoinedChannels}
       />
       <ul className="channelContent">

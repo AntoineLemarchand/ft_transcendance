@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "../../utils/User";
 import UserImage from "./UserImage";
@@ -20,6 +21,7 @@ function ProfileBadge(props: {
   const twoFa = false;
   const isFriend = false;
   const navigate = useNavigate();
+  const [isTwoFa, setIsTwoFa] = useState(false);
 
   const AddFriend = () => {
     fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/user/info", {
@@ -65,8 +67,7 @@ function ProfileBadge(props: {
       response.text().then((content) => {
         const method =
           JSON.parse(content).blockedUsers.indexOf(props.shownUser.name) > -1
-            ? "DELETE"
-            : "POST";
+            ? "DELETE" : "POST";
         fetch(
           "http://" + process.env.REACT_APP_SERVER_IP + "/api/user/blockedUser",
           {
@@ -78,11 +79,20 @@ function ProfileBadge(props: {
             body: JSON.stringify({
               username: props.shownUser.name,
             }),
-          }
-        );
+        });
       });
     });
   };
+
+  useEffect(() => {
+    fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/status', {
+      credentials: "include",
+      method: "GET",
+    }).then(response => {
+      response.text().then(text => setIsTwoFa(JSON.parse(text).status))
+    })
+  }, [])
+
 
   if (
     props.mainUser === undefined ||
@@ -93,12 +103,12 @@ function ProfileBadge(props: {
         <button
           onClick={() => navigate("/TwoFactor")}
           style={{
-            background: twoFa ? "#b8bb26" : "#cc241d",
+            background: isTwoFa ? "#b8bb26" : "#cc241d",
             gridRow: "1/3",
             gridColumn: "1/3",
           }}
         >
-          {twoFa ? <FaLock /> : <FaLockOpen />}
+          {isTwoFa ? <FaLock /> : <FaLockOpen />}
         </button>
       </div>
     );
@@ -128,8 +138,7 @@ function ProfileBadge(props: {
     <div className="profileBadge">
       <button
         onClick={AddFriend}
-        style={{ background: isFriend ? "#fb4934" : "#b8bb26" }}
-      >
+        style={{ background: isFriend ? "#fb4934" : "#b8bb26" }}>
         {" "}
         {isFriend ? <FaUserTimes /> : <FaUserPlus />}
       </button>
