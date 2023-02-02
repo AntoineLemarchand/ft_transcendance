@@ -27,7 +27,7 @@ export class UserService {
   ) {}
 
   async getUserInfo(name: string, accessToken?: string) {
-    const test = await this.getUser(name);
+    const test = await this.getUser(name, accessToken);
     if (!test) return undefined;
     const { password, friends, ...userWithoutPassword } = test;
     return {
@@ -39,9 +39,7 @@ export class UserService {
   async getUser(name: string, accessToken?: string) {
     let test;
     if (accessToken)
-    {
       test = await this.userRepository.findOneBy({ accessToken: accessToken});
-    }
     else
       test = await this.userRepository.findOneBy({ name: name });
     if (!test)

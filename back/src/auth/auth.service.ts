@@ -69,6 +69,6 @@ export class AuthService {
   }
 
   async getUserInfo(user: Identity): Promise<any> {
-    return this.userService.getUser(user.name);
+    return this.userService.getUser(user.name, user.accessToken);
   }
 }

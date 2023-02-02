@@ -71,7 +71,7 @@ services:
       test: ["CMD-SHELL", "curl http://localhost:3000"]
 
   db:
-    container_name: "postgres-transcendence"
+    container_name: "postgres"
     image: postgres:15
     restart: unless-stopped
     init: true

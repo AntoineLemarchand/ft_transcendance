@@ -43,7 +43,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('info')
   async getInfoAboutSelf(@Request() req: any) {
-    const result = await this.userService.getUserInfo(req.user.name);
+    const result = await this.userService.getUserInfo(req.user.name, req.user.accessToken);
     if (result === undefined)
       throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);
     return { userInfo: result };
