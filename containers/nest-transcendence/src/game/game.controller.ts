@@ -11,7 +11,7 @@ import {
 import { GameService } from './game.service';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { UserRefDTO } from '../user/user.dto';
-import { GameCreationDTO, GameRefDTO } from "./game.dto";
+import { GameCreationDTO, GameRefDTO, GameRefParamDTO } from "./game.dto";
 
 @Controller()
 export class GameController {
@@ -42,7 +42,7 @@ export class GameController {
 
   @UseGuards(JwtAuthGuard)
   @Get('getMode/:id')
-  async getMode(@Param() params: GameRefDTO) {
+  async getMode(@Param() params: GameRefParamDTO) {
     return { games: this.gameService.getMode(parseInt(params.id)) };
   }
 
@@ -78,7 +78,7 @@ export class GameController {
 
   @UseGuards(JwtAuthGuard)
   @Get('getById/:id')
-  async getById(@Param() params: GameRefDTO) {
+  async getById(@Param() params: GameRefParamDTO) {
     return {
       gameInfo: await this.gameService.getInfoObject(parseInt(params.id)),
     };

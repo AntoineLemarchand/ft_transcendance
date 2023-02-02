@@ -55,7 +55,7 @@ export class UserService {
 
   async createUser(user: User) {
     await this.userRepository.save(user);
-    await this.channelService.joinChannel(user.getName(), 'welcome', '');
+    await this.channelService.joinChannel(user.getName(), 'welcome', 'ignored');
   }
 
   async deleteUser(name: string) {
