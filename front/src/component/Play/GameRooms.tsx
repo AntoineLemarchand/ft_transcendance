@@ -161,7 +161,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
         </div>
       ) : (
         <div className="LoadingScreen">
-          <img src="/loading.gif" Alt="loading" />
+          <img src="/loading.gif" alt="loading" />
         </div>
       )}
     </div>
@@ -206,7 +206,7 @@ export function MatchMakingRoom(props: { socket: Socket }) {
     <div className="waitingRoom">
       <div className="Prompt">
         <p>waiting for a game{dotAmount}</p>
-        <img src="/loading.gif" Alt="loading" />
+        <img src="/loading.gif" alt="loading" />
       </div>
     </div>
   );

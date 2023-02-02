@@ -5,13 +5,13 @@ import * as bcrypt from 'bcrypt';
 export class User {
   @Column({ type: 'bytea' })
   public image: Buffer;
+  @Column('text')
+  public imageFormat: string | undefined;
   @Column({
     nullable: false,
     default: '',
   })
   public accessToken: string;
-  @Column('text')
-  public imageFormat: string | undefined;
   @Column('text', { array: true })
   public friends: string[] = [];
   @Column('text', { array: true })

@@ -24,8 +24,9 @@ export class AuthService {
 
   async validateUser(username: string, password: string, accessToken?: string): Promise<User> {
     const user = await this.userService.getUser(username, accessToken);
+
     if (user !== undefined) {
-      if (user.comparePassword(password) || user.accessToken) return user;
+      if (user.comparePassword(password)) return user;
       throw new ErrUnAuthorized('Wrong password');
     }
     throw new ErrUnAuthorized('Could not find user');
@@ -58,21 +59,25 @@ export class AuthService {
       newUser.image = userCandidate.image.buffer;
       newUser.imageFormat = userCandidate.image.mimetype;
     }
+
     await this.userService.createUser(newUser);
-    return this.login(new Identity(userCandidate.username, 1, userCandidate.accessToken));
+    return this.login(new Identity(userCandidate.username, 1, ''));
   }
 
   async fetchUser(accessToken: string): Promise<any> {
-    const { data: searchResponse } = await axios.get('https://api.intra.42.fr/v2/me', {
-      headers: {
-        'Authorization': `Bearer ${ accessToken }`,
-      }
-    });
+    const { data: searchResponse } = await axios.get(
+      'https://api.intra.42.fr/v2/me',
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
     return searchResponse;
   }
 
   async getUserInfo(user: Identity): Promise<any> {
-    return this.userService.getUser(user.name, user.accessToken);
+    return this.userService.getUser(user.name);
   }
 
   async activate2fa(username: string) {

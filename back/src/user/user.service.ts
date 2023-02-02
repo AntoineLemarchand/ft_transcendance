@@ -27,7 +27,7 @@ export class UserService {
     private gameService: GameService,
   ) {}
 
-  async getUserInfo(name: string, accessToken?: string) {
+  async getUserInfo(name: string, accessToken?:string) {
     const test = await this.getUser(name, accessToken);
     if (!test) return undefined;
     const { password, friends, ...userWithoutPassword } = test;

@@ -13,8 +13,8 @@ volumes:
 
 services:
 
-  nginx:
-    container_name: "nginx"
+  proxy:
+    container_name: "nginx-transcendence"
     image: nginx:1.23
     restart: unless-stopped
     ports:
@@ -27,51 +27,43 @@ services:
       SERVER_HOST: ${SERVER_URL}
     depends_on:
       - front
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost/"]
 
   front:
-    container_name: "react"
+    container_name: "react-transcendence"
     image: "react:transcendence"
-    build: ./front
-    command: /entrypoint.sh npm run start
     restart: unless-stopped
     init: true
     environment:
       REACT_APP_SERVER_IP: ${SERVER_URL}:${SERVER_PORT}
       REACT_APP_FORTYTWO_CLIENT_ID: ${FORTYTWO_CLIENT_ID}
-    volumes:
-      - ${PWD}/front:/app
     networks:
       - frontend
+    build:
+      context: .
+      dockerfile: front/Dockerfile
     depends_on:
-      - back
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:3000"]
+      - api
 
-
-  back:
-    container_name: "nest"
+  api:
+    container_name: "nest-transcendence"
     image: "nest:transcendence"
-    build: ./back/
-    command: /entrypoint.sh npm run start:dev
     restart: unless-stopped
     init: true
     volumes:
       - $POSTGRES_DATAPATH:${PGDATA}
-      - ${PWD}/back:/app
     networks:
       - frontend
       - backend
     env_file:
         - .env
+    build:
+      context: .
+      dockerfile: back/Dockerfile
     depends_on:
       - db
-    healthcheck:
-      test: ["CMD-SHELL", "curl http://localhost:3000"]
 
   db:
-    container_name: "postgres"
+    container_name: "postgres-transcendence"
     image: postgres:15
     restart: unless-stopped
     init: true
@@ -79,6 +71,3 @@ services:
         - .env
     networks:
       - backend
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${DB_NAME}"]
-

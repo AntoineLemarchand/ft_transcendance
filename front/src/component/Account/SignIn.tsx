@@ -35,7 +35,6 @@ function SignIn() {
     return;
   } else if (password === '') {
     alert('Please provide a password');
-    return;
   } else if (password !== confirmation) {
     alert('Passwords do not match');
     return;

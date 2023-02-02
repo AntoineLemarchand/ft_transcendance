@@ -1,7 +1,11 @@
 #!/bin/sh
 
-cd /app
-npm install --silent
-npm run build
 
-$@
+env | grep REACT_APP > .env
+
+npm run build
+serve -s build
+
+# DEV BUILD
+# CMD ["npm","run","start"]
+

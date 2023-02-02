@@ -1,13 +1,20 @@
-FROM node:alpine
+FROM node:14.17.1-alpine
 
 WORKDIR /app
-VOLUME /app
 
 ENV PATH /app/node_modules/.bin:$PATH
 
-RUN apk add curl 
+COPY front/package.json ./
+COPY front/package-lock.json ./
+RUN npm install && npm install -g serve
 
-COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY front/ /app
+# RUN 'echo salut > .env'
 
-CMD /entrypoint.sh
+ENTRYPOINT  ["sh", "entrypoint.sh"]
+
+# CMD ["env | grep REACT_APP > .env"]
+# # PROD BUILD
+# RUN npm run build
+# CMD ["serve", "-s", "build"]
+

@@ -210,7 +210,6 @@ describe('Getting user info', () => {
     expect(result.status).toBe(200);
     expect(result.body).toStrictEqual(Buffer.from('test image buffer'));
   })
-<<<<<<< HEAD
 
   it('should return 200 and set another image', async () => {
     const testImage: Buffer = Buffer.from('test image buffer');
@@ -226,8 +225,6 @@ describe('Getting user info', () => {
     expect(result.status).toBe(200);
     expect(result.body).toStrictEqual(Buffer.from('test image buffer'));
   })
-=======
->>>>>>> fixUsername
 });
 
 describe('Login', () => {

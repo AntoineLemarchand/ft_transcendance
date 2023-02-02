@@ -1,14 +1,18 @@
 FROM node:alpine
 
 WORKDIR /app
-VOLUME /app
 
 ENV PATH /app/node_modules/.bin:$PATH
 
-RUN apk add curl 
-RUN npm i -g @nestjs/cli
+ADD back/package.json /app/package.json
+RUN npm install
+RUN npm upgrade
 
-COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY back/ /app/
 
-CMD /entrypoint.sh
+# PROD BUILD
+CMD [ "npm", "run", "start:dev" ]
+
+# DEV BUILD
+# CMD [ "npm", "run", start"]
+
