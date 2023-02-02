@@ -21,7 +21,7 @@ import '../static/App.scss'
 
 
 function App() {
-  const [cookies] = useCookies(['auth', 'userInfo']);
+  const [cookies] = useCookies(['auth']);
   const [socket, setSocket] = useState<Socket>();
 
   function WrappedComponent( props: {component: any}) {

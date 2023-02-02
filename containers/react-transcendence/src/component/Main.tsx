@@ -2,9 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useCookies } from 'react-cookie';
 import { Socket } from 'socket.io-client';
-
 import 'static/Main.scss'
-
 import {
 	FaHome,
 	FaTableTennis,
@@ -12,7 +10,6 @@ import {
 	FaUser,
 	FaDoorOpen
 	} from 'react-icons/fa'
-
 import Home from './Home/Home'
 import Play from './Play/Play'
 import Chat from './Chat/Chat'
@@ -23,17 +20,16 @@ function Main(props: {component: any, socket: Socket}) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const tab = location.pathname.split('/')[1];
-  const [cookie,, removeCookie] = useCookies(['auth', 'userInfo']);
+  const [cookie,, removeCookie] = useCookies(['auth']);
 
 	const ProcessLogout = () => {
     removeCookie('auth', {path: '/'});
-    removeCookie('userInfo', {path: '/'});
 		navigate('/');
     props.socket.close();
 	}
 
   useEffect(() => {
-    if (cookie['auth'] === undefined || cookie['userInfo'] === undefined)
+    if (cookie['auth'] === undefined)
       navigate('/');
     fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/status', {
       credentials: "include",

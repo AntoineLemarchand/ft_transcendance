@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
+import { User, updateUserInfo } from "../../utils/User";
 import "static/Play/Game.scss";
 import GameStatus from "./GameStatus";
 
 function Game(props: { firstMove: string; socket: Socket; mode: boolean }) {
   const [currentMove, setCurrentMove] = useState(JSON.parse(props.firstMove));
-  const [cookies] = useCookies(["userInfo"]);
   const [leftPos, setLeftPos] = useState(0.5);
   const [rightPos, setRightPos] = useState(0.5);
+  const [userInfo, setUserInfo] = useState<User>();
   const navigate = useNavigate();
 
   const ballStyle = {
@@ -80,7 +81,7 @@ function Game(props: { firstMove: string; socket: Socket; mode: boolean }) {
       props.socket.emit(
         "gameUpdateToServer",
         JSON.stringify({
-          username: cookies["userInfo"].name,
+          username: userInfo.name,
           action: "startUp",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
@@ -90,7 +91,7 @@ function Game(props: { firstMove: string; socket: Socket; mode: boolean }) {
       props.socket.emit(
         "gameUpdateToServer",
         JSON.stringify({
-          username: cookies["userInfo"].name,
+          username: userInfo.name,
           action: "startDown",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
@@ -106,7 +107,7 @@ function Game(props: { firstMove: string; socket: Socket; mode: boolean }) {
       props.socket.emit(
         "gameUpdateToServer",
         JSON.stringify({
-          username: cookies["userInfo"].name,
+          username: userInfo.name,
           action: "endUp",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
@@ -116,7 +117,7 @@ function Game(props: { firstMove: string; socket: Socket; mode: boolean }) {
       props.socket.emit(
         "gameUpdateToServer",
         JSON.stringify({
-          username: cookies["userInfo"].name,
+          username: userInfo.name,
           action: "endDown",
           timeStamp: Date.now(),
           gameId: currentMove.gameId,
@@ -126,20 +127,7 @@ function Game(props: { firstMove: string; socket: Socket; mode: boolean }) {
   };
 
   useEffect(() => {
-    if (
-      currentMove.players[0].name !== cookies["userInfo"].name &&
-      currentMove.players[1].name !== cookies["userInfo"].name
-    )
-      return;
-    window.addEventListener("keydown", keyDownHandler);
-    window.addEventListener("keyup", keyUpHandler);
-    return function cleanup() {
-      window.removeEventListener("keydown", keyDownHandler);
-      window.removeEventListener("keyup", keyUpHandler);
-    };
-  }, []);
-
-  useEffect(() => {
+    updateUserInfo(setUserInfo);
     const messageListener = (payload: string) => {
       const gameStatus = JSON.parse(payload);
       if (gameStatus.gameId !== JSON.parse(props.firstMove).gameId) return;
@@ -151,6 +139,22 @@ function Game(props: { firstMove: string; socket: Socket; mode: boolean }) {
       props.socket.off("gameUpdateToClient", messageListener);
     };
   }, []);
+
+  useEffect(() => {
+    if (!userInfo)
+      return;
+    if (
+      currentMove.players[0].name !== userInfo.name &&
+      currentMove.players[1].name !== userInfo.name
+    )
+      return;
+    window.addEventListener("keydown", keyDownHandler);
+    window.addEventListener("keyup", keyUpHandler);
+    return function cleanup() {
+      window.removeEventListener("keydown", keyDownHandler);
+      window.removeEventListener("keyup", keyUpHandler);
+    };
+  }, [userInfo]);
 
   return (
     <div className="Game">

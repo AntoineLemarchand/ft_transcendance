@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import { Socket } from "socket.io-client";
 import "static/Play/GameRooms.scss";
 import Game from "./Game";
 import UserImage from "../Profile/UserImage";
+import { updateUserInfo } from "../../utils/User"
 
 export function PreMatchRoom(props: { socket: Socket }) {
+  const [userInfo, setUserInfo] = useState<User>();
   const [userReady, setUserReady] = useState(false);
   const [gameStart, setGameStart] = useState("");
   const [isGameRunning, setIsGameRunning] = useState(false);
@@ -15,7 +16,6 @@ export function PreMatchRoom(props: { socket: Socket }) {
   const [init, setInit] = useState(false);
   const params = useParams();
   const navigate = useNavigate();
-  const [cookies] = useCookies(["userInfo"]);
 
   const spectate = () => {
     fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/game/spectate', {
@@ -32,6 +32,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
   }
 
   useEffect(() => {
+    updateUserInfo(setUserInfo);
     fetch(
       "http://" +
         process.env.REACT_APP_SERVER_IP +
@@ -73,7 +74,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
   };
 
   useEffect(() => {
-    if (cookies["userInfo"] && cookies["userInfo"].name !== player0) return;
+    if (userInfo && userInfo.name !== player0) return;
     const url = currentGamemode ? "setMode" : "unsetMode";
     fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/game/" + url, {
       credentials: "include",
@@ -100,7 +101,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
         },
         body: JSON.stringify({
           gameId: params.gid,
-        }),
+        })
       }).then((response) => {
         if (response.status === 404) navigate("/game");
       });
@@ -134,7 +135,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
     <div className="waitingRoom">
       {!isGameRunning ? (
         <div className="Prompt">
-          {cookies["userInfo"] && player0 === cookies["userInfo"].name && (
+          {userInfo && player0 === userInfo.name && (
             <div className="Gamemode">
               <button
                 onClick={() => setCurrentGamemode(false)}

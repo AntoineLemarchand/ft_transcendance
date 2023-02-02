@@ -9,7 +9,7 @@ import Historic from './Historic'
 import Friends from './Friends'
 import Options from './Options'
 
-import { User } from '../../utils/User'
+import { User, updateUserInfo } from '../../utils/User'
 import { Channel } from "../../utils/Message";
 
 function InviteMenu(props: {callback: any, mainUser: string, shownUser: string}) {
@@ -110,18 +110,7 @@ function Profile() {
 				setShownUser(JSON.parse(text).userInfo);
 			});
 		})
-		fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/user/info/', {
-				credentials: 'include',
-				method: 'GET',
-				headers: {
-						Accept: 'application/json',
-						'Content-Type': 'application/json'
-				},
-		}).then((result) => {
-			result.text().then((text)=> {
-				setMainUser(JSON.parse(text).userInfo);
-			});
-		})
+    updateUserInfo(setMainUser);
 	}, [params.uid])
 
 	if (mainUser && shownUser)
