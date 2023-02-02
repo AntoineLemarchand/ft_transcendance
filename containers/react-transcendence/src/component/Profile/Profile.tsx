@@ -74,22 +74,23 @@ function InviteMenu(props: {callback: any, mainUser: string, shownUser: string})
   )
 }
 
-function Profile(props: {user: any}) {
+function Profile() {
 	const params = useParams();
   const navigate = useNavigate();
 	const [ tabIndex, setTabIndex ] = useState(0);
-	const [ user, setUser ] = useState<User>();
+	const [ mainUser, setMainUser ] = useState<User>();
+	const [ shownUser, setShownUser ] = useState<User>();
   const [ inviteMenu, setInviteMenu ] = useState(false)
 
 	const TabStyle = (selected: boolean): React.CSSProperties =>{
     return selected ? {
       background: '#83a598',
       border: 'inset .2rem #a89984',
-      width: user === undefined || props.user.name === user.name ?
+      width: shownUser === undefined || mainUser.name === shownUser.name ?
         undefined : '50%',
     } : {
       background: '#458588',
-      width: user === undefined || props.user.name === user.name ?
+      width: shownUser === undefined || mainUser.name === shownUser.name ?
         undefined : '50%',
     }
 	}
@@ -106,26 +107,37 @@ function Profile(props: {user: any}) {
 		}).then((result) => {
       if (result.status === 404) {navigate('/profile')}
 			result.text().then((text)=> {
-				setUser(JSON.parse(text).userInfo);
+				setShownUser(JSON.parse(text).userInfo);
 			});
 		})
-	}, [params.uid, props.user])
+		fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/user/info/', {
+				credentials: 'include',
+				method: 'GET',
+				headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json'
+				},
+		}).then((result) => {
+			result.text().then((text)=> {
+				setMainUser(JSON.parse(text).userInfo);
+			});
+		})
+	}, [params.uid])
 
+	if (mainUser && shownUser)
 	return (
-			<div className="Profile">
-        {inviteMenu && user &&
+      <div className="Profile">
+        {inviteMenu &&
         <InviteMenu
           callback={()=>setInviteMenu(false)}
-          mainUser={props.user.name}
-          shownUser={user && user.name}
+          mainUser={mainUser.name}
+          shownUser={shownUser.name}
           />}
-        {user !== undefined &&
-          <ProfileHeader
-            mainUser={props.user}
-            shownUser={user}
-            inviteMenu={()=>setInviteMenu(true)}
-          />
-        }
+        <ProfileHeader
+          mainUser={mainUser}
+          shownUser={shownUser}
+          inviteMenu={()=>setInviteMenu(true)}
+        />
 				<div className="tabs">
 					<button
 						onClick={()=>setTabIndex(0)}
@@ -135,21 +147,18 @@ function Profile(props: {user: any}) {
 						onClick={()=>setTabIndex(1)}
 						style={TabStyle(1 === tabIndex)}
 						>Historic</button>
-          {user && props.user.name === user.name &&
+          {mainUser.name === shownUser.name &&
 					<button
 						onClick={()=>setTabIndex(2)}
 						style={TabStyle(2 === tabIndex)}
 						>Options</button>
           }
 				</div>
-        {
-          user && 
-          <div className="content">
-            {tabIndex === 0 && <Friends friends={user.friends} />}
-            {tabIndex === 1 && <Historic username={user.name} />}
-            {tabIndex === 2 && <Options />}
-          </div>
-        }
+        <div className="content">
+          {tabIndex === 0 && <Friends friends={shownUser.friends} />}
+          {tabIndex === 1 && <Historic username={shownUser.name} />}
+          {tabIndex === 2 && <Options />}
+        </div>
 		</div>
 	)}
 

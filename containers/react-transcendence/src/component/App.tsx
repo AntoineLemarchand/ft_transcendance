@@ -60,10 +60,10 @@ function App() {
       component: <WrappedComponent component={<ResultRoom />}/>
     }, {
       path:'/profile',
-      component: <WrappedComponent component={<Profile user={cookies['userInfo']}/>}/>
+      component: <WrappedComponent component={<Profile />}/>
     }, {
       path:'/profile/:uid',
-      component: <WrappedComponent component={<Profile user={cookies['userInfo']}/>}/>
+      component: <WrappedComponent component={<Profile />}/>
     }, {
       path:'/twoFactor',
       component: <TwoFactor />

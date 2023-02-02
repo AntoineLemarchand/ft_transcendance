@@ -60,7 +60,7 @@ function Main(props: {component: any, socket: Socket}) {
 		{ icon: <FaHome/>, ref: 'home', component: <Home />},
 		{ icon: <FaTableTennis/>, ref: 'game', component: <Play/>},
 		{ icon: <FaCommentDots/>, ref: 'chat', component: <Chat socket={props.socket}/>},
-		{ icon: <FaUser/>, ref: 'profile', component: <Profile user={cookie['userInfo']}/>},
+		{ icon: <FaUser/>, ref: 'profile', component: <Profile/>},
 	];
 
 	const tabStyle= (ref: string): React.CSSProperties  => {
