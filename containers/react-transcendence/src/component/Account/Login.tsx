@@ -16,7 +16,7 @@ function Login(props: {socketSetter: Function}) {
 
   useEffect(() => {
     if (cookie["auth"] !== undefined) navigate("/home");
-  });
+  }, []);
 
   const initSocket = (token: string) => {
       const newSocket = io("http://" + process.env.REACT_APP_SERVER_IP, {

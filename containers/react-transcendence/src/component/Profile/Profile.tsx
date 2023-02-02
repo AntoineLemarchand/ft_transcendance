@@ -81,13 +81,17 @@ function Profile(props: {user: any}) {
 	const [ user, setUser ] = useState<User>();
   const [ inviteMenu, setInviteMenu ] = useState(false)
 
-	const TabStyle = (index: number): React.CSSProperties =>{
-		return index === tabIndex ? {
-			background: '#83a598',
-			border: 'inset .2rem #a89984'
-		} : {
-			background: '#458588'
-		}
+	const TabStyle = (selected: boolean): React.CSSProperties =>{
+    return selected ? {
+      background: '#83a598',
+      border: 'inset .2rem #a89984',
+      width: user === undefined || props.user.name === user.name ?
+        undefined : '50%',
+    } : {
+      background: '#458588',
+      width: user === undefined || props.user.name === user.name ?
+        undefined : '50%',
+    }
 	}
 
 	useEffect(() => {
@@ -105,7 +109,7 @@ function Profile(props: {user: any}) {
 				setUser(JSON.parse(text).userInfo);
 			});
 		})
-	}, [navigate, params.uid])
+	}, [params.uid, props.user])
 
 	return (
 			<div className="Profile">
@@ -125,16 +129,16 @@ function Profile(props: {user: any}) {
 				<div className="tabs">
 					<button
 						onClick={()=>setTabIndex(0)}
-						style={TabStyle(0)}
+						style={TabStyle(0 === tabIndex)}
 					>Friends</button>
 					<button
 						onClick={()=>setTabIndex(1)}
-						style={TabStyle(1)}
+						style={TabStyle(1 === tabIndex)}
 						>Historic</button>
           {user && props.user.name === user.name &&
 					<button
 						onClick={()=>setTabIndex(2)}
-						style={TabStyle(2)}
+						style={TabStyle(2 === tabIndex)}
 						>Options</button>
           }
 				</div>

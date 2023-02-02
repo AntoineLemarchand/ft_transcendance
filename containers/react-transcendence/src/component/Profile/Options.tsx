@@ -2,17 +2,12 @@ import { useState } from 'react';
 import 'static/Profile/Options.scss';
 
 function Options() {
-  const [newNickname, setNewNickname] = useState('');
   const [newImage, setNewImage] = useState<File>();
 
   const updateImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setNewImage(event.target.files[0]);
     }
-  }
-
-  const processNickname = () => {
-    console.log(newNickname);
   }
 
   const processImage = () => {
@@ -39,13 +34,6 @@ function Options() {
 
 	return (
     <div className="Options">
-      <div className="ChangeValue">
-        <p>Nickname:</p>
-        <input
-          type="text"
-          onChange={(event)=>setNewNickname(event.target.value)}/>
-        <button onClick={processNickname}>change</button>
-      </div>
       <div className="ChangeValue">
         <p>Image:</p>
         <input
