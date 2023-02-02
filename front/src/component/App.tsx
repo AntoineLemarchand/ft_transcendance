@@ -8,6 +8,7 @@ import NotFound from './NotFound'
 import Header from './Header'
 import Login from './Account/Login'
 import SignIn from './Account/SignIn'
+import SignInFortyTwo from './Account/SignInFortyTwo'
 import TwoFactor from './Account/TwoFactor'
 
 import Home from './Home/Home'
@@ -37,6 +38,9 @@ function App() {
     }, {
       path: '/signin',
       component: <SignIn />
+    }, {
+      path: '/signinFortyTwo',
+      component: <SignInFortyTwo />
     }, {
       path: '/home',
       component: <WrappedComponent component={<Home />}/>

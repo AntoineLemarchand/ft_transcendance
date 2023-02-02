@@ -5,6 +5,11 @@ import * as bcrypt from 'bcrypt';
 export class User {
   @Column({ type: 'bytea' })
   public image: Buffer;
+  @Column({
+    nullable: false,
+    default: '',
+  })
+  public accessToken: string;
   @Column('text')
   public imageFormat: string | undefined;
   @Column('text', { array: true })
@@ -23,7 +28,7 @@ export class User {
   @Column({ nullable: true, default: '' })
   secret2fa: string;
 
-  constructor(name: string, password: string, image?: Express.Multer.File) {
+  constructor(name: string, password: string, accessToken: string, image?: Express.Multer.File) {
     this.password = password;
     this.hashPassword(password);
     this.name = name;
@@ -34,6 +39,7 @@ export class User {
       this.image = Buffer.from('');
       this.imageFormat = '';
     }
+    this.accessToken = accessToken;
   }
 
   getName() {

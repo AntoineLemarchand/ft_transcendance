@@ -11,7 +11,7 @@ import { Response } from 'express';
 import * as qrCode from 'qrcode';
 
 export class Identity {
-  constructor(public name: string, public id: number) {}
+  constructor(public name: string, public id: number, public accessToken: string) {}
 }
 
 @Injectable()
@@ -22,11 +22,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<User> {
-    const user = await this.userService.getUser(username);
-
+  async validateUser(username: string, password: string, accessToken?: string): Promise<User> {
+    const user = await this.userService.getUser(username, accessToken);
     if (user !== undefined) {
-      if (user.comparePassword(password)) return user;
+      if (user.comparePassword(password) || user.accessToken) return user;
       throw new ErrUnAuthorized('Wrong password');
     }
     throw new ErrUnAuthorized('Could not find user');
@@ -53,30 +52,27 @@ export class AuthService {
     const newUser: User = new User(
       userCandidate.username,
       userCandidate.password,
+      userCandidate.accessToken
     );
     if (userCandidate.image) {
       newUser.image = userCandidate.image.buffer;
       newUser.imageFormat = userCandidate.image.mimetype;
     }
-
     await this.userService.createUser(newUser);
-    return this.login(new Identity(userCandidate.username, 1));
+    return this.login(new Identity(userCandidate.username, 1, userCandidate.accessToken));
   }
 
   async fetchUser(accessToken: string): Promise<any> {
-    const { data: searchResponse } = await axios.get(
-      'https://api.intra.42.fr/v2/me',
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
+    const { data: searchResponse } = await axios.get('https://api.intra.42.fr/v2/me', {
+      headers: {
+        'Authorization': `Bearer ${ accessToken }`,
+      }
+    });
     return searchResponse;
   }
 
   async getUserInfo(user: Identity): Promise<any> {
-    return this.userService.getUser(user.name);
+    return this.userService.getUser(user.name, user.accessToken);
   }
 
   async activate2fa(username: string) {

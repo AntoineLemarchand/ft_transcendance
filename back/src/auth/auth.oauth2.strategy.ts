@@ -17,14 +17,6 @@ export class Oauth2Strategy extends PassportStrategy(Strategy) {
 
   async validate(accessToken: string): Promise<any> {
     const userData = await this.authService.fetchUser(accessToken);
-    try {
-      await this.authService.validateUser(userData.login, '');
-    } catch (HttpException) {
-      await this.authService.createUser({
-        username: userData.login,
-        password: '',
-      });
-    }
-    return new Identity(userData.login, 999);
+	return new Identity(userData.login, 999, accessToken);
   }
 }

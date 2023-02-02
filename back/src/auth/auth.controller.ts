@@ -93,23 +93,24 @@ export class AuthController {
 
   @Get('oauth/callback')
   @UseGuards(Oauth2Guard)
-  async signinFortyTwo(
+  async callbackFortyTwo(
     @Request() req: Express.Request,
     @Res() res: ExpressResponse,
   ) {
-    const { access_token: token } = await this.authService.login(
-      req.user as Identity,
-    );
-    const userInfo = this.authService.getUserInfo(req.user as Identity);
-    res.cookie('auth', token);
-    res.cookie('userInfo', userInfo);
-    res.redirect(
-      'http://' +
-        process.env.SERVER_URL +
-        ':' +
-        process.env.SERVER_PORT +
-        '/home',
-    );
-    return token;
+    const newUser = req.user as Identity;
+    try {
+      await this.authService.validateUser(newUser.name, '', newUser.accessToken);
+      const { access_token: token } = await this.authService.login(newUser);
+      const userInfo = this.authService.getUserInfo(newUser);
+      res.cookie('auth', token);
+      res.cookie('userInfo', userInfo);
+      res.redirect('http://' + process.env.SERVER_URL + ':' + process.env.SERVER_PORT + '/home');
+      return token;
+    }
+    catch (HttpException) {
+      res.cookie('fortytwo_token', newUser.accessToken);
+      res.redirect('http://' + process.env.SERVER_URL + ':' + process.env.SERVER_PORT +
+                   '/signinFortyTwo');
+    }
   }
 }
