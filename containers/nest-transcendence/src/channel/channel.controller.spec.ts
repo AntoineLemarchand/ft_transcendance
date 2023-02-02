@@ -184,7 +184,6 @@ describe('leaving a channel', () => {
       .send({channelName: 'newChannelName'})
 
     expect(result.status).toBe(200);
-    console.log((await userService.getUser('testUser'))!.getChannelNames())
     expect(
       (await userService.getUser('testUser'))!
         .getChannelNames()
@@ -221,8 +220,9 @@ describe('creating a direct message channel', () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
     await testUtils.signinUser(app, 'Receiver', 'password');
 
-    await createDirectMessage(app, jwt, 'Receiver');
+    const result = await createDirectMessage(app, jwt, 'Receiver');
 
+    expect(result.status).toBe(201);
     expect(spy).toBeCalledWith('Thomas', 'Receiver');
   });
 });
@@ -310,12 +310,12 @@ describe('administrating a channel', () => {
     const response = await testUtils.addChannelAdmin(
       app,
       jwt,
-      'adminCandidateName',
+      'adminCandidate',
       'welcome',
     );
 
     expect(response.status).toBe(401);
-    expect(spy).toHaveBeenCalledWith('Thomas', 'adminCandidateName', 'welcome');
+    expect(spy).toHaveBeenCalledWith('Thomas', 'adminCandidate', 'welcome');
   });
 
   it('should return 401 if not authorized to change the channel password', async () => {

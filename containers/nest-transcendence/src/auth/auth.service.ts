@@ -2,13 +2,13 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/user.entities';
-import { CreateUserDTO } from '../app.controller';
 import { ErrForbidden, ErrUnAuthorized } from '../exceptions';
 import axios from 'axios';
 import { authenticator } from 'otplib';
 import { toFileStream } from 'qrcode';
 import { Response } from 'express';
 import * as qrCode from 'qrcode';
+import { CreateUserDTO } from "./auth.dto";
 
 export class Identity {
   constructor(public name: string, public id: number) {}
@@ -98,7 +98,7 @@ export class AuthService {
 
   async logIn2fa(username: string, code2fa: string) {
     const user = await this.userService.getUser(username);
-    const isValid = await authenticator.verify({
+    const isValid = authenticator.verify({
       token: code2fa,
       secret: user!.secret2fa,
     });

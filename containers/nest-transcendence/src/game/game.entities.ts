@@ -135,7 +135,6 @@ export class GameObject {
   }
 
   private calcScorer() {
-    //console.log(this.collision.getCoordinates());
     if (
       (isAlmostEqual(this.collision.getCoordinates().x, 0+this.radius) &&
       !this.players[0].bar.isContact(this.collision.getCoordinates())) ||

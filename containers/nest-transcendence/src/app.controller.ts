@@ -1,18 +1,8 @@
-import { Body, Controller, Get, Post, Delete, Request, UseGuards } from '@nestjs/common';
-import { HttpException, HttpStatus} from '@nestjs/common';
-import { LocalAuthGuard } from './auth/local-auth.guard';
-import { Identity } from './auth/auth.service';
+import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt.auth.guard';
-import { UserService } from './user/user.service'
-
-export class CreateUserDTO {
-  username: string;
-  password: string;
-  image?: Express.Multer.File;
-}
 
 class RequestBody {
-	readonly name: string;
+  readonly name: string;
 }
 
 @Controller()

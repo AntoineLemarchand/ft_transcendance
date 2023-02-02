@@ -12,12 +12,12 @@ import {
 import { LocalAuthGuard } from './local-auth.guard';
 import { Oauth2Guard } from './Oauth2.guard';
 import { AuthService, Identity } from './auth.service';
-import { CreateUserDTO } from '../app.controller';
 import { Response as ExpressResponse } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from './jwt.auth.guard';
 import { JwtTwoFactorGuard } from './auth.2fa.guard';
 import * as qrCode from 'qrcode';
+import { CreateUserDTO, TwoFactorDTO } from './auth.dto';
 
 @Controller()
 export class AuthController {
@@ -69,13 +69,13 @@ export class AuthController {
   async login2fa(
     @Request() req: any,
     @Res({ passthrough: true }) res: ExpressResponse,
+    @Body() userInput: TwoFactorDTO,
   ) {
     const token = await this.authService.logIn2fa(
       req.user.name,
-      req.body.code2fa,
+      userInput.code2fa,
     );
     res.cookie('token', { access_token: token, sameSite: 'strict' });
-    console.log(token);
     return token;
   }
 
@@ -95,7 +95,7 @@ export class AuthController {
   @UseGuards(Oauth2Guard)
   async signinFortyTwo(
     @Request() req: Express.Request,
-    @Res() res: ExpressResponse,
+    @Res({ passthrough: true }) res: ExpressResponse,
   ) {
     const { access_token: token } = await this.authService.login(
       req.user as Identity,
