@@ -4,32 +4,33 @@ import { Socket } from "socket.io-client";
 import "static/Play/GameRooms.scss";
 import Game from "./Game";
 import UserImage from "../Profile/UserImage";
-import { updateUserInfo } from "../../utils/User"
+import { updateUserInfo } from "../../utils/User";
 
 export function PreMatchRoom(props: { socket: Socket }) {
   const [userInfo, setUserInfo] = useState<User>();
   const [userReady, setUserReady] = useState(false);
   const [gameStart, setGameStart] = useState("");
   const [isGameRunning, setIsGameRunning] = useState(false);
-  const [currentGamemode, setCurrentGamemode] = useState(true);
+  const [currentGamemode, setCurrentGamemode] = useState();
   const [player0, setPlayer0] = useState("");
-  const [init, setInit] = useState(false);
+  const [player1, setPlayer1] = useState("");
+  const [init, setInit] = useState({ready: false, gamemode: false});
   const params = useParams();
   const navigate = useNavigate();
 
   const spectate = () => {
-    fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/game/spectate', {
-        credentials: 'include',
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          gameId: params.gid,
-        })
-    }).then(result=>result.status === 404);
-  }
+    fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/game/spectate", {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        gameId: params.gid,
+      }),
+    }).then((result) => result.status === 404);
+  };
 
   useEffect(() => {
     updateUserInfo(setUserInfo);
@@ -51,6 +52,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
         response.text().then((text) => {
           const data = JSON.parse(text);
           setPlayer0(data.gameInfo.gameObject.players[0].name);
+          setPlayer1(data.gameInfo.gameObject.players[1].name);
           if (data.gameInfo.gameObject && data.gameInfo.gameObject.progress) {
             setIsGameRunning(true);
           }
@@ -61,19 +63,11 @@ export function PreMatchRoom(props: { socket: Socket }) {
     });
   }, []);
 
-  const GamemodeButtonStyle = (gamemode: boolean) => {
-    return gamemode === currentGamemode
-      ? { background: "#83a598", border: "inset" }
-      : { background: "#458588" };
-  };
-
-  const PlayerReadyButton = (isReady: boolean) => {
-    return isReady
-      ? { background: "#b8bb26", border: "inset" }
-      : { background: "#cc241d" };
-  };
-
   useEffect(() => {
+    if (!init.gamemode) {
+      setInit({ready: init.ready, gamemode: true});
+      return;
+    }
     if (userInfo && userInfo.name !== player0) return;
     const url = currentGamemode ? "setMode" : "unsetMode";
     fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/game/" + url, {
@@ -92,8 +86,13 @@ export function PreMatchRoom(props: { socket: Socket }) {
   }, [currentGamemode]);
 
   useEffect(() => {
-    if (init)
-      fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/game/setReady", {
+    if (!init.ready) {
+      setInit({ready: true, gamemode: init.gamemode});
+      return;
+    }
+    fetch(
+      "http://" + process.env.REACT_APP_SERVER_IP + "/api/game/setReady",
+      {
         credentials: "include",
         method: userReady ? "POST" : "DELETE",
         headers: {
@@ -101,19 +100,20 @@ export function PreMatchRoom(props: { socket: Socket }) {
         },
         body: JSON.stringify({
           gameId: params.gid,
-        })
-      }).then((response) => {
-        if (response.status === 404) navigate("/game");
-      });
-    setInit(true)
+        }),
+      }
+    ).then((response) => {
+      if (response.status === 404) navigate("/game");
+    });
   }, [userReady]);
 
   useEffect(() => {
     const messageListener = (payload: string) => {
       if (JSON.parse(payload).gameId == params.gid) {
-        setCurrentGamemode(JSON.parse(payload).gameMode);
+        //setCurrentGamemode(JSON.parse(payload).gameMode);
         setGameStart(payload);
-        setIsGameRunning(true);
+        setPlayer0(JSON.parse(payload).players[0].name);
+        setPlayer1(JSON.parse(payload).players[1].name);
       }
     };
     props.socket?.on("gameUpdateToClient", messageListener);
@@ -121,6 +121,51 @@ export function PreMatchRoom(props: { socket: Socket }) {
       props.socket?.off("gameUpdateToClient", messageListener);
     };
   }, []);
+
+  useEffect(() => {
+    fetch(
+      "http://" +
+        process.env.REACT_APP_SERVER_IP +
+        "/api/game/getById/" +
+        params.gid,
+      {
+        credentials: "include",
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      }
+    ).then((response) => {
+      if (response.status === 404) navigate("/game/" + params.gid);
+      else {
+        response.text().then((text) => {
+          const data = JSON.parse(text);
+          console.log(data);
+          console.log("player0: " + player0);
+          console.log("player1: " + player1);
+          if (userInfo && player0 === userInfo.name)
+            setUserReady(data.gameInfo.gameObject.players[0].ready);
+          else if (userInfo && player1 === userInfo.name)
+            setUserReady(data.gameInfo.gameObject.players[1].ready);
+          setCurrentGamemode(data.gameInfo.gameObject.gameMode);
+          console.log("currentGamemode: " + currentGamemode);
+          console.log("userReady: " + userReady);
+        });
+      }
+    });
+  }, [player0, player1, userReady]);
+
+  const GamemodeButtonStyle = (gamemode: boolean) => {
+    return gamemode === currentGamemode
+      ? { background: "#83a598", border: "inset" }
+      : { background: "#458588" };
+  };
+
+  const PlayerReadyButton = (isReady: boolean) => {
+    return isReady
+      ? { background: "#b8bb26", border: "inset" }
+      : { background: "#cc241d" };
+  };
 
   if (gameStart !== "") {
     return (
@@ -270,3 +315,4 @@ export function ResultRoom() {
     </div>
   );
 }
+
