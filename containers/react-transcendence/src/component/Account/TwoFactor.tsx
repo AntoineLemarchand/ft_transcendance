@@ -13,27 +13,38 @@ function TwoFactor(props: {socket: Socket}) {
   const navigate = useNavigate();
 
   const connect2fa = () => {
-      fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/login', {
-        credentials: "include",
-        method: "POST",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-        },
-        body: JSON.stringify({
-          code2fa: currentCode,
-        }),
-      }).then(response => {
-        response.text().then(text => {
-          setCookies('auth', JSON.parse(text).access_token,
-            {path: {path: "/", sameSite: 'strict'}}
-          )
-          navigate('/profile');
-        });
-      })
+    if (currentCode.length !== 6 || isNaN(+currentCode) ||
+      Number(currentCode) < 0) {
+        alert('Wrong code format');
+        setCurrentCode('');
+        return;
+      }
+    fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/login', {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+      body: JSON.stringify({
+        code2fa: currentCode,
+      }),
+    }).then(response => {
+      if (response.status === 401) {
+        alert('Invalid code');
+        setCurrentCode('');
+        return;
+      }
+      response.text().then(text => {
+        setCookies('auth', JSON.parse(text).access_token,
+          {path: {path: "/", sameSite: 'strict'}}
+        )
+        navigate('/profile');
+      });
+    })
   }
 
   const statusHook = (event) => {
-    if (!initComponent || !cookie['auth'])
+    if (!initComponent || !cookies['auth'])
       return;
     if (!event.target.checked) {
       fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/deactivate', {
