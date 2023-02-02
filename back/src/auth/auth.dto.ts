@@ -13,8 +13,9 @@ export class CreateUserDTO {
   @IsAlphanumeric()
   @Length(1, 15)
   username: string;
-  @IsNotEmpty()
-  password: string;
+  @IsOptional()
+  @IsString()
+  password?: any;
   @IsOptional()
   image?: Express.Multer.File;
   @IsOptional()

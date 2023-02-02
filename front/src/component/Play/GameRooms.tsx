@@ -140,16 +140,11 @@ export function PreMatchRoom(props: { socket: Socket }) {
       else {
         response.text().then((text) => {
           const data = JSON.parse(text);
-          console.log(data);
-          console.log("player0: " + player0);
-          console.log("player1: " + player1);
           if (userInfo && player0 === userInfo.name)
             setUserReady(data.gameInfo.gameObject.players[0].ready);
           else if (userInfo && player1 === userInfo.name)
             setUserReady(data.gameInfo.gameObject.players[1].ready);
           setCurrentGamemode(data.gameInfo.gameObject.gameMode);
-          console.log("currentGamemode: " + currentGamemode);
-          console.log("userReady: " + userReady);
         });
       }
     });
@@ -288,7 +283,6 @@ export function ResultRoom() {
       result.text().then((text) => {
         const status = JSON.parse(text);
         if (!status.gameInfo || !status.gameInfo.gameObject) navigate("/home");
-        //console.log(status);
         setGameStats({
           player1: status.gameInfo.gameObject.players[0].name,
           score1: status.gameInfo.gameObject.players[0].score,

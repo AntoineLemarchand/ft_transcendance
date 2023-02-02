@@ -26,7 +26,8 @@ export class AuthService {
     const user = await this.userService.getUser(username, accessToken);
 
     if (user !== undefined) {
-      if (user.comparePassword(password)) return user;
+      if (user.accessToken || user.comparePassword(password))
+        return user;
       throw new ErrUnAuthorized('Wrong password');
     }
     throw new ErrUnAuthorized('Could not find user');
@@ -80,12 +81,12 @@ export class AuthService {
     return this.userService.getUser(user.name);
   }
 
-  async activate2fa(username: string) {
+  async activate2fa(username: string, token?: string) {
     const secret = authenticator.generateSecret();
     const app_name: string = process.env
       .TWO_FACTOR_AUTHENTICATION_APP_NAME as string;
     const otpAuthUrl = authenticator.keyuri(username, app_name, secret);
-    await this.userService.set2faSecret(username, secret);
+    await this.userService.set2faSecret(username, secret, token);
     return otpAuthUrl;
   }
 
@@ -101,7 +102,7 @@ export class AuthService {
     const user = await this.userService.getUser(username);
     const isValid = authenticator.verify({
       token: code2fa,
-      secret: user!.secret2fa,
+      secret: user ? user.secret2fa : '',
     });
     if (!isValid) throw new ErrUnAuthorized('wrong 2fa code');
     return this.generateJwt({
@@ -109,8 +110,10 @@ export class AuthService {
     });
   }
 
-  async isUserUsing2fa(username: string) {
-    const user = (await this.userService.getUser(username)) as User;
+  async isUserUsing2fa(username: string, token?: string) {
+    const user = (await this.userService.getUser(username, token)) as User;
+    if (!user || !user.secret2fa)
+      return false;
     return user.secret2fa !== '';
   }
 }

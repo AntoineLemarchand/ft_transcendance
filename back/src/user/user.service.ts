@@ -167,8 +167,8 @@ export class UserService {
     this.userRepository.save(user);
   }
 
-  async set2faSecret(username: string, secret: string) {
-    const user = (await this.getUser(username)) as User;
+  async set2faSecret(username: string, secret: string, token?: string) {
+    let user = (await this.getUser(username, token)) as User;
     user.secret2fa = secret;
     await this.userRepository.save(user);
   }

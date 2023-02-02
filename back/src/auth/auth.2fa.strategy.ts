@@ -29,9 +29,8 @@ export class JwtTwoFaStrategy extends PassportStrategy(
   async validate(payload: any): Promise<User | null> {
     const username = payload.user.name;
     const user = await this.userService.getUser(username);
-    if (!user) throw new UnauthorizedException();
-    if (user.secret2fa === '') return user as User;
-    if (!payload.user.hasSucceeded2Fa) throw new UnauthorizedException();
-    return user as User;
+    if (user && (user.secret2fa === '' || payload.user.hasSucceeded2Fa))
+      return user as User;
+    return null;
   }
 }

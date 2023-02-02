@@ -52,7 +52,6 @@ function SignInFortyTwo() {
           return JSON.parse(body).access_token;
         });
         setCookie("auth", token, { path: "/", sameSite: 'strict' });
-        setCookie("userInfo", "", { path: "/", sameSite: 'strict' });
         fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/user/info", {
           credentials: "include",
           method: "GET",
@@ -60,13 +59,7 @@ function SignInFortyTwo() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-        }).then((result) => {
-          result.text().then((text) => {
-            let cookie = JSON.parse(text).userInfo;
-            cookie.image = [];
-            setCookie("userInfo", cookie, { path: "/", sameSite: 'strict' });
-          });
-        });
+        })
         navigate("/home");
       } else {
         alert('Username already taken');

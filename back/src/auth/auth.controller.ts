@@ -8,6 +8,7 @@ import {
   UseGuards,
   UploadedFile,
   UseInterceptors,
+  Header,
 } from '@nestjs/common';
 import { LocalAuthGuard } from './local-auth.guard';
 import { Oauth2Guard } from './Oauth2.guard';
@@ -43,18 +44,18 @@ export class AuthController {
   ) {
     if (image) userCandidate.image = image;
     const token = await this.authService.createUser(userCandidate);
-    res.cookie('token', { access_token: token, sameSite: 'strict' });
     return token;
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('2fa/activate')
+  @Header('content-type', 'image/png')
   async activate2fa(
     @Request() req: any,
     @Res({ passthrough: true }) res: ExpressResponse,
   ) {
-    const otpAuthUrl = await this.authService.activate2fa(req.user.name);
-    res.setHeader('content-type', 'image/png');
+    const otpAuthUrl = await
+      this.authService.activate2fa(req.user.name, req.user.accessToken);
     res.send(await this.authService.qrCodeStreamPipe(otpAuthUrl));
   }
 
@@ -75,14 +76,15 @@ export class AuthController {
       req.user.name,
       userInput.code2fa,
     );
-    res.cookie('token', { access_token: token, sameSite: 'strict' });
+    //res.cookie('token', { access_token: token, sameSite: 'strict' });
     return token;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('2fa/status')
   async get2faStatus(@Request() req: any) {
-    return { status: await this.authService.isUserUsing2fa(req.user.name) };
+    return { status:
+      await this.authService.isUserUsing2fa(req.user.name, req.user.accessToken) };
   }
 
   @UseGuards(JwtTwoFactorGuard)
@@ -97,13 +99,12 @@ export class AuthController {
     @Request() req: Express.Request,
     @Res({ passthrough: true }) res: ExpressResponse,
   ) {
+    console.log(req.user);
     const newUser = req.user as Identity;
     try {
       await this.authService.validateUser(newUser.name, '', newUser.accessToken);
       const { access_token: token } = await this.authService.login(newUser);
-      const userInfo = this.authService.getUserInfo(newUser);
       res.cookie('auth', token);
-      res.cookie('userInfo', userInfo);
       res.redirect('http://' + process.env.SERVER_URL + ':' + process.env.SERVER_PORT + '/home');
       return token;
     }
