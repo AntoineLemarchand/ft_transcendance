@@ -66,7 +66,7 @@ function App() {
       component: <WrappedComponent component={<Profile />}/>
     }, {
       path:'/twoFactor',
-      component: <TwoFactor />
+      component: <TwoFactor socket={socket as Socket}/>
     }, {
       path:'/*',
       component: <NotFound />

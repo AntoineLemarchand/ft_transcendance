@@ -29,8 +29,10 @@ function Main(props: {component: any, socket: Socket}) {
 	}
 
   useEffect(() => {
-    if (cookie['auth'] === undefined)
+    if (cookie['auth'] === undefined) {
+      props.socket?.close();
       navigate('/');
+    }
     fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/status', {
       credentials: "include",
       method: "GET",

@@ -2,13 +2,14 @@ import 'static/Account/Prompt.scss';
 import { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
+import { Socket } from 'socket.io-client';
 
-function TwoFactor() {
+function TwoFactor(props: {socket: Socket}) {
   const [twoFaStatus, setTwoFaStatus] = useState(false);
   const [initComponent, setInitComponent] = useState(false);
   const [qrCode, setQrCode] = useState('');
   const [currentCode, setCurrentCode] = useState('');
-  const [cookies, setCookies] = useCookies(['auth']);
+  const [cookies, setCookies, removeCookies] = useCookies(['auth']);
   const navigate = useNavigate();
 
   const connect2fa = () => {
@@ -32,7 +33,7 @@ function TwoFactor() {
   }
 
   const statusHook = (event) => {
-    if (!initComponent)
+    if (!initComponent || !cookie['auth'])
       return;
     if (!event.target.checked) {
       fetch("http://" + process.env.REACT_APP_SERVER_IP + '/api/auth/2fa/deactivate', {
@@ -94,7 +95,13 @@ function TwoFactor() {
               type="text"
               value={currentCode}
               onChange={(event)=>setCurrentCode(event.target.value)}/>
-            <button onClick={connect2fa}>connect</button>
+            <button onClick={connect2fa}>Connect</button>
+            <button onClick={()=>{
+              removeCookies('auth', {path: '/'});
+              props.socket.close();
+              navigate('/')}
+            }>
+              Logout</button>
           </div>
         }
     </div>
