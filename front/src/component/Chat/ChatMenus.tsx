@@ -69,7 +69,7 @@ export function NewChannelMenu(props: {
       body: JSON.stringify({
           'channelName': channelName,
           'channelPassword': channelPassword,
-          'channelType': isPrivate ? 'privateChannel' : 'standard',
+          'channelType': isPrivate ? 'privateChannel' : 'standardChannel',
       }),
     }).then(response=>{
       if (response.status !== 201)
@@ -163,7 +163,7 @@ export function SearchMenu( props: {
       body: JSON.stringify({
           'channelName': channelName,
           'channelPassword': channelPassword,
-          'channelType': 'standard',
+          'channelType': 'standardChannel',
       }),
     }).then(response=>{
 			return response.status;
@@ -246,7 +246,7 @@ export function SearchMenu( props: {
 						}
 						{
 							searchedUsers.map((username: string, idx: number) => {
-                return ( (username !== userInfo.name) &&
+                return ( userInfo && (username !== userInfo.name) &&
                   <button key={idx} value={username} onClick={directMessage}>
                     <FaUser /> {username}
                   </button>

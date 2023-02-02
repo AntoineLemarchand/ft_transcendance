@@ -20,7 +20,7 @@ function DisplayList(props: {
         channel.admins.includes(props.username) &&
         channel.channelName.indexOf("_") === -1
           ? "1"
-          : "1/3",
+          : "1/4",
     };
   };
 
@@ -37,7 +37,7 @@ function DisplayList(props: {
         }),
       }).then((result) => {
         if (result.status === 401)
-          alert("You cannot leave a channels you created");
+          alert("You cannot leave a channel you created");
         else {
           props.updateChannels();
           props.setCurrentChannel(undefined);
@@ -60,12 +60,10 @@ function DisplayList(props: {
                   ? channel.channelName.split("_")[1]
                   : channel.channelName.split("_")[0])}
           </button>
-          <button
+          {!channel.channelName.includes('_') && <button
             className="leaveButton"
             onClick={() => LeaveChannel(channel.channelName)}
-          >
-            <FaTimes />
-          </button>
+          ><FaTimes /></button>}
           {channel.admins.includes(props.username) &&
             channel.channelName.indexOf("_") === -1 && (
               <button
