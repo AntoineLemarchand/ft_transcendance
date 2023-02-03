@@ -62,6 +62,7 @@ function ChatName(props: {
   };
 
   const MakeAdmin = () => {
+    console.log(props.sender, props.channel.channelName);
     fetch("http://" + process.env.REACT_APP_SERVER_IP + "/api/channel/admin", {
       credentials: "include",
       method: "POST",
@@ -69,7 +70,7 @@ function ChatName(props: {
         "Content-type": "application/json; charset=UTF-8",
       },
       body: JSON.stringify({
-        adminCandidateName: props.sender,
+        adminCandidate: props.sender,
         channelName: props.channel.channelName,
       }),
     }).then((result) => {

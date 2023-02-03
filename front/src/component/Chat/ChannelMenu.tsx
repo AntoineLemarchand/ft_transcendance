@@ -10,6 +10,7 @@ function DisplayList(props: {
   updateChannels: Function;
 }) {
   const ChannelButtonStyle = (channel: Channel) => {
+    console.log(channel.channelName + ' : ' + channel.admins);
     return {
       backgroundColor:
         props.currentChannel === undefined ||

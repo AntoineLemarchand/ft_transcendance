@@ -72,9 +72,9 @@ export class ChannelSetPwdDTO {
 }
 
 export class ChannelMakeAdminDTO {
-  @IsString()
   @Length(1, 15)
   @IsAlphanumeric()
+  @IsString()
   adminCandidate: string;
   @IsNotEmpty()
   @Length(1, 80)
