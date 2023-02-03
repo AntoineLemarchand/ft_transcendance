@@ -57,7 +57,7 @@ function SignIn() {
     if (response.status === 201) {
       navigate('/');
     } else {
-      alert('Invalid username');
+      alert('Invalid username or image');
     }
   })
 }

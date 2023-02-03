@@ -212,7 +212,7 @@ export function SearchMenu( props: {
 	const connectWithPassword = () => {
 		connectToChannel(channelName, channelPassword).then(result=> {
 			if (result === 401) {
-				alert('Wrong Password');
+				alert('Access refused');
 				setChannelPassword('');
 			} else {
 				props.callback();
