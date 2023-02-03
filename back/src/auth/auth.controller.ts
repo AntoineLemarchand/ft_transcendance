@@ -30,6 +30,7 @@ export class AuthController {
     @Request() req: Express.Request,
     @Res({ passthrough: true }) res: ExpressResponse,
   ): Promise<{ access_token: string }> {
+    console.log('salut');
     const token = this.authService.login(req.user as Identity);
     res.cookie('token', { access_token: token, sameSite: 'strict' });
     return token;
