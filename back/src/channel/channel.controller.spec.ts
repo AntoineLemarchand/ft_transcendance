@@ -209,7 +209,7 @@ describe('leaving a channel', () => {
     expect(result.status).toBe(401);
   });
 
-  it('should return 401 when leaving as the owner', async () => {
+  it('should return remove first admin leaving as the owner', async () => {
     const jwt = await testUtils.getLoginToken(app, 'Thomas', 'test');
     await testUtils.joinChannel(app, jwt, 'newChannelName', 'default');
 
@@ -218,7 +218,7 @@ describe('leaving a channel', () => {
       .set('Authorization', 'Bearer ' + jwt)
       .send({channelName: 'newChannelName'})
 
-    expect(result.status).toBe(401);
+    expect(result.status).toBe(200);
   });
 });
 

@@ -164,11 +164,6 @@ export class ChannelController {
       const result = await this.channelService.getChannelByName(
         input.channelName,
       );
-      if (result.isOwner(req.user.name))
-        throw new HttpException(
-          'this user is the owner',
-          HttpStatus.UNAUTHORIZED,
-        );
       await this.channelService.removeFromChannel(
         req.user.name,
         input.channelName,

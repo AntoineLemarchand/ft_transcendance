@@ -135,6 +135,9 @@ export class ChannelService {
 
   async removeFromChannel(username: string, channelName: string) {
     await this.userService.removeChannelName(username, channelName);
+    const result = await this.getChannelByName(channelName);
+    result.admins = result.admins.filter(obj => obj !== username);
+    await this.channelRepository.save(result);
   }
 
   private async addUserToChannel(

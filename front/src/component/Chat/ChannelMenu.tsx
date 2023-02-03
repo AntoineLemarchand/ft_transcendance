@@ -10,7 +10,6 @@ function DisplayList(props: {
   updateChannels: Function;
 }) {
   const ChannelButtonStyle = (channel: Channel) => {
-    console.log(channel.channelName + ' : ' + channel.admins);
     return {
       backgroundColor:
         props.currentChannel === undefined ||
@@ -18,7 +17,8 @@ function DisplayList(props: {
           ? "#458588"
           : "#83a598",
       gridColumn: channel.channelName.indexOf("_") !== -1 ? 
-        "1/4" : (channel.admins.includes(props.username) ? "1" : "1/3"),
+        "1/4" : (channel.admins.length > 0 &&
+        channel.admins[0] === props.username ? "1" : "1/3"),
     };
   };
 
@@ -62,7 +62,7 @@ function DisplayList(props: {
             className="leaveButton"
             onClick={() => LeaveChannel(channel.channelName)}
           ><FaTimes /></button>}
-          {channel.admins.includes(props.username) &&
+          {channel.admins.length > 0 && channel.admins[0] === props.username &&
             channel.channelName.indexOf("_") === -1 && (
               <button
                 className="editButton"
