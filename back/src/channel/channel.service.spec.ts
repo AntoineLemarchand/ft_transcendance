@@ -396,6 +396,18 @@ describe('Administrating a channel', () => {
     ).rejects.toThrow();
   });
 
+  it('should throw if trying mute the owner', async () => {
+    await expect(
+      async () =>
+        await channelService.muteMemberForMinutes(
+          'admin',
+          'admin',
+          15,
+          'welcom',
+        ),
+    ).rejects.toThrow();
+  });
+
   it('should throw if trying to mute a non member user', async () => {
     await expect(
       async () =>

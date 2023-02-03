@@ -43,6 +43,8 @@ export class ChannelService {
       executorName,
       'only admins can mute other members',
     );
+    if (channel.isOwner(mutedUsername))
+      throw new ErrUnAuthorized('An owner cannot be muted');
     const muteCandidate = await this.userService.getUser(mutedUsername);
     if (muteCandidate === undefined) throw new ErrNotFound('User does exist');
     if (!muteCandidate.channelNames.includes(channelName))
