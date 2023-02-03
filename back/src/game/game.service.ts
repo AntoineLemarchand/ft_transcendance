@@ -296,8 +296,8 @@ export class GameService {
   async joinMatchMaking(executorName: string) {
     if (!this.matchMakingQueue.includes(executorName)) {
       this.matchMakingQueue.push(executorName);
-      this.broadcastingGateway.putUserInRoom(executorName, '_waiting_room_');
     }
+    this.broadcastingGateway.putUserInRoom(executorName, '_waiting_room_');
     if (this.matchMakingQueue.length === 2) {
       const game = await this.initGame(
         this.matchMakingQueue[0],
