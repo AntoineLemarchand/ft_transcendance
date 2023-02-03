@@ -72,7 +72,7 @@ function Chat(props: { socket: Socket }) {
       setJoinedChannel(allChannels);
     };
     props.socket?.on("messageToClient", messageListener);
-    if (currentChannel === undefined && joinedChannel.length > 0)
+    if (!currentChannel && joinedChannel.length > 0)
       setCurrentChannel(joinedChannel[0]);
     return () => {
       props.socket?.off("messageToClient", messageListener);

@@ -16,11 +16,8 @@ function DisplayList(props: {
         channel.channelName !== props.currentChannel.channelName
           ? "#458588"
           : "#83a598",
-      gridColumn:
-        channel.admins.includes(props.username) &&
-        channel.channelName.indexOf("_") === -1
-          ? "1"
-          : "1/4",
+      gridColumn: channel.channelName.indexOf("_") !== -1 ? 
+        "1/4" : (channel.admins.includes(props.username) ? "1" : "1/3"),
     };
   };
 
