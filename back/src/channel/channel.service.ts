@@ -25,6 +25,7 @@ export class ChannelService {
   async sendMessage(message: Message): Promise<void> {
     const channel = await this.getChannelByName(message.channel);
     if (channel.isUserMuted(message.sender)) return;
+    if (channel.isUserBanned(message.sender)) return;
     channel.addMessage(message);
     await this.channelRepository.save(channel);
     this.broadcastingGateway.emitMessage(message.channel, message);

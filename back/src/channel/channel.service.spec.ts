@@ -9,6 +9,7 @@ import { DataSource } from 'typeorm';
 import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
 import { ChannelModule } from './channel.module';
 import { GameStat } from '../game/game.entities';
+import { executionCtx } from "pg-mem/types/utils";
 
 jest.spyOn(Channel.prototype, 'addMessage');
 jest.spyOn(BroadcastingGateway.prototype, 'emitMessage');
@@ -277,6 +278,29 @@ describe('Administrating a channel', () => {
     expect(
       (await userService.getUser('bannedUsername'))?.getChannelNames(),
     ).toEqual(['welcome']);
+  });
+
+  it('should not post any messages when user banned', async () => {
+    const spy = jest.spyOn(broadcasting, "emitMessage");
+    await userService.createUser(new User('bannedUsername', ''));
+    await channelService.joinChannel(
+      'bannedUsername',
+      'channelName',
+      'channelPassword',
+    );
+    await channelService.banUserFromChannel(
+      'Thomas',
+      'bannedUsername',
+      'channelName',
+    );
+
+    const msg = new Message();
+    msg.channel = "channelName";
+    msg.sender = "bannedUsername";
+    msg.content = "test";
+    await channelService.sendMessage(msg);
+
+    expect(spy).not.toHaveBeenCalled();
   });
 
   it('should not be allowed to ban unless admin', async () => {

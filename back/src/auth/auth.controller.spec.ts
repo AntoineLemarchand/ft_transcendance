@@ -243,7 +243,7 @@ describe('AuthController', () => {
     const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
     const result = await testUtils.isUsingTwoFactorAuth(app, jwt);
 
-    expect(spy).toHaveBeenCalledWith('Ginette');
+    expect(spy).toHaveBeenCalledWith('Ginette', '');
     expect(result.body.status).toBe(true);
   });
 
@@ -260,6 +260,6 @@ describe('AuthController', () => {
     const result = await testUtils.deactivateTwoFactorAuth(app, jwt);
 
     expect(result.status).toBe(201);
-    expect(spy).toHaveBeenCalledWith('Ginette');
+    expect(spy).toHaveBeenCalledWith('Ginette', '');
   });
 });
