@@ -10,11 +10,18 @@ import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
 import { ChannelModule } from './channel.module';
 import { GameStat } from '../game/game.entities';
 import { executionCtx } from "pg-mem/types/utils";
+import {RoomHandler} from "../broadcasting/broadcasting.roomHandler";
+import {Server} from "socket.io";
 
 jest.spyOn(Channel.prototype, 'addMessage');
 jest.spyOn(BroadcastingGateway.prototype, 'emitMessage');
 jest.mock('../broadcasting/broadcasting.gateway');
 jest.spyOn(global, 'setTimeout').mockImplementation(jest.fn());
+jest
+  .spyOn(BroadcastingGateway.prototype, 'getRoomHandler')
+  .mockImplementation(() => {
+    return new RoomHandler(new Server());
+  });
 
 let channelService: ChannelService;
 let broadcasting: BroadcastingGateway;
@@ -263,6 +270,7 @@ describe('Administrating a channel', () => {
   });
 
   it('should remove the channel from the user when banned', async () => {
+    const spy = jest.spyOn(RoomHandler.prototype, 'leave');
     await userService.createUser(new User('bannedUsername', ''));
     await channelService.joinChannel(
       'bannedUsername',
@@ -278,6 +286,7 @@ describe('Administrating a channel', () => {
     expect(
       (await userService.getUser('bannedUsername'))?.getChannelNames(),
     ).toEqual(['welcome']);
+    expect(spy).toHaveBeenCalledWith('bannedUsername', 'channelName');
   });
 
   it('should not post any messages when user banned', async () => {

@@ -161,6 +161,7 @@ export class ChannelService {
     if (channel.isOwner(bannedUsername))
       throw new ErrForbidden('An owner cannot be banned');
     channel.banUser(bannedUsername);
+    this.broadcastingGateway.getRoomHandler().leave(bannedUsername, channelName);
     await this.userService.removeChannelName(bannedUsername, channelName);
     await this.channelRepository.save(channel);
   }

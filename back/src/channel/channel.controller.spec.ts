@@ -9,6 +9,9 @@ import { DataSource } from 'typeorm';
 import { setupDataSource, TestDatabase } from '../test.databaseFake.utils';
 import { createTestModule } from '../test.module.utils';
 import { User } from '../user/user.entities';
+import {BroadcastingGateway} from "../broadcasting/broadcasting.gateway";
+import {RoomHandler} from "../broadcasting/broadcasting.roomHandler";
+import {Server} from "socket.io";
 
 jest.mock('../broadcasting/broadcasting.gateway');
 jest.mock('@nestjs/typeorm', () => {
@@ -22,6 +25,11 @@ jest.mock('@nestjs/typeorm', () => {
     ...original,
   };
 });
+jest
+  .spyOn(BroadcastingGateway.prototype, 'getRoomHandler')
+  .mockImplementation(() => {
+    return new RoomHandler(new Server());
+  });
 
 let app: INestApplication;
 let userService: UserService;

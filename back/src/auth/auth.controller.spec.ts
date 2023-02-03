@@ -7,6 +7,9 @@ import { createTestModule } from '../test.module.utils';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { authenticator } from 'otplib';
+import {BroadcastingGateway} from "../broadcasting/broadcasting.gateway";
+import {RoomHandler} from "../broadcasting/broadcasting.roomHandler";
+import {Server} from "socket.io";
 
 jest.mock('../broadcasting/broadcasting.gateway');
 
@@ -143,7 +146,7 @@ describe('AuthController', () => {
     const jwt = await testUtils.getLoginToken(app, 'Ginette', 'camemb3rt');
     await testUtils.activateTwoFactorAuth(app, jwt);
 
-    expect(spy).toHaveBeenCalledWith('Ginette');
+    expect(spy).toHaveBeenCalledWith('Ginette', '');
   });
 
   it('should fail to log in with 2fa when not logged in with 1fa', async () => {
@@ -260,6 +263,6 @@ describe('AuthController', () => {
     const result = await testUtils.deactivateTwoFactorAuth(app, jwt);
 
     expect(result.status).toBe(201);
-    expect(spy).toHaveBeenCalledWith('Ginette', '');
+    expect(spy).toHaveBeenCalledWith('Ginette');
   });
 });
