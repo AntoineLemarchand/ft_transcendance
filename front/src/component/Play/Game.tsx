@@ -63,9 +63,8 @@ function Game(props: { firstMove: string; socket: Socket; mode: boolean }) {
       else
         setPosition(
           bar.position.y +
-            ((Date.now() - bar.movement.startTimeStamp) / 1000) *
-              bar.movement.direction *
-              bar.speed
+            ((Date.now() + 200 - bar.movement.startTimeStamp) / 1000) *
+              bar.movement.direction * bar.speed
         );
     };
     const interval = setInterval(() => {

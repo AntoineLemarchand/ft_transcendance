@@ -136,13 +136,13 @@ export class PlayerBar {
       x: this.position.x,
       y:
         this.position.y +
-        ((this.movement.direction *
-          (timeStamp - this.movement.startTimeStamp)) /
-          1000) *
-          this.speed,
+        ((timeStamp - this.movement.startTimeStamp) / 1000) *
+        this.movement.direction * this.speed,
     };
-    if (result.y < this.barHeight / 2) result.y = this.barHeight / 2;
-    if (result.y > 1 - this.barHeight / 2) result.y = 1 - this.barHeight / 2;
+    if (result.y < this.barHeight / 2)
+      result.y = this.barHeight / 2;
+    if (result.y > 1 - this.barHeight / 2)
+      result.y = 1 - this.barHeight / 2;
     return result;
   }
 
@@ -152,9 +152,9 @@ export class PlayerBar {
   }
 
   isContact(point: { x: number; y: number }) {
-    if (this.getPositionAtT(Date.now()).y - this.barHeight / 2 > point.y)
+    if (this.getPositionAtT(Date.now()).y - this.barHeight / 2 > point.y + 0.01)
       return false;
-    if (this.getPositionAtT(Date.now()).y + this.barHeight / 2 < point.y)
+    if (this.getPositionAtT(Date.now()).y + this.barHeight / 2 < point.y - 0.01)
       return false;
     return true;
   }
