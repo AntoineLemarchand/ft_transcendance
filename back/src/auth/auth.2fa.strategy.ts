@@ -26,11 +26,11 @@ export class JwtTwoFaStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: any): Promise<User | null> {
+  async validate(payload: any): Promise<User> {
     const username = payload.user.name;
     const user = await this.userService.getUser(username);
     if (user && (user.secret2fa === '' || payload.user.hasSucceeded2Fa))
       return user as User;
-    return null;
+    throw new UnauthorizedException();
   }
 }
