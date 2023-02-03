@@ -65,16 +65,8 @@ export class AuthService {
     return this.login(new Identity(userCandidate.username, 1, ''));
   }
 
-  async fetchUser(accessToken: string): Promise<any> {
-    const { data: searchResponse } = await axios.get(
-      'https://api.intra.42.fr/v2/me',
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-    return searchResponse;
+  async getFortyTwoUser(accessToken: string): Promise<any> {
+    return (await this.userService.getUser('random', accessToken));
   }
 
   async getUserInfo(user: Identity): Promise<any> {
