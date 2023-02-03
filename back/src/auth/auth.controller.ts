@@ -96,7 +96,7 @@ export class AuthController {
   @UseGuards(Oauth2Guard)
   async callbackFortyTwo(
     @Request() req: Express.Request,
-    @Res({ passthrough: true }) res: ExpressResponse,
+    @Res() res: ExpressResponse,
   ) {
     console.log(req.user);
     const newUser = req.user as Identity;
