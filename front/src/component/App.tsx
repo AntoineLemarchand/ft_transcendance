@@ -84,6 +84,7 @@ function App() {
 
   useEffect(() => {
     if (!socket && cookies['auth']) {
+    console.log('opening socket')
       const newSocket = io("http://" + process.env.REACT_APP_SERVER_IP, {
         withCredentials: true,
         query: { auth: cookies["auth"] },

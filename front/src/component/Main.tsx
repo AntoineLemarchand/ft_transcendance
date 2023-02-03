@@ -26,6 +26,7 @@ function Main(props: {component: any, socket: Socket}) {
     removeCookie('auth', {path: '/'});
 		navigate('/');
     props.socket?.close();
+    console.log('closing socket')
 	}
 
   useEffect(() => {

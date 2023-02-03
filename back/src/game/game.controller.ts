@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { GameService } from './game.service';
-import { JwtAuthGuard } from '../auth/jwt.auth.guard';
+import { JwtTwoFactorGuard } from '../auth/auth.2fa.guard';
 import { UserRefDTO } from '../user/user.dto';
 import { GameCreationDTO, GameRefDTO, GameRefParamDTO } from "./game.dto";
 
@@ -17,7 +17,7 @@ import { GameCreationDTO, GameRefDTO, GameRefParamDTO } from "./game.dto";
 export class GameController {
   constructor(private gameService: GameService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post('init')
   async createGame(@Request() req: any, @Body() input: GameCreationDTO) {
     return {
@@ -28,55 +28,55 @@ export class GameController {
     };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post('setMode')
   async setMode(@Request() req: any, @Body() input: GameRefDTO) {
     await this.gameService.setMode(req.user.name, parseInt(input.gameId));
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post('unsetMode')
   async unsetMode(@Request() req: any, @Body() input: GameRefDTO) {
     await this.gameService.unsetMode(req.user.name, parseInt(input.gameId));
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('getMode/:id')
   async getMode(@Param() params: GameRefParamDTO) {
     return { games: this.gameService.getMode(parseInt(params.id)) };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post('setReady')
   async setReady(@Request() req: any, @Body() input: GameRefDTO) {
     await this.gameService.setReady(req.user.name, parseInt(input.gameId));
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post('spectate')
   async beginSpectating(@Request() req: any, @Body() input: GameRefDTO) {
     await this.gameService.beginSpectate(req.user.name, parseInt(input.gameId));
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Delete('spectate')
   async endSpectating(@Request() req: any, @Body() input: GameRefDTO) {
     await this.gameService.endSpectate(req.user.name, parseInt(input.gameId));
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Delete('setReady')
   async unsetReady(@Request() req: any, @Body() input: GameRefDTO) {
     await this.gameService.unsetReady(req.user.name, parseInt(input.gameId));
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('getRunning')
   async getRunning() {
     return { games: this.gameService.getRunningGames() };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('getById/:id')
   async getById(@Param() params: GameRefParamDTO) {
     return {
@@ -84,27 +84,27 @@ export class GameController {
     };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('getPerUser')
   async getPerUser(@Request() req: any) {
     return { games: this.gameService.getGamesForUser(req.user.name) };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('getSavedGames')
   async getSavedGames() {
     const allSavedGames = await this.gameService.getSavedGames();
     return { games: allSavedGames };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('getSavedGamesCount')
   async getSavedGamesCount() {
     const savedGamesCount = await this.gameService.getSavedGamesCount();
     return { games: savedGamesCount };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('getSavedGamesByPlayer/:username')
   async getSavedGamesByPlayer(@Param() params: UserRefDTO) {
     const savedGamesByPlayer = await this.gameService.getSavedGamesByPlayer(
@@ -113,7 +113,7 @@ export class GameController {
     return { games: savedGamesByPlayer };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('getWonGamesByPlayer/:username')
   async getWonGamesByPlayer(@Param() params: UserRefDTO) {
     const wonGamesByPlayer = await this.gameService.getWonGamesByPlayer(
@@ -122,7 +122,7 @@ export class GameController {
     return { games: wonGamesByPlayer };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('getWonGamesCountByPlayer/:username')
   async getWonGamesCountByPlayer(@Param() params: UserRefDTO) {
     const wonGamesCountByPlayer =
@@ -130,7 +130,7 @@ export class GameController {
     return { games: wonGamesCountByPlayer };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post('matchMaking')
   async joinMatchMaking(@Request() req: any) {
     await this.gameService.joinMatchMaking(req.user.name);

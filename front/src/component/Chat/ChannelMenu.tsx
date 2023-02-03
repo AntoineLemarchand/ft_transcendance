@@ -52,7 +52,7 @@ function DisplayList(props: {
             onClick={() => props.setCurrentChannel(channel)}
           >
             {!channel.channelName.includes("_")
-              ? channel.channelName
+              ? channel.channelName.substring(0, 15)
               : "☺ " +
                 (channel.channelName.split("_")[0] === props.username
                   ? channel.channelName.split("_")[1]

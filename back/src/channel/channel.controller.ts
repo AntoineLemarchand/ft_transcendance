@@ -10,7 +10,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt.auth.guard';
+import { JwtTwoFactorGuard } from '../auth/auth.2fa.guard';
 import { ChannelService } from './channel.service';
 import {
   ChannelBanDTO,
@@ -25,7 +25,7 @@ import {
 export class ChannelController {
   constructor(private channelService: ChannelService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post('join')
   async addChannel(
     @Request() req: any,
@@ -54,7 +54,7 @@ export class ChannelController {
     };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post('mute')
   async muteUserOnChannel(@Request() req: any, @Body() input: ChannelMuteDTO) {
     await this.channelService.muteMemberForMinutes(
@@ -65,7 +65,7 @@ export class ChannelController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post('invite')
   async inviteToChannel(@Request() req: any, @Body() input: ChannelInviteDTO) {
     await this.channelService.inviteToChannel(
@@ -75,14 +75,14 @@ export class ChannelController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('findAll')
   async getChannels() {
     const allChannels = await this.channelService.getChannels();
     return { channels: allChannels };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('findOne/:channelName')
   async getChannelByName(@Param() params: ChannelRefDTO) {
     try {
@@ -95,7 +95,7 @@ export class ChannelController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('getMatchingNames/:channelName')
   async findMatching(@Param() params: ChannelRefDTO) {
     const matchingChannels = await this.channelService.findMatchingNames(
@@ -104,14 +104,14 @@ export class ChannelController {
     return { channels: matchingChannels };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('getMatchingNames')
   async findAllChannelNames(@Request() req: any) {
     const matchingChannels = await this.channelService.findMatchingNames('');
     return { channels: matchingChannels };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post('password')
   async setPassword(@Request() req: any, @Body() input: ChannelSetPwdDTO) {
     await this.channelService.setPassword(
@@ -121,7 +121,7 @@ export class ChannelController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post('admin')
   async makeAdmin(@Request() req: any, @Body() input: ChannelMakeAdminDTO) {
     const matchingChannels = await this.channelService.makeAdmin(
@@ -131,7 +131,7 @@ export class ChannelController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('admin')
   async getAdmins(@Request() req: any, @Body() input: ChannelRefDTO) {
     const adminList = (
@@ -140,7 +140,7 @@ export class ChannelController {
     return { adminNames: adminList };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Delete('user')
   async banUser(@Request() req: any, @Body() input: ChannelBanDTO) {
     const matchingChannel = await this.channelService.getChannelByName(
@@ -157,7 +157,7 @@ export class ChannelController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Delete('join')
   async leaveChannel(@Request() req: any, @Body() input: ChannelRefDTO) {
     try {

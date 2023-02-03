@@ -118,8 +118,15 @@ export function SearchMenu( props: {
 	const [channelName, setChannelName] = useState<string>('');
 	const [channelPassword, setChannelPassword] = useState<string>('');
   const [userInfo, setUserInfo] = useState<User>();
+  const [query, setQuery] = useState('');
 
-	const updateSearchedChannels = (query: string) => {
+	const updateSearchedChannels = (input: string) => {
+    if ((input.match((/^[0-9a-z]+$/)) && input.length < 15) || input === '')
+      setQuery(input);
+    else {
+      alert("invalid query");
+      setQuery('');
+    }
     fetch('http://' + process.env.REACT_APP_SERVER_IP + '/api/channel/getMatchingNames/' + query , {
         credentials: 'include',
         method: 'GET',
@@ -233,6 +240,7 @@ export function SearchMenu( props: {
 				<div className="choiceBox" onClick={(event=>{event.stopPropagation()})}>
 						<input type="text"
 							placeholder="Search..."
+              value={query}
 							onChange={(event)=>updateSearchedChannels(event.target.value)}/>
             <div className="ChannelList">
 						{
