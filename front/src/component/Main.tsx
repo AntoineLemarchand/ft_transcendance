@@ -25,7 +25,7 @@ function Main(props: {component: any, socket: Socket}) {
 	const ProcessLogout = () => {
     removeCookie('auth', {path: '/'});
 		navigate('/');
-    props.socket.close();
+    props.socket?.close();
 	}
 
   useEffect(() => {
