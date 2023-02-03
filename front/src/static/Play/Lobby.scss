@@ -42,8 +42,7 @@ $inviteHeight: 5rem;
       .Invite {
         height: $inviteHeight;
         padding: 0;
-        display: grid;
-        grid-template-columns: calc($inviteHeight - .4rem) auto;
+        text-align: center;
         cursor: pointer;
         background: color('bluePrimary');
 
