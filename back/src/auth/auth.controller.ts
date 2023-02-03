@@ -98,7 +98,6 @@ export class AuthController {
     @Request() req: Express.Request,
     @Res() res: ExpressResponse,
   ) {
-    console.log(req.user);
     const newUser = req.user as Identity;
     try {
       await this.authService.validateUser(newUser.name, '', newUser.accessToken);
