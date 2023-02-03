@@ -229,7 +229,7 @@ export function MatchMakingRoom(props: { socket: Socket }) {
   }, []);
 
   useEffect(() => {
-    fetch(
+    setTimeout(() => fetch(
       "http://" + process.env.REACT_APP_SERVER_IP + "/api/game/matchMaking",
       {
         credentials: "include",
@@ -238,7 +238,7 @@ export function MatchMakingRoom(props: { socket: Socket }) {
           "Content-type": "application/json; charset=UTF-8",
         },
       }
-    );
+    ), 1000);
   }, []);
 
   return (
