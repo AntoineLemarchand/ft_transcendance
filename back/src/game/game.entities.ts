@@ -156,7 +156,7 @@ export class GameObject {
   executeStep() {
     const scorer = this.calcScorer();
     if (scorer) {
-      if (scorer.score === 10) {
+      if (scorer.score === 5) {
         this.progress = GameProgress.FINISHED;
       }
       this.collision.reset();

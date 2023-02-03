@@ -42,7 +42,7 @@ function Spectate() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          gameId: gameId,
+          gameId: String(gameId),
         })
     });
     navigate('/game/' + gameId);

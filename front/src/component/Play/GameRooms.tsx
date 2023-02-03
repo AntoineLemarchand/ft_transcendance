@@ -124,9 +124,7 @@ export function PreMatchRoom(props: { socket: Socket }) {
 
   useEffect(() => {
     fetch(
-      "http://" +
-        process.env.REACT_APP_SERVER_IP +
-        "/api/game/getById/" +
+      "http://" + process.env.REACT_APP_SERVER_IP + "/api/game/getById/" +
         params.gid,
       {
         credentials: "include",
