@@ -56,7 +56,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('image/:username')
-  async getImage(@Param() params: UserRefDTO, @Res({passthrough:true}) res: any): Promise<void> {
+  async getImage(@Param() params: UserRefDTO, @Res() res: any): Promise<void> {
     const result = await this.userService.getUserInfo(params.username);
     if (!result)
       throw new HttpException('Could not find user', HttpStatus.NOT_FOUND);

@@ -51,8 +51,7 @@ export class AuthController {
   @Post('2fa/activate')
   @Header('content-type', 'image/png')
   async activate2fa(
-    @Request() req: any,
-    @Res({ passthrough: true }) res: ExpressResponse,
+    @Request() req: any, @Res() res: ExpressResponse,
   ) {
     const otpAuthUrl = await
       this.authService.activate2fa(req.user.name, req.user.accessToken);
