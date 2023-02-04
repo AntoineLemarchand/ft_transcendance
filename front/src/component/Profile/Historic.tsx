@@ -71,6 +71,38 @@ function Historic(props: { username: string }) {
             ).length
           }
         </p>
+        <p>
+          <p>
+            Ladder Level:{" "}
+            {!isFinite(
+              playedGames.filter((item) =>
+                isPlayerOne(item)
+                  ? item.score1 > item.score2
+                  : item.score2 > item.score1
+              ).length /
+                playedGames.filter((item) =>
+                  isPlayerOne(item)
+                    ? item.score2 > item.score1
+                    : item.score1 > item.score2
+                ).length
+            )
+              ? playedGames.filter((item) =>
+                  isPlayerOne(item)
+                    ? item.score1 > item.score2
+                    : item.score2 > item.score1
+                ).length
+              : playedGames.filter((item) =>
+                  isPlayerOne(item)
+                    ? item.score1 > item.score2
+                    : item.score2 > item.score1
+                ).length /
+                playedGames.filter((item) =>
+                  isPlayerOne(item)
+                    ? item.score2 > item.score1
+                    : item.score1 > item.score2
+                ).length}
+          </p>
+        </p>
       </div>
       <div className="content">
         <div className="head">

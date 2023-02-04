@@ -1,68 +1,82 @@
-@import 'static/gruvbox';
+@import "static/gruvbox";
 
 .Historic {
-	overflow: hidden;
-	display: grid;
-	grid-template-rows: 3rem auto;
-	height: 100%;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 3rem auto;
+  height: 100%;
 
-	.statsHeader {
-		display: grid;
-		text-align: center;
-    grid-template-columns: auto 5rem 5rem;
+  .statsHeader {
+    display: grid;
+    text-align: center;
+    grid-template-columns: 1fr 5rem 5rem 1fr;
 
-		p {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			margin: 0;
+    p {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
 
       &:first-child {
-        background: color('backGround2');
-        color: color('textPrimary');
+        background: color("backGround2");
+        color: color("textPrimary");
+      }
+      &:last-child {
+        background: color("backGround2");
+        color: color("textPrimary");
       }
 
-      &:nth-child(2) {background: color('greyPrimary');}
-      &:nth-child(3) {background: color('greySecondary');}
-		}
+      &:nth-child(2) {
+        background: color("greyPrimary");
+      }
+      &:nth-child(3) {
+        background: color("greySecondary");
+      }
+    }
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 
-	}
-	.content {
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-start;
-
-		.head, .body li {
-			display: grid;
+    .head,
+    .body li {
+      display: grid;
       grid-template-columns: 1rem 3fr 1fr 1fr;
-			p {
-				width: 100%;
-				margin: 0;
+      p {
+        width: 100%;
+        margin: 0;
         padding-left: 1rem;
         overflow-x: scroll;
-			}
-		}
-
-    .head {
-      color: color('backGround2');
-      background: color('textSecondary');
-      p:first-child {padding: 0}
+      }
     }
 
-		.body {
-      width: 100%;
-			margin: 0;
-			overflow-y: scroll;
-      overflow-x: hidden;
-			list-style: none;
-			padding: 0;
-			color: color('backGround2');
-			.row {
-        color: color('textPrimary');
+    .head {
+      color: color("backGround2");
+      background: color("textSecondary");
+      p:first-child {
+        padding: 0;
+      }
+    }
 
-        &:nth-child(2n) {background: color('backGround1');}
-        &:nth-child(2n + 1) {background: color('backGround2');}
-			}
-		}
-	}
+    .body {
+      width: 100%;
+      margin: 0;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      list-style: none;
+      padding: 0;
+      color: color("backGround2");
+      .row {
+        color: color("textPrimary");
+
+        &:nth-child(2n) {
+          background: color("backGround1");
+        }
+        &:nth-child(2n + 1) {
+          background: color("backGround2");
+        }
+      }
+    }
+  }
 }
