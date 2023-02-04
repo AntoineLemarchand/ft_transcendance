@@ -11,6 +11,7 @@ import { UserService } from '../user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { ErrForbidden, ErrNotFound, ErrUnAuthorized } from '../exceptions';
+const escapeSql = require('pg-escape');
 
 @Injectable()
 export class ChannelService {
@@ -22,7 +23,11 @@ export class ChannelService {
     private userService: UserService,
   ) {}
 
-  async sendMessage(message: Message): Promise<void> {
+  async sendMessage(tmp: Message): Promise<void> {
+    const message = tmp;
+    tmp.content = escapeSql(tmp.content);
+    tmp.channel = escapeSql(tmp.channel);
+    tmp.sender = escapeSql(tmp.sender);
     const channel = await this.getChannelByName(message.channel);
     if (channel.isUserMuted(message.sender)) return;
     if (channel.isUserBanned(message.sender)) return;
