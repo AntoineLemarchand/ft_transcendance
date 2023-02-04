@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "pg-escape": "^0.2.0"
+  }
+}

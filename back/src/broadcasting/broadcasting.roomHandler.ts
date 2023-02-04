@@ -46,7 +46,7 @@ export class RoomHandler implements OnGatewayInit {
     const deviceIds = this.instanceMap.get(username) as string[];
     if (deviceIds === undefined) return;
     for (const deviceId of deviceIds)
-      (this.server.sockets.sockets.get(deviceId) as Socket).join(roomName);
+      this.server.sockets.sockets.get(deviceId)?.join(roomName);
   }
 
   leave(username: string, roomName: string) {
